@@ -51,7 +51,7 @@ export default function Home() {
 					Bienvenue sur <span className="text-yellow-400">ICO</span> !
 				</h1>
 				<p className="text-lg mb-6 max-w-lg mx-auto">
-					Venez conquérir les océans avec votre équipage ! Pour commencer, créez un compte ou rejoignez vos amis.
+					Venez conquérir les océans avec votre équipage ! Pour commencer, créez un compte ou rejoignez vos amis.
 				</p>
 			</div>
 
