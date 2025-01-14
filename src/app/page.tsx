@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUUID as setUUIDAction } from "@/lib/reducers/users";
 import { RootState } from "@/lib/store";
+import RulesSlider from "./components/RulesSlider";
 
 export default function Home() {
 	const [inputCode, setInputCode] = useState("");
@@ -92,6 +93,8 @@ export default function Home() {
 					{uuid || "Génération en cours..."}
 				</span>
 			</div>
+
+			<RulesSlider />
 		</section>
 	);
 }
