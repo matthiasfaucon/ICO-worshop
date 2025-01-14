@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaUser, FaInfoCircle, FaTrophy, FaTimesCircle, FaCog } from "react-icons/fa";
 import JoinGameModal from "./JoinGameModal"; // Import your modal component
@@ -10,7 +10,35 @@ export default function ConnectedHome() {
   const [defeats, setDefeats] = useState(4);
   const [nickname, setNickname] = useState("Pseudo");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
+
+  // Fonction pour récupérer le profil utilisateur
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch("/api/auth/me", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`, // Assurez-vous que le token est stocké dans localStorage lors de la connexion
+          },
+        });
+
+        if (response.ok) {
+          const user = await response.json();
+          setNickname(user.username || "Utilisateur"); // Met à jour le nickname
+        } else {
+          console.error("Échec de la récupération du profil utilisateur :", response.statusText);
+          setError("Impossible de récupérer le profil utilisateur.");
+        }
+      } catch (err) {
+        console.error("Erreur lors de la récupération du profil utilisateur :", err);
+        setError("Une erreur est survenue.");
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -21,27 +49,22 @@ export default function ConnectedHome() {
   };
 
   const handleCreateGame = () => {
-    console.log("Créer une partie");
     router.push("/create-game");
   };
 
   const handleViewAchievements = () => {
-    console.log("Voir les succès");
     router.push("/achievements");
   };
 
   const handleUser = () => {
-    console.log("Accéder au profil utilisateur");
     router.push("/auth-options");
   };
 
   const handleInfo = () => {
-    console.log("Afficher les informations");
     router.push("/info");
   };
 
   const handleEditProfile = () => {
-    console.log("Modifier le profil");
     router.push("/profile/edit");
   };
 
@@ -49,17 +72,12 @@ export default function ConnectedHome() {
     <div className="flex flex-col items-center justify-between min-h-screen bg-gray-50 px-6 py-6">
       {/* Header */}
       <div className="flex justify-between items-center w-full max-w-md">
-        {/* Icon User */}
         <button onClick={handleUser} className="p-2">
           <FaUser className="text-gray-700 text-2xl" />
         </button>
-
-        {/* Game Image */}
         <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
           <FaTrophy className="text-gray-400 text-3xl" />
         </div>
-
-        {/* Icon Info */}
         <button onClick={handleInfo} className="p-2">
           <FaInfoCircle className="text-gray-700 text-2xl" />
         </button>
@@ -67,38 +85,34 @@ export default function ConnectedHome() {
 
       {/* Profile Picture and Nickname */}
       <div className="flex flex-col items-center mt-6">
-        {/* Nickname with Edit Icon */}
         <div className="flex items-center space-x-2 mb-2">
           <h2 className="text-xl font-bold text-gray-800">{nickname}</h2>
           <button onClick={handleEditProfile} className="p-1">
             <FaCog className="text-gray-600 text-lg" />
           </button>
         </div>
-
-        {/* Profile Picture */}
         <div className="w-40 h-40 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
           <FaUser className="text-gray-400 text-6xl" />
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+
       {/* Statistics */}
       <div className="flex justify-center items-center w-full max-w-md mt-6 space-x-8">
         <div className="flex flex-col items-center">
-          <div className="flex flex-col items-center">
-            <div className="w-14 h-14 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
-              <FaTrophy className="text-gray-600 text-xl" />
-            </div>
-            <p className="mt-2 text-sm font-semibold text-gray-700">Victoire</p>
+          <div className="w-14 h-14 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
+            <FaTrophy className="text-gray-600 text-xl" />
           </div>
+          <p className="mt-2 text-sm font-semibold text-gray-700">Victoire</p>
           <span className="mt-1 text-lg font-bold text-gray-900">{victories}</span>
         </div>
         <div className="flex flex-col items-center">
-          <div className="flex flex-col items-center">
-            <div className="w-14 h-14 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
-              <FaTimesCircle className="text-gray-600 text-xl" />
-            </div>
-            <p className="mt-2 text-sm font-semibold text-gray-700">Défaite</p>
+          <div className="w-14 h-14 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
+            <FaTimesCircle className="text-gray-600 text-xl" />
           </div>
+          <p className="mt-2 text-sm font-semibold text-gray-700">Défaite</p>
           <span className="mt-1 text-lg font-bold text-gray-900">{defeats}</span>
         </div>
       </div>

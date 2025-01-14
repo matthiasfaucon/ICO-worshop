@@ -1,62 +1,54 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "@/lib/prisma";
-import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 
+const JWT_SECRET = process.env.JWT_SECRET!;
+
+/**
+ * Options d'authentification NextAuth
+ */
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials || !credentials.email || !credentials.password) {
-          throw new Error("Email et mot de passe requis");
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
-        if (!user || !user.password) {
-          throw new Error("Email ou mot de passe invalide");
-        }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) {
-          throw new Error("Email ou mot de passe invalide");
-        }
-
-        return user;
-      },
-    }),
+    // Exemple d'autres providers comme Google ou Credentials
   ],
   callbacks: {
-    async session({ session, user }: { session: any; user: any }) {
-      session.user.id = user.id;
-      session.user.uuid = user.session_uuid;
+    async jwt({ token, user }: { token: any; user: any }) {
+      if (user) {
+        token.id = user.id;
+        token.session_uuid = user.session_uuid;
+      }
+      return token;
+    },
+    async session({ session, token }: { session: any; token: any }) {
+      session.user.id = token.id;
+      session.user.uuid = token.session_uuid;
       return session;
     },
-    async signIn({ user }: { user: any }) {
-      if (!user.session_uuid) {
-        const newUUID = uuidv4();
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { session_uuid: newUUID },
-        });
-        user.session_uuid = newUUID;
-      }
-      return true;
-    },
+  },
+  jwt: {
+    secret: JWT_SECRET,
   },
   secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/signin",
+    error: "/error",
+  },
 };
+
+/**
+ * Valide un token JWT.
+ * @param token - Le token JWT à valider.
+ * @returns Les données décodées du token si valide.
+ * @throws Une erreur si le token est invalide ou expiré.
+ */
+export function validateToken(token: string) {
+  if (!token || typeof token !== "string") {
+    throw new Error("Token vide ou non valide");
+  }
+
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    console.error("Erreur lors de la validation du token :", error);
+    throw new Error("Token invalide ou expiré");
+  }
+}

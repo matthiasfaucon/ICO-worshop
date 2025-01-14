@@ -1,14 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { FaGoogle } from "react-icons/fa";
 
 export default function AuthOptions() {
   const router = useRouter();
 
-  const handleGoogleSignIn = () => {
-    console.log("Connexion avec Google");
-    // Logique pour connecter avec Google
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn("google", { callbackUrl: "/games" });
+    } catch (error) {
+      console.error("Erreur lors de la connexion avec Google :", error);
+    }
   };
 
   const handleSignIn = () => {
@@ -42,7 +46,7 @@ export default function AuthOptions() {
             className="w-full h-full rounded-full object-cover"
           />
         </div>
-        <p className="mt-6 text-lg font-semibold">
+        <p className="mt-6 text-lg font-semibold text-center">
           Connecte-toi ou crée un compte pour jouer en ligne et accéder à ta progression sur tous tes appareils.
         </p>
       </div>
@@ -59,7 +63,11 @@ export default function AuthOptions() {
         </button>
 
         {/* Séparateur */}
-        <hr className="w-full border-t border-gray-200 my-6" />
+        <div className="flex items-center w-full my-6">
+          <div className="flex-grow border-t border-gray-200"></div>
+          <span className="mx-4 text-gray-200 text-sm">ou</span>
+          <div className="flex-grow border-t border-gray-200"></div>
+        </div>
 
         {/* Bouton Se connecter */}
         <button
