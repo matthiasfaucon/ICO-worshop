@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
+import { Providers } from "@/app/components/SessionProviderWrapper" // Import SessionProvider pour NextAuth
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +27,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <StoreProvider>
-          {children}
-        </StoreProvider>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Providers> {/* Encapsulation avec SessionProvider */}
+          <StoreProvider>
+            {children}
+          </StoreProvider>
+        </Providers>
       </body>
     </html>
   );

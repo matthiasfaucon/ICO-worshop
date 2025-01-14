@@ -11,6 +11,11 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope: "openid email profile",
+        },
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -36,15 +41,34 @@ export const authOptions = {
           throw new Error("Email ou mot de passe invalide");
         }
 
-        return user;
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.username,
+          session_uuid: user.session_uuid,
+          role: user.role,
+        };
       },
     }),
   ],
   callbacks: {
-    async session({ session, user }: { session: any; user: any }) {
-      session.user.id = user.id;
-      session.user.uuid = user.session_uuid;
+    async session({ session, token }: { session: any; token: any }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.uuid = token.session_uuid;
+        session.user.role = token.role;
+      }
       return session;
+    },
+    async jwt({ token, user }: { token: any; user: any }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.session_uuid = user.session_uuid;
+        token.role = user.role;
+      }
+      return token;
     },
     async signIn({ user }: { user: any }) {
       if (!user.session_uuid) {
@@ -59,4 +83,7 @@ export const authOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt",
+  },
 };

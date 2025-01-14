@@ -70,7 +70,8 @@ export default function SignUpPage() {
             });
 
             if (response.ok) {
-                router.push("/games");
+                // Redirection vers la page login après inscription réussie
+                router.push("/login");
             } else {
                 const data = await response.json();
                 setError(data.message);

@@ -46,7 +46,8 @@ export default function LoginPage() {
             });
 
             if (response.ok) {
-                router.push("/games");
+                // Redirection vers la page d'accueil après connexion réussie
+                router.push("/");
             } else {
                 const data = await response.json();
                 setError(data.message);
@@ -60,7 +61,7 @@ export default function LoginPage() {
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
         try {
-            await signIn("google", { callbackUrl: "/games" });
+            await signIn("google", { callbackUrl: "/" }); // Redirige vers la page d'accueil après Google Sign-In
         } catch {
             setError("Une erreur est survenue avec Google Sign-In.");
         }
