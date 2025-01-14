@@ -1,40 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { setUUID as setUUIDAction } from "@/lib/reducers/users";
 import { signIn } from "next-auth/react";
 
-export default function SignUpPage() {
+export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
-    const dispatch = useDispatch();
     const uuid = useSelector((state: RootState) => state.user.uuid);
-
-    // Générer ou récupérer l'UUID
-    useEffect(() => {
-        const getOrCreateUUID = () => {
-            const storedUUID = localStorage.getItem("user_uuid");
-            if (storedUUID) {
-                return storedUUID;
-            }
-
-            // Génération d'un nouvel UUID
-            const newUUID = crypto.randomUUID();
-            localStorage.setItem("user_uuid", newUUID);
-            return newUUID;
-        };
-
-        const generatedUUID = getOrCreateUUID();
-        dispatch(setUUIDAction(generatedUUID)); // Enregistrez dans Redux
-    }, [dispatch]);
 
     const handleSignIn = async () => {
         if (!email) {
@@ -54,19 +34,15 @@ export default function SignUpPage() {
             return;
         }
 
-        if (password.length < 6) {
-            setError("Le mot de passe doit contenir au moins 6 caractères.");
-            return;
-        }
-
         setLoading(true);
         try {
-            const response = await fetch("/api/uuid/associate", {
+            // Requête pour la connexion via API
+            const response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ uuid, email, password }),
+                body: JSON.stringify({ email, password }),
             });
 
             if (response.ok) {
@@ -81,7 +57,7 @@ export default function SignUpPage() {
         setLoading(false);
     };
 
-    const createAccountWithGoogle = async () => {
+    const handleGoogleSignIn = async () => {
         setGoogleLoading(true);
         try {
             await signIn("google", { callbackUrl: "/games" });
@@ -95,16 +71,16 @@ export default function SignUpPage() {
         <section className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-800 via-purple-700 to-pink-600 text-white px-6 py-8">
             <div className="text-center mb-10">
                 <h1 className="text-5xl font-bold mb-4">
-                    Rejoignez <span className="text-yellow-400">ICO</span> !
+                    Content de vous revoir sur <span className="text-yellow-400">ICO</span> !
                 </h1>
                 <p className="text-lg max-w-xl mx-auto">
-                    Préparez-vous à conquérir les océans avec votre équipage. Inscrivez-vous et démarrez votre aventure dès aujourd'hui !
+                    Connectez-vous pour accéder à votre jeu de pirate favori !
                 </p>
             </div>
 
             <div className="w-full max-w-lg bg-white rounded-lg shadow-2xl p-8 text-gray-800">
                 <h2 className="text-xl font-semibold text-gray-700 mb-4 text-center">
-                    Créez votre compte
+                    Connectez-vous
                 </h2>
                 <div className="space-y-4">
                     <input
@@ -129,7 +105,7 @@ export default function SignUpPage() {
                     onClick={handleSignIn}
                     disabled={loading}
                 >
-                    {loading ? "Chargement..." : "Créer votre compte"}
+                    {loading ? "Chargement..." : "Se connecter"}
                 </button>
                 {error && (
                     <p className="text-red-500 text-center mt-4 font-medium">{error}</p>
@@ -142,13 +118,12 @@ export default function SignUpPage() {
                     className={`w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center transition-transform transform hover:scale-105 ${
                         googleLoading ? "opacity-50 cursor-not-allowed" : ""
                     }`}
-                    onClick={createAccountWithGoogle}
+                    onClick={handleGoogleSignIn}
                     disabled={googleLoading}
                 >
                     <Image src="/logo-google.webp" alt="Google" width={24} height={24} />
                 </button>
             </div>
-
             <div className="w-full flex flex-col items-center max-w-md rounded-lg text-gray-800">
                 <p className="text-sm mt-10 mb-4 text-white ">ID client</p>
                 <span className="font-mono bg-white text-indigo-600 px-2 py-1 rounded">
