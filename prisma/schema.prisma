@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] 
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id             String                 @id @default(uuid()) @db.Uuid
+  username       String?                @unique @db.VarChar(50) 
+  email          String?                @unique @db.VarChar(100) 
+  password       String?                @db.VarChar(255) 
+  role           String                 @default("USER") @db.VarChar(20)
+  session_uuid   String                 @unique @db.Uuid
+  is_logged      Boolean                @default(false)
+  created_at     DateTime               @default(now())
+  updated_at     DateTime?
+  players        Player[]
+  bugSuggestions BugSuggestion[]
+  bugHistory     BugSuggestionHistory[]
+  gameRules      GameRule[]
+}
+
+
+model Game {
+  id                 String          @id @default(uuid()) @db.Uuid
+  code               String          @unique @db.VarChar(10)
+  status             String          @db.VarChar(20)
+  max_players        Int
+  win_threshold      Int             @default(10)
+  socket_room        String          @db.VarChar(50)
+  current_captain    Player?         @relation("Captain", fields: [current_captain_id], references: [id])
+  current_captain_id String?         @db.Uuid
+  current_turn       Int             @default(1)
+  created_at         DateTime        @default(now())
+  updated_at         DateTime?
+  players            Player[]
+  turns              Turn[]
+  statistics         GameStatistics?
+  cardActions        CardAction[]
+  votes              Vote[]
+}
+
+model Player {
+  id          String            @id @default(uuid()) @db.Uuid
+  user_id     String            @db.Uuid
+  game_id     String            @db.Uuid
+  role        String            @db.VarChar(20)
+  is_host     Boolean           @default(false)
+  is_captain  Boolean           @default(false)
+  is_in_crew  Boolean           @default(false)
+  is_active   Boolean           @default(true)
+  socket_id   String?           @db.VarChar(100)
+  connected   Boolean           @default(true)
+  joined_at   DateTime          @default(now())
+  score       Int               @default(0)
+  user        User              @relation(fields: [user_id], references: [id])
+  game        Game              @relation(fields: [game_id], references: [id])
+  captainOf   Game[]            @relation("Captain") 
+  playerStats PlayerStatistics?
+  votes       Vote[]
+  cardActions CardAction[]
+}
+
+model PlayerStatistics {
+  id                      String   @id @default(uuid()) @db.Uuid
+  player_id               String   @unique @db.Uuid
+  total_victories         Int      @default(0)
+  total_defeats           Int      @default(0)
+  total_games             Int      @default(0)
+  average_points_per_game Float    @default(0.0)
+  last_updated            DateTime @default(now())
+  player                  Player   @relation(fields: [player_id], references: [id])
+}
+
+model Turn {
+  id           String       @id @default(uuid()) @db.Uuid
+  game_id      String       @db.Uuid
+  turn_number  Int
+  status       String       @default("ONGOING") @db.VarChar(20)
+  created_at   DateTime     @default(now())
+  completed_at DateTime?
+  game         Game         @relation(fields: [game_id], references: [id])
+  votes        Vote[]
+  cardActions  CardAction[]
+}
+
+model Card {
+  id       String @id @db.Text
+  type        String
+  name        String    @unique
+  description String?
+  effect      String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime?
+  CardAction  CardAction[]
+}
+
+
+model CardAction {
+  id        String   @id @default(uuid()) @db.Uuid
+  player_id String   @db.Uuid
+  game_id   String   @db.Uuid
+  card_id String @db.Text
+  turn_id   String   @db.Uuid
+  type      String   @db.VarChar(20)
+  played_at DateTime @default(now())
+  player    Player   @relation(fields: [player_id], references: [id])
+  game      Game     @relation(fields: [game_id], references: [id])
+  card      Card     @relation(fields: [card_id], references: [id])
+  turn      Turn     @relation(fields: [turn_id], references: [id])
+}
+
+model Vote {
+  id          String   @id @default(uuid()) @db.Uuid
+  player_id   String   @db.Uuid
+  game_id     String   @db.Uuid
+  turn_id     String   @db.Uuid
+  is_approved Boolean
+  created_at  DateTime @default(now())
+  player      Player   @relation(fields: [player_id], references: [id])
+  game        Game     @relation(fields: [game_id], references: [id])
+  turn        Turn     @relation(fields: [turn_id], references: [id])
+}
+
+model GameStatistics {
+  id              String   @id @default(uuid()) @db.Uuid
+  game_id         String   @unique @db.Uuid
+  duration        Float?
+  median_duration Float?
+  total_players   Int
+  abandoned       Boolean  @default(false)
+  created_at      DateTime @default(now())
+  game            Game     @relation(fields: [game_id], references: [id])
+}
+
+model BugSuggestion {
+  id          String                 @id @default(uuid()) @db.Uuid
+  user_id     String                 @db.Uuid
+  description String
+  type        String                 @db.VarChar(20)
+  status      String                 @default("PENDING") @db.VarChar(20)
+  created_at  DateTime               @default(now())
+  updated_at  DateTime?
+  user        User                   @relation(fields: [user_id], references: [id])
+  history     BugSuggestionHistory[]
+}
+
+model BugSuggestionHistory {
+  id                String        @id @default(uuid()) @db.Uuid
+  bug_suggestion_id String        @db.Uuid
+  old_status        String        @db.VarChar(20)
+  new_status        String        @db.VarChar(20)
+  changed_by        String        @db.Uuid
+  change_date       DateTime      @default(now())
+  bugSuggestion     BugSuggestion @relation(fields: [bug_suggestion_id], references: [id])
+  user              User          @relation(fields: [changed_by], references: [id])
+}
+
+model GameRule {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(50)
+  value       String
+  description String?
+  updated_by  String   @db.Uuid
+  updated_at  DateTime @default(now())
+  user        User     @relation(fields: [updated_by], references: [id])
+}
