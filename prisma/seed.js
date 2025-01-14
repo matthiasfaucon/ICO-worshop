@@ -5,9 +5,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function seed() {
+
   console.log("Démarrage du peuplement des données...");
   await seedUsers(); 
   await seedCards(); 
+  
   console.log("Peuplement terminé !");
 }
 
