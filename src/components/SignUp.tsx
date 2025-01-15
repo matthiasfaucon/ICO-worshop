@@ -1,14 +1,71 @@
 "use client";
 
 import { useState } from "react";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [gameKey, setGameKey] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSignup = () => {
-    console.log("Inscription avec :", { email, password, gameKey });
+  const router = useRouter();
+
+  const handleSignup = async () => {
+    if (!email) {
+      setError("Veuillez entrer votre email.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Veuillez entrer une adresse email valide.");
+      return;
+    }
+
+    if (!password) {
+      setError("Veuillez entrer votre mot de passe.");
+      return;
+    }
+
+    if (!username) {
+      setError("Veuillez entrer votre nom d'utilisateur.");
+      return;
+    }
+
+    setError(""); // Réinitialiser les erreurs
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password, username }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const token = data.token; // Le JWT retourné par l'API
+
+        // Stocker le token dans un cookie sécurisé
+        Cookies.set("authToken", token, { secure: true, sameSite: "strict" });
+
+        router.push("/"); // Redirection après connexion réussie
+      } else {
+        const data = await response.json();
+        setError(data.message || "Une erreur est survenue.");
+      }
+    } catch (err) {
+      console.error("Erreur lors de la connexion :", err);
+      setError("Une erreur inconnue est survenue.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +100,20 @@ export default function SignupForm() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-3 text-slate-900 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
+        </div>
+
+        {/* Nom d'utilisateur */}
+        <div>
+          <label htmlFor="username" className="block text-sm font-medium mb-2 text-black">
+            Nom d'utilisateur
+          </label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Nom d'utilisateur"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full px-4 py-3 text-slate-900 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" />
         </div>
 
         {/* Clé du jeu */}

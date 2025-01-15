@@ -24,8 +24,10 @@ export default function ConnectedHome() {
           },
         });
 
+        
         if (response.ok) {
           const user = await response.json();
+          console.log("user:", user);
           setNickname(user.username || "Utilisateur"); // Met à jour le nickname
         } else {
           console.error("Échec de la récupération du profil utilisateur :", response.statusText);
