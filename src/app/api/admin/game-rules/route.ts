@@ -27,7 +27,7 @@ export async function POST(request: Request) {
                 name, 
                 value, 
                 description,
-                updated_by: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                updated_by: "1cf846e9-ec91-4a77-ad90-de8fc7a6e99e"
             }
         });
         return NextResponse.json(rule);

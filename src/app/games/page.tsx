@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard } from '@/lib/reducers/game';
+import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene } from '@/lib/reducers/game';
 import { useState } from 'react';
 
 export default function GamePage() {
@@ -22,6 +22,7 @@ export default function GamePage() {
 
     const handleStartGame = () => {
         dispatch(startGame());
+        dispatch(distributeRoles());
     };
 
     const handleCrewSelection = () => {
@@ -42,43 +43,57 @@ export default function GamePage() {
             }));
         }
     };
-    
+
+    const handleVoteSirene = (playerId: string) => {
+        dispatch(submitVoteSirene({
+            playerId,
+            vote: true
+        }));
+    };
 
     const handleJourneyCardSubmit = (card: 'POISON' | 'ILE') => {
         const currentCardSubmitter = gameState.currentCrew.find(
             (crewId) => !gameState.submittedCards.includes(crewId)
         );
+        const player = gameState.players.find(p => p.id === currentCardSubmitter);
+        if (player?.role === 'MARIN' && card === 'POISON') {
+            alert('Les marins ne peuvent pas choisir la carte poison!');
+            return;
+        }
         if (currentCardSubmitter) {
             dispatch(submitJourneyCard({
                 playerId: currentCardSubmitter,
                 card
             }));
         }
-    };    
+    };
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Le Trésor des Pirates</h1>
 
             {/* Phase de configuration */}
-            {gameState.gamePhase === 'SETUP' && (
+            {gameState.gamePhase === 'CREATE_PLAYERS' && (
                 <div className="mb-4">
-                    <h2 className="text-xl mb-2">Ajout des joueurs</h2>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={playerName}
-                            onChange={(e) => setPlayerName(e.target.value)}
-                            className="border p-2 rounded"
-                            placeholder="Nom du joueur"
-                        />
-                        <button
-                            onClick={handleAddPlayer}
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                            Ajouter
-                        </button>
-                    </div>
+                    {gameState.settings.playersCount > gameState.players.length && (
+                        <div>
+                            <h2 className="text-xl mb-2">Ajout des joueurs</h2>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={playerName}
+                                    onChange={(e) => setPlayerName(e.target.value)}
+                                    className="border p-2 rounded"
+                                    placeholder="Nom du joueur"
+                                />
+                                <button
+                                    onClick={handleAddPlayer}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-4">
                         <h3>Joueurs ({gameState.players.length}):</h3>
@@ -88,11 +103,10 @@ export default function GamePage() {
                             ))}
                         </ul>
 
-                        {gameState.players.length >= 7 && (
+                        {gameState.players.length >= gameState.settings.playersCount && (
                             <button
                                 onClick={handleStartGame}
-                                className="bg-green-500 text-white px-4 py-2 rounded"
-                            >
+                                className="bg-green-500 text-white px-4 py-2 rounded">
                                 Commencer la partie
                             </button>
                         )}
@@ -120,8 +134,8 @@ export default function GamePage() {
                                         }
                                     }}
                                     className={`p-2 rounded ${selectedPlayers.includes(player.id)
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-200'
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-200'
                                         }`}
                                 >
                                     {player.name}
@@ -216,12 +230,28 @@ export default function GamePage() {
                 </div>
             )}
 
+            {/* Phase de victoire des Pirates : Savoir si c'est la sirène ou les pirates qui gagnent */}
+            {gameState.gamePhase === 'PIRATES_OR_SIRENES_WIN' && (
+                // Afficher les players qui ont le roles pirates ou sirène
+                <div className="mb-4">
+                    <h2 className="text-xl mb-2">Les Pirates ont gagné! Mais une sirène se cache parmi eux</h2>
+                    <p>Qui est la sirène ?</p>
+                    <div className="mt-4">
+                        {gameState.players.filter(player => player.role === 'PIRATE' || player.role === 'SIRENE').map(player => (
+                            <button key={player.id} className="bg-blue-500 text-white px-4 py-2 rounded mr-2" onClick={() => handleVoteSirene(player.id)}>
+                                {player.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Phase de fin de partie */}
             {gameState.gamePhase === 'GAME_OVER' && (
                 <div className="mb-4">
                     <h2 className="text-xl mb-2">Partie terminée!</h2>
                     <p className="text-2xl font-bold">
-                        {gameState.winner === 'PIRATES' ? 'Les Pirates ont gagné!' : 'Les Marins ont gagné!'}
+                        {gameState.winner === 'PIRATES' ? 'Les Pirates ont gagné!' : gameState.winner === 'MARINS' ? 'Les Marins ont gagné!' : 'La Sirène a gagné!'}
                     </p>
                     <div className="mt-4">
                         <p>Score final:</p>
@@ -232,7 +262,7 @@ export default function GamePage() {
             )}
 
             {/* Affichage du score en cours */}
-            {gameState.gamePhase !== 'SETUP' && gameState.gamePhase !== 'GAME_OVER' && (
+            {gameState.gamePhase !== 'SETUP' && gameState.gamePhase !== 'CREATE_PLAYERS' && gameState.gamePhase !== 'GAME_OVER' && (
                 <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded">
                     <p>Score:</p>
                     <p>Pirates: {gameState.pirateScore}</p>
