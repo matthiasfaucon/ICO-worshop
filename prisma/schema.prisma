@@ -49,6 +49,7 @@ model Player {
   id          String            @id @default(uuid()) @db.Uuid
   user_id     String            @db.Uuid
   game_id     String            @db.Uuid
+  session_uuid String           @db.Uuid
   role        String            @db.VarChar(20)
   is_host     Boolean           @default(false)
   is_captain  Boolean           @default(false)

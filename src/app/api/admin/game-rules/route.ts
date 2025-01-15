@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { GameRuleType } from '@prisma/client';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const type = searchParams.get('type') as GameRuleType | null;;
+        
         const rules = await prisma.gameRule.findMany({
-            orderBy: { updated_at: 'desc' }
+            where: type ? { type: { equals: type } } : {},
+            orderBy: { order: 'asc' }
         });
         return NextResponse.json(rules);
     } catch (error) {

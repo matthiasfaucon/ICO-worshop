@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronLeft, FaGamepad } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +10,7 @@ export default function CreateGame() {
   const [pointsToWin, setPointsToWin] = useState(10);
   const [playersCount, setPlayersCount] = useState(10);
   const router = useRouter();
+  const [gameRules, setGameRules] = useState({});
 
   const handleCreateGame = () => {
     console.log("Création de la partie avec les paramètres :", {
@@ -22,7 +23,6 @@ export default function CreateGame() {
     });
     router.push("/waiting-room");
 
-    // Logique de création de partie
   };
 
   const handlePlayersCountChange = (value: number) => {
@@ -30,6 +30,31 @@ export default function CreateGame() {
     else if (value > 20) setPlayersCount(20);
     else setPlayersCount(value);
   };
+
+  useEffect(() => {
+    async function fetchGameRules() {
+      const filter = {
+        type: "SPECIFIC"
+      }
+      const response = await fetch(`/api/admin/game-rules?type=${filter.type}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        },
+      })
+
+      const data = await response.json()
+      const rules = data.reduce((acc, rule) => {
+        acc[rule.key] = rule.value
+        return acc
+      }, {})
+      console.log("Game rules:", rules)
+      setGameRules(rules)
+
+    }
+    fetchGameRules()
+  }, [])
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 px-6 py-6">
@@ -102,6 +127,9 @@ export default function CreateGame() {
               />
               <span className="text-sm text-slate-500">Temps estimé : 30 min</span>
             </div>
+            <span className="text-sm text-slate-500 mt-2 block">
+              Min : {gameRules["round-to-win"]}, Max : {gameRules.max_points_to_win}
+            </span>
           </div>
 
           {/* Players count */}
