@@ -1,4 +1,4 @@
-import CreateGame from "@/components/CreateGame";
+import CreateGameMulti from "@/components/CreateGameMulti";
 
 export default function CreateGamePage() {
   const gameConfig = {
@@ -8,5 +8,5 @@ export default function CreateGamePage() {
     playersCount: 10,
   };
 
-  return <CreateGame {...gameConfig} />;
+  return <CreateGameMulti {...gameConfig} />;
 }
