@@ -1,9 +1,8 @@
 "use client";
 
-import ConnectedHome from "@/components/ConnectedHome";
-import HomePage from "@/components/Homepage";
-import RulesSlider from "@/components/RulesSlider";
+import HomepageChooseMode from "@/components/HomepageChooseMode";
 
 export default function Home() {
-  return <ConnectedHome />;
+  return <HomepageChooseMode />;
+
 }

@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateToken } from "./lib/auth"; // Assurez-vous que validateToken est correct
+import { validateToken } from "./lib/auth"; // Assurez-vous que cette fonction est correcte
+import { v4 as uuidv4 } from "uuid";
 
 export function middleware(req: NextRequest) {
-  console.log("Requête entrante :", {
-    method: req.method,
-    url: req.url,
-    headers: Object.fromEntries(req.headers),
-  });
-
   const protectedRoutes = ["/api/protected", "/dashboard"];
   const pathname = req.nextUrl.pathname;
 
@@ -52,6 +47,29 @@ export function middleware(req: NextRequest) {
   }
 
   console.log("Route non protégée :", pathname);
+
+  // Gestion des visiteurs anonymes avec un `session_uuid`
+  let session_uuid = req.cookies.get("session_uuid")?.value;
+
+  if (!session_uuid) {
+    // Générer un nouveau `session_uuid`
+    session_uuid = uuidv4();
+    console.log("Génération d'un nouveau session_uuid :", session_uuid);
+
+    // Ajouter le cookie `session_uuid`
+    const response = NextResponse.next();
+    response.cookies.set("session_uuid", session_uuid, {
+      maxAge: 365 * 24 * 60 * 60, // 1 an en secondes
+      httpOnly: true, // Empêche l'accès via le client JS
+      secure: process.env.NODE_ENV === "production", // Utiliser HTTPS en production
+      path: "/",
+    });
+
+    return response;
+  } else {
+    console.log("Session ID trouvé :", session_uuid);
+  }
+
   return NextResponse.next();
 }
 

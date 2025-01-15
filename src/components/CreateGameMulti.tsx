@@ -1,50 +1,69 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FaChevronLeft, FaGamepad } from "react-icons/fa";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { configureGame } from '@/lib/reducers/game';
+import Cookies from "js-cookie";
+import { FaChevronLeft, FaGamepad } from "react-icons/fa";
 
-export default function CreateGame() {
+export default function CreateGameMulti() {
+  const [withSiren, setWithSiren] = useState(true);
   const [withBonus, setWithBonus] = useState(false);
   const [pointsToWin, setPointsToWin] = useState(10);
   const [playersCount, setPlayersCount] = useState(10);
 
   const router = useRouter();
-  const [gameRules, setGameRules] = useState({});
-  const dispatch = useAppDispatch();
-  const gameState = useAppSelector((state) => state.game);
 
   const handleCreateGame = async () => {
-    let generalRules = await fetch("/api/admin/game-rules?type=SPECIFIC", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+    console.log("Création de la partie avec les paramètres :", {
+      withSiren,
+      withBonus,
+      pointsToWin,
+      playersCount,
+    });
+
+    try {
+      // Récupérer le token depuis les cookies
+      const token = Cookies.get("authToken");
+
+      if (!token) {
+        alert("Vous devez être connecté pour créer une partie.");
+        router.push("/signin");
+        return;
       }
-    })
-    generalRules = await generalRules.json()
 
-    generalRules = generalRules.reduce((acc, rule) => {
-      acc[rule.key] = rule.value
-      return acc
-    }, {})
+      const response = await fetch("/api/games/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          withSiren,
+          withBonus,
+          pointsToWin,
+          playersCount,
+        }),
+      });
 
-    dispatch(configureGame({ withBonus, pointsToWin, playersCount, min_players: generalRules["min-player"], max_players: generalRules["max-player"], min_points: generalRules["min-round-to-win"], max_points: generalRules["max-round-to-win"] }));
-    console.log(gameState);
-    router.push("/single/games");
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Partie créée :", data);
 
+        // Redirige vers la salle d'attente
+        router.push(`./waiting-room/${data.code}`);
+      } else {
+        const error = await response.json();
+        console.error("Erreur :", error.message);
+        alert(`Erreur : ${error.message}`);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la création de la partie :", err);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
   };
 
   const handlePlayersCountChange = (value: number) => {
-    if (value < gameRules["min-player"]) {
-      setPlayersCount(gameRules["min-player"]);
-    } else if (value > gameRules["max-player"]) {
-      setPlayersCount(gameRules["max-player"]);
-    } else {
-      setPlayersCount(value);
-    }
+    setPlayersCount(Math.max(5, Math.min(value, 20)));
   };
 
   useEffect(() => {
@@ -75,13 +94,12 @@ export default function CreateGame() {
     <div className="flex flex-col min-h-screen bg-gray-50 px-6 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <a href="/">
         <button
           onClick={() => router.back()}
           className="p-2 text-slate-700 hover:text-slate-900"
         >
           <FaChevronLeft size={24} />
-        </button></a>
+        </button>
 
         <div className="flex items-center space-x-2">
           <FaGamepad size={24} className="text-slate-700" />
@@ -92,13 +110,13 @@ export default function CreateGame() {
 
       {/* Title */}
       <h1 className="text-xl font-bold text-center text-slate-900 mb-6">
-        Votre partie
+        Créez votre partie
       </h1>
 
       {/* Modes */}
       <div className="mb-6">
         <div className="bg-gray-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-900">
-          Mode
+          Modes
         </div>
         <div className="flex space-x-4 mt-4">
           <label className="flex items-center space-x-2">
@@ -119,7 +137,7 @@ export default function CreateGame() {
           Paramètres
         </div>
         <div className="mt-4 space-y-4">
-          {/* Points to win */}
+          {/* Points to Win */}
           <div>
             <label className="block text-sm font-medium text-slate-900 mb-1">
               Nombre de points pour gagner
@@ -140,7 +158,7 @@ export default function CreateGame() {
             </span>
           </div>
 
-          {/* Players count */}
+          {/* Players Count */}
           <div>
             <label className="block text-sm font-medium text-slate-900 mb-1">
               Nombre de joueurs
@@ -148,11 +166,7 @@ export default function CreateGame() {
             <input
               type="number"
               value={playersCount}
-              min={gameRules["min-player"]}
-              max={gameRules["max-player"]}
-              onChange={(e) =>
-                handlePlayersCountChange(Number(e.target.value))
-              }
+              onChange={(e) => handlePlayersCountChange(Number(e.target.value))}
               className="w-20 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-sm text-slate-500 mt-2 block">
@@ -162,7 +176,7 @@ export default function CreateGame() {
         </div>
       </div>
 
-      {/* Create game button */}
+      {/* Create Game Button */}
       <div className="mt-auto">
         <button
           onClick={handleCreateGame}

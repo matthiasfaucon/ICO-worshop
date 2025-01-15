@@ -43,11 +43,16 @@ export default function SignInForm() {
       if (response.ok) {
         const data = await response.json();
         const token = data.token; // Le JWT retourné par l'API
+        const userInfo = data.user; // Toutes les informations utilisateur retournées par l'API
 
         // Stocker le token dans un cookie sécurisé
         Cookies.set("authToken", token, { secure: true, sameSite: "strict" });
 
-        router.push("/"); // Redirection après connexion réussie
+        // Stocker des informations utilisateur dans localStorage
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+        // Redirigez l'utilisateur après une connexion réussie
+        router.push("/multidevice");
       } else {
         const data = await response.json();
         setError(data.message || "Une erreur est survenue.");
