@@ -20,7 +20,6 @@ export default function AdminOneRulePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const [form, setForm] = useState({
-        key: '',
         type: '',
         order: '',
         name: '',
@@ -39,7 +38,6 @@ export default function AdminOneRulePage() {
             const data = await response.json();
             setRule(data);
             setForm({
-                key: data.key,
                 type: data.type,
                 order: data.order,
                 name: data.name,
@@ -63,7 +61,7 @@ export default function AdminOneRulePage() {
                 },
                 body: JSON.stringify({
                     ...form,
-                    updated_by: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' // Replace with actual admin ID
+                    updated_by: '1cf846e9-ec91-4a77-ad90-de8fc7a6e99e' // Replace with actual admin ID
                 }),
             });
 
@@ -99,7 +97,7 @@ export default function AdminOneRulePage() {
                                 required
                             />
                         </div>
-                        <div>
+                        {/* <div>
                             <label className="block text-sm font-medium text-gray-700">Clé</label>
                             <input
                                 type="text"
@@ -108,7 +106,7 @@ export default function AdminOneRulePage() {
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 required
                             />
-                        </div>
+                        </div> */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Type</label>
                             <select

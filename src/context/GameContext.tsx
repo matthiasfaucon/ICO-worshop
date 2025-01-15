@@ -18,7 +18,7 @@ interface GameState {
   currentCrew: string[];
   pirateScore: number;
   marinScore: number;
-  gamePhase: 'SETUP' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'GAME_OVER';
+  gamePhase: 'SETUP' | 'CREATE_PLAYERS' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'PIRATES_OR_SIRENES_WIN' | 'GAME_OVER';
   winner: 'PIRATES' | 'MARINS' | 'SIRENE' | null;
 }
 

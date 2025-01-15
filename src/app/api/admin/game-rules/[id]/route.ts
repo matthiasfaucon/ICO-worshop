@@ -14,10 +14,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
     try {
-        const { key, value, description, updated_by, order } = await request.json();
+        const { name, value, description, updated_by, order, type } = await request.json();
         const rule = await prisma.gameRule.update({
             where: { id: params.id },
-            data: { key, value, description, updated_by, order }
+            data: { name, value, description, updated_by, order, type }
         });
         return NextResponse.json(rule);
     } catch (error) {
