@@ -10,6 +10,7 @@ export default function CreateGameMulti() {
   const [withBonus, setWithBonus] = useState(false);
   const [pointsToWin, setPointsToWin] = useState(10);
   const [playersCount, setPlayersCount] = useState(10);
+  const [gameRules, setGameRules] = useState({});
 
   const router = useRouter();
 
