@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { FaChevronLeft, FaGamepad } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { FaChevronLeft, FaGamepad } from "react-icons/fa";
 
 export default function CreateGame() {
   const [withSiren, setWithSiren] = useState(true);
@@ -11,37 +12,69 @@ export default function CreateGame() {
   const [playersCount, setPlayersCount] = useState(10);
   const router = useRouter();
 
-  const handleCreateGame = () => {
+  const handleCreateGame = async () => {
     console.log("Création de la partie avec les paramètres :", {
-      modes: {
-        withSiren,
-        withBonus,
-      },
+      withSiren,
+      withBonus,
       pointsToWin,
       playersCount,
     });
-    router.push("/waiting-room");
 
-    // Logique de création de partie
+    try {
+      // Récupérer le token depuis les cookies
+      const token = Cookies.get("authToken");
+
+      if (!token) {
+        alert("Vous devez être connecté pour créer une partie.");
+        router.push("/signin");
+        return;
+      }
+
+      const response = await fetch("/api/games/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          withSiren,
+          withBonus,
+          pointsToWin,
+          playersCount,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Partie créée :", data);
+
+        // Redirige vers la salle d'attente
+        router.push(`./waiting-room/${data.code}`);
+      } else {
+        const error = await response.json();
+        console.error("Erreur :", error.message);
+        alert(`Erreur : ${error.message}`);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la création de la partie :", err);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
   };
 
   const handlePlayersCountChange = (value: number) => {
-    if (value < 5) setPlayersCount(5);
-    else if (value > 20) setPlayersCount(20);
-    else setPlayersCount(value);
+    setPlayersCount(Math.max(5, Math.min(value, 20)));
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 px-6 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <a href="/">
         <button
           onClick={() => router.back()}
           className="p-2 text-slate-700 hover:text-slate-900"
         >
           <FaChevronLeft size={24} />
-        </button></a>
+        </button>
 
         <div className="flex items-center space-x-2">
           <FaGamepad size={24} className="text-slate-700" />
@@ -52,13 +85,13 @@ export default function CreateGame() {
 
       {/* Title */}
       <h1 className="text-xl font-bold text-center text-slate-900 mb-6">
-        Votre partie
+        Créez votre partie
       </h1>
 
       {/* Modes */}
       <div className="mb-6">
         <div className="bg-gray-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-900">
-          Mode
+          Modes
         </div>
         <div className="flex space-x-4 mt-4">
           <label className="flex items-center space-x-2">
@@ -88,7 +121,7 @@ export default function CreateGame() {
           Paramètres
         </div>
         <div className="mt-4 space-y-4">
-          {/* Points to win */}
+          {/* Points to Win */}
           <div>
             <label className="block text-sm font-medium text-slate-900 mb-1">
               Nombre de points pour gagner
@@ -104,7 +137,7 @@ export default function CreateGame() {
             </div>
           </div>
 
-          {/* Players count */}
+          {/* Players Count */}
           <div>
             <label className="block text-sm font-medium text-slate-900 mb-1">
               Nombre de joueurs
@@ -112,9 +145,7 @@ export default function CreateGame() {
             <input
               type="number"
               value={playersCount}
-              onChange={(e) =>
-                handlePlayersCountChange(Number(e.target.value))
-              }
+              onChange={(e) => handlePlayersCountChange(Number(e.target.value))}
               className="w-20 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-sm text-slate-500 mt-2 block">
@@ -124,7 +155,7 @@ export default function CreateGame() {
         </div>
       </div>
 
-      {/* Create game button */}
+      {/* Create Game Button */}
       <div className="mt-auto">
         <button
           onClick={handleCreateGame}
