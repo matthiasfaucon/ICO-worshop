@@ -6,8 +6,6 @@ export function middleware(req: NextRequest) {
   const protectedRoutes = ["/api/protected", "/dashboard"];
   const pathname = req.nextUrl.pathname;
 
-  console.log("Vérification du chemin :", pathname);
-
   // Vérifie si la route est protégée
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     console.log("Route protégée détectée :", pathname);
