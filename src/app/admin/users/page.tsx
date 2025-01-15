@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { PlusIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/20/solid";
+import Sidebar from "@/app/admin/components/Sidebar";
+import { PlusIcon } from "@heroicons/react/20/solid";
 
 type User = {
   id: string;
@@ -18,7 +19,6 @@ export default function AdminUsersPage() {
   const [data, setData] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -102,100 +102,12 @@ export default function AdminUsersPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile Sidebar */}
-      <div
-        className={`fixed inset-0 z-40 flex lg:hidden transition-transform duration-300 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <aside className="w-64 bg-white shadow-md h-full">
-          <div className="p-6">
-            <h2 onClick={() => router.push("/admin")} className="text-lg font-semibold text-gray-900">Back Office</h2>
-            <nav className="mt-4">
-              <ul className="space-y-2">
-                <li>
-                  <button
-                    onClick={() => router.push("/admin/cards")}
-                    className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                  >
-                    Gestion des cartes
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push("/admin/users")}
-                    className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                  >
-                    Gestion des utilisateurs
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => router.push("/admin/statistics")}
-                    className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                  >
-                    Statistiques
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </aside>
-        <div
-          className="flex-1 bg-black bg-opacity-50"
-          onClick={() => setSidebarOpen(false)}
-        />
-      </div>
-
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-64 bg-white shadow-md">
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Back Office</h2>
-          <nav className="mt-4">
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => router.push("/admin/cards")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des cartes
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push("/admin/users")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des utilisateurs
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push("/admin/statistics")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Statistiques
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
+      {/* Sidebar */}
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
-          {/* Mobile Hamburger */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden p-2 bg-indigo-600 text-white rounded-full shadow-md hover:bg-indigo-500 focus:outline-none"
-          >
-            {sidebarOpen ? (
-              <XMarkIcon className="h-5 w-5" />
-            ) : (
-              <Bars3Icon className="h-5 w-5" />
-            )}
-          </button>
           <h1 className="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
           <button
             onClick={() => router.push("/admin/users/create")}

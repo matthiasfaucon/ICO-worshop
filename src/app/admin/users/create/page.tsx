@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Bars3Icon } from '@heroicons/react/24/outline';
-import { v4 as uuidv4 } from 'uuid';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Sidebar from "@/app/admin/components/Sidebar";
+import { v4 as uuidv4 } from "uuid";
 
 type CreateUserData = {
   username: string;
@@ -16,22 +16,21 @@ export default function CreateUser() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateUserData>({
-    username: '',
-    email: '',
-    password: '',
-    role: 'USER',
+    username: "",
+    email: "",
+    password: "",
+    role: "USER",
   });
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const response = await fetch('/api/admin/users', {
-        method: 'POST',
+      const response = await fetch("/api/admin/users", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...formData,
@@ -44,72 +43,22 @@ export default function CreateUser() {
         throw new Error(data.error || "Erreur lors de la création de l'utilisateur");
       }
 
-      router.push('/admin/users');
+      router.push("/admin/users");
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Une erreur est survenue');
+      setError(error instanceof Error ? error.message : "Une erreur est survenue");
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? 'block' : 'hidden'
-        } md:block fixed inset-y-0 md:static z-10 w-64 bg-white shadow-md md:translate-x-0 transform transition-transform duration-300`}
-      >
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Back Office</h2>
-          <nav className="mt-4">
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => router.push('/admin/cards')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des cartes
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push('/admin/users')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des utilisateurs
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push('/admin/statistics')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Statistiques
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push('/admin/rules')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des règles
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Créer un nouvel utilisateur</h1>
-          <button
-            className="block md:hidden p-2 rounded-full text-gray-500 hover:bg-gray-200"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Bars3Icon className="h-6 w-6" />
-          </button>
         </div>
 
         <div className="max-w-3xl mx-auto  p-6">

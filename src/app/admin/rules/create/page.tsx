@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Bars3Icon } from '@heroicons/react/24/outline';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Sidebar from "@/app/admin/components/Sidebar";
 
 type RuleFormData = {
   key: string;
@@ -15,14 +15,13 @@ type RuleFormData = {
 
 export default function CreateRulePage() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [formData, setFormData] = useState<RuleFormData>({
-    key: '',
-    name: '',
-    type: 'GLOBAL',
+    key: "",
+    name: "",
+    type: "GLOBAL",
     order: 1,
-    value: '',
-    description: '',
+    value: "",
+    description: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -31,10 +30,10 @@ export default function CreateRulePage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/admin/game-rules', {
-        method: 'POST',
+      const response = await fetch("/api/admin/game-rules", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -44,75 +43,25 @@ export default function CreateRulePage() {
         throw new Error(data.error || "Erreur lors de la création de la règle");
       }
 
-      router.push('/admin/rules');
+      router.push("/admin/rules");
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Une erreur est survenue');
+      setError(error instanceof Error ? error.message : "Une erreur est survenue");
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? 'block' : 'hidden'
-        } md:block fixed inset-y-0 md:static z-10 w-64 bg-white shadow-md md:translate-x-0 transform transition-transform duration-300`}
-      >
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Back Office</h2>
-          <nav className="mt-4">
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => router.push('/admin/cards')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des cartes
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push('/admin/users')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des utilisateurs
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push('/admin/statistics')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Statistiques
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push('/admin/rules')}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des règles
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Créer une nouvelle règle</h1>
-          <button
-            className="block md:hidden p-2 rounded-full text-gray-500 hover:bg-gray-200"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Bars3Icon className="h-6 w-6" />
-          </button>
         </div>
 
-        <div className="max-w-3xl mx-auto  p-6 rounded-lg">
+        <div className="max-w-3xl mx-auto  p-6">
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               {error}

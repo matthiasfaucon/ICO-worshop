@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import Sidebar from "@/app/admin/components/Sidebar";
 import { PlusIcon } from "@heroicons/react/20/solid";
 
 type GameRule = {
@@ -21,7 +21,6 @@ export default function AdminRulesPage() {
   const [rules, setRules] = useState<GameRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchRules() {
@@ -39,6 +38,18 @@ export default function AdminRulesPage() {
 
     fetchRules();
   }, []);
+
+  const getTypeBadge = (type: string) => {
+    return type === "GLOBAL" ? (
+      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10">
+        GLOBAL
+      </span>
+    ) : (
+      <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/10">
+        LOCAL
+      </span>
+    );
+  };
 
   if (loading) {
     return (
@@ -58,66 +69,10 @@ export default function AdminRulesPage() {
     );
   }
 
-  const getTypeBadge = (type: string) => {
-    return type === "GLOBAL" ? (
-      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10">
-        GLOBAL
-      </span>
-    ) : (
-      <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/10">
-        LOCAL
-      </span>
-    );
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside
-        className={`${
-          sidebarOpen ? "block" : "hidden"
-        } md:block fixed inset-y-0 md:static z-10 w-64 bg-white shadow-md md:translate-x-0 transform transition-transform duration-300`}
-      >
-        <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900">Back Office</h2>
-          <nav className="mt-4">
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => router.push("/admin/cards")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des cartes
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push("/admin/users")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des utilisateurs
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push("/admin/statistics")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Statistiques
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => router.push("/admin/rules")}
-                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Gestion des règles
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 p-6">
@@ -129,15 +84,9 @@ export default function AdminRulesPage() {
             className="rounded-full bg-indigo-600 p-2 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
             <span className="text-sm font-semibold flex items-center gap-2">
-            <PlusIcon className="h-5 w-5" />
+              <PlusIcon className="h-5 w-5" />
               Nouvelle règle
             </span>
-          </button>
-          <button
-            className="block md:hidden p-2 rounded-full text-gray-500 hover:bg-gray-200"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Bars3Icon className="h-6 w-6" />
           </button>
         </div>
 
@@ -179,7 +128,7 @@ export default function AdminRulesPage() {
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
                     <button
-                      onClick={() => router.push(`/admin/rules/edit/${rule.id}`)}
+                      onClick={() => router.push(`/admin/rules/${rule.id}`)}
                       type="button"
                       className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 transition duration-200"
                     >
