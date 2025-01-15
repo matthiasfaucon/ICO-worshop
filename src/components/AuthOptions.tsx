@@ -9,7 +9,7 @@ export default function AuthOptions() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google", { callbackUrl: "/games" });
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
       console.error("Erreur lors de la connexion avec Google :", error);
     }

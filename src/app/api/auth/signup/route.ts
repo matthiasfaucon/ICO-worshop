@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+
+const JWT_SECRET = process.env.JWT_SECRET || "votre_secret_jwt"; // Assurez-vous de définir cela dans vos variables d'environnement
 
 export async function POST(req: NextRequest) {
   try {
     const { email, password, username } = await req.json();
 
     // Validation des champs requis
-    if (!email || !password || !username) {
+    if (!email || !password) {
       return NextResponse.json(
         { message: "Tous les champs sont requis." },
         { status: 400 }

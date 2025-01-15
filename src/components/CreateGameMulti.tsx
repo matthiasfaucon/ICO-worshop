@@ -10,6 +10,7 @@ export default function CreateGameMulti() {
   const [withBonus, setWithBonus] = useState(false);
   const [pointsToWin, setPointsToWin] = useState(10);
   const [playersCount, setPlayersCount] = useState(10);
+
   const router = useRouter();
 
   const handleCreateGame = async () => {
@@ -65,6 +66,30 @@ export default function CreateGameMulti() {
     setPlayersCount(Math.max(5, Math.min(value, 20)));
   };
 
+  useEffect(() => {
+    async function fetchGameRules() {
+      const filter = {
+        type: "SPECIFIC"
+      }
+      const response = await fetch(`/api/admin/game-rules?type=${filter.type}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        },
+      })
+
+      const data = await response.json()
+      const rules = data.reduce((acc, rule) => {
+        acc[rule.key] = rule.value
+        return acc
+      }, {})
+      setGameRules(rules)
+
+    }
+    fetchGameRules()
+  }, [])
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 px-6 py-6">
       {/* Header */}
@@ -97,15 +122,6 @@ export default function CreateGameMulti() {
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
-              checked={withSiren}
-              onChange={() => setWithSiren(!withSiren)}
-              className="form-checkbox text-blue-600"
-            />
-            <span className="text-slate-900">Avec la Sirène</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
               checked={withBonus}
               onChange={() => setWithBonus(!withBonus)}
               className="form-checkbox text-blue-600"
@@ -130,11 +146,16 @@ export default function CreateGameMulti() {
               <input
                 type="number"
                 value={pointsToWin}
+                min={gameRules["min-round-to-win"]}
+                max={gameRules["max-round-to-win"]}
                 onChange={(e) => setPointsToWin(Number(e.target.value))}
                 className="w-20 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <span className="text-sm text-slate-500">Temps estimé : 30 min</span>
             </div>
+            <span className="text-sm text-slate-500 mt-2 block">
+              Min : {gameRules["min-round-to-win"]}, Max : {gameRules["max-round-to-win"]}
+            </span>
           </div>
 
           {/* Players Count */}
@@ -149,7 +170,7 @@ export default function CreateGameMulti() {
               className="w-20 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-sm text-slate-500 mt-2 block">
-              Min : 5, Max : 20
+              Min : {gameRules["min-player"]}, Max : {gameRules["max-player"]}
             </span>
           </div>
         </div>
@@ -159,8 +180,7 @@ export default function CreateGameMulti() {
       <div className="mt-auto">
         <button
           onClick={handleCreateGame}
-          className="w-full py-3 bg-blue-700 text-white rounded-lg shadow-md hover:bg-blue-800 transition duration-300"
-        >
+          className="w-full py-3 bg-blue-700 text-white rounded-lg shadow-md hover:bg-blue-800 transition duration-300">
           Créer la partie
         </button>
       </div>

@@ -1,9 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from './reducers/users'
+import gameReducer from './reducers/game'
 
 export const makeStore = () => {
   return configureStore({
-    reducer: userReducer,
+    reducer: {
+      user: userReducer,
+      game: gameReducer,
+    },
   })
 }
 
