@@ -1,167 +1,284 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { PlusIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/20/solid";
 
 type User = {
-    id: string;
-    username: string | null;
-    email: string | null;
-    role: string;
-    created_at: string;
-    is_logged: boolean;
+  id: string;
+  username: string | null;
+  email: string | null;
+  role: string;
+  created_at: string;
+  is_logged: boolean;
 };
 
 export default function AdminUsersPage() {
-    const router = useRouter();
-    const [data, setData] = useState<User[] | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+  const router = useRouter();
+  const [data, setData] = useState<User[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await fetch("/api/admin/users");
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                setData(data);
-            } catch (error) {
-                setError(error as Error);
-            } finally {
-                setLoading(false);
-            }
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("/api/admin/users");
+        if (!response.ok) {
+          throw new Error("Erreur lors du chargement des données.");
         }
-        fetchData();
-    }, []);
-
-    async function deleteUser(id: string) {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
-
-        try {
-            const response = await fetch(`/api/admin/users/${id}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                setData(data => data?.filter(user => user.id !== id) ?? null);
-            } else {
-                throw new Error('Erreur lors de la suppression');
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Erreur lors de la suppression de l\'utilisateur');
-        }
+        const users = await response.json();
+        setData(users);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
     }
+    fetchData();
+  }, []);
 
-    const getRoleColor = (role: string) => {
-        switch (role) {
-            case 'ADMIN':
-                return 'bg-red-100 text-red-800';
-            case 'MODERATOR':
-                return 'bg-yellow-100 text-yellow-800';
-            default:
-                return 'bg-green-100 text-green-800';
-        }
-    };
+  async function deleteUser(id: string) {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) return;
 
-    if (loading) {
+    try {
+      const response = await fetch(`/api/admin/users/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setData((currentData) =>
+          currentData?.filter((user) => user.id !== id) ?? null
+        );
+      } else {
+        throw new Error("Erreur lors de la suppression.");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Erreur lors de la suppression de l'utilisateur.");
+    }
+  }
+
+  const getRoleBadge = (role: string) => {
+    switch (role) {
+      case "ADMIN":
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-lg font-semibold text-gray-700">Chargement...</div>
-            </div>
+          <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+            ADMIN
+          </span>
+        );
+      case "MODERATOR":
+        return (
+          <span className="inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-inset ring-yellow-600/10">
+            MODERATOR
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/10">
+            USER
+          </span>
         );
     }
+  };
 
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-red-500 text-lg font-semibold">Erreur : {error.message}</div>
-            </div>
-        );
-    }
-
+  if (loading) {
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
-                    <button
-                        onClick={() => router.push('/admin/users/create')}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                    >
-                        Créer un utilisateur
-                    </button>
-                </div>
-
-                <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Utilisateur
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Rôle
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Statut
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date d'inscription
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {data?.map((user) => (
-                                <tr key={user.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">
-                                            {user.username || 'Non défini'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-500">
-                                            {user.email || 'Non défini'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                                            {user.role}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_logged ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                            {user.is_logged ? 'En ligne' : 'Hors ligne'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(user.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => router.push(`/admin/users/edit/${user.id}`)}
-                                            className="text-indigo-600 hover:text-indigo-900 mr-4">
-                                            Modifier
-                                        </button>
-                                        <button
-                                            onClick={() => deleteUser(user.id)}
-                                            className="text-red-600 hover:text-red-900">
-                                            Supprimer
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-semibold text-gray-700">Chargement...</p>
+      </div>
     );
-} 
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-red-500 text-lg font-semibold">
+          Erreur : {error.message}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Mobile Sidebar */}
+      <div
+        className={`fixed inset-0 z-40 flex lg:hidden transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <aside className="w-64 bg-white shadow-md h-full">
+          <div className="p-6">
+            <h2 onClick={() => router.push("/admin")} className="text-lg font-semibold text-gray-900">Back Office</h2>
+            <nav className="mt-4">
+              <ul className="space-y-2">
+                <li>
+                  <button
+                    onClick={() => router.push("/admin/cards")}
+                    className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  >
+                    Gestion des cartes
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push("/admin/users")}
+                    className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  >
+                    Gestion des utilisateurs
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push("/admin/statistics")}
+                    className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  >
+                    Statistiques
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </aside>
+        <div
+          className="flex-1 bg-black bg-opacity-50"
+          onClick={() => setSidebarOpen(false)}
+        />
+      </div>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:block w-64 bg-white shadow-md">
+        <div className="p-6">
+          <h2 className="text-lg font-semibold text-gray-900">Back Office</h2>
+          <nav className="mt-4">
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => router.push("/admin/cards")}
+                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Gestion des cartes
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => router.push("/admin/users")}
+                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Gestion des utilisateurs
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => router.push("/admin/statistics")}
+                  className="w-full text-left px-4 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Statistiques
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-6">
+        <div className="flex justify-between items-center mb-6">
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 bg-indigo-600 text-white rounded-full shadow-md hover:bg-indigo-500 focus:outline-none"
+          >
+            {sidebarOpen ? (
+              <XMarkIcon className="h-5 w-5" />
+            ) : (
+              <Bars3Icon className="h-5 w-5" />
+            )}
+          </button>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+          <button
+            onClick={() => router.push("/admin/users/create")}
+            type="button"
+            className="rounded-full bg-indigo-600 p-2 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            <span className="text-sm font-semibold flex items-center gap-1">
+              <PlusIcon className="h-5 w-5" />
+              Créer un utilisateur
+            </span>
+          </button>
+        </div>
+
+        <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
+          <table className="min-w-full bg-white">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nom d'utilisateur
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Rôle
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Statut
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Inscrit le
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {data?.map((user) => (
+                <tr key={user.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {user.username || "Non défini"}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{user.email || "Non défini"}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getRoleBadge(user.role)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                        user.is_logged
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {user.is_logged ? "En ligne" : "Hors ligne"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                      onClick={() => router.push(`/admin/users/edit/${user.id}`)}
+                      className="rounded bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 transition duration-200"
+                    >
+                      Modifier
+                    </button>
+                    <button
+                      onClick={() => deleteUser(user.id)}
+                      className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100 transition duration-200 ml-2"
+                    >
+                      Supprimer
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  );
+}
