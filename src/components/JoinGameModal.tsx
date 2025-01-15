@@ -106,7 +106,7 @@ export default function JoinGameModal({ isOpen, onClose }: JoinGameModalProps) {
           <input
             id="gameCode"
             type="text"
-            placeholder="34 24 01"
+            placeholder="2R9BHB"
             value={gameCode}
             onChange={(e) => setGameCode(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
