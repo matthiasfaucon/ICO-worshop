@@ -1,9 +1,8 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "@/lib/prisma";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { v4 as uuidv4 } from "uuid";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -15,47 +14,38 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials || !credentials.email || !credentials.password) {
-          throw new Error("Email et mot de passe requis");
-        }
-
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email: credentials?.email },
         });
-
-        if (!user || !user.password) {
-          throw new Error("Email ou mot de passe invalide");
+        if (user && user.password) {
+          const isValid = await bcrypt.compare(credentials?.password!, user.password);
+          if (isValid) return user;
         }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) {
-          throw new Error("Email ou mot de passe invalide");
-        }
-
-        return user;
+        throw new Error("Invalid email or password");
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session, user }: { session: any; user: any }) {
-      session.user.id = user.id;
-      session.user.uuid = user.session_uuid;
-      return session;
-    },
-    async signIn({ user }: { user: any }) {
-      if (!user.session_uuid) {
-        const newUUID = uuidv4();
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { session_uuid: newUUID },
-        });
-        user.session_uuid = newUUID;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
       }
-      return true;
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+      }
+      return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
