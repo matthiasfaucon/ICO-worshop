@@ -19,13 +19,15 @@ interface VoteResult {
 
 interface GameState {
   players: Player[];
+  tour: number;
   currentCaptain: string | null;
   currentCrew: string[];
   pirateScore: number;
   marinScore: number;
-  gamePhase: 'SETUP' | 'CREATE_PLAYERS' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'PIRATES_OR_SIRENES_WIN' | 'GAME_OVER';
+  gamePhase: 'SETUP' | 'CREATE_PLAYERS' | 'REVEAL_ROLES' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'PIRATES_OR_SIRENES_WIN' | 'GAME_OVER';
   winner: 'PIRATES' | 'MARINS' | 'SIRENE' | null;
   votes: VoteResult[];
+  votesAnnulation: number;
   votesSirene: VoteResult[];
   general_rules: {
     min_players: number,
@@ -46,6 +48,7 @@ interface GameState {
 
 const initialState: GameState = {
   players: [],
+  tour: 1,
   currentCaptain: null,
   currentCrew: [],
   pirateScore: 0,
@@ -53,6 +56,7 @@ const initialState: GameState = {
   gamePhase: 'SETUP',
   winner: null,
   votes: [],
+  votesAnnulation: 0,
   general_rules: {
     min_players: 7,
     max_players: 20,
@@ -94,12 +98,15 @@ const gameSlice = createSlice({
     },
     startGame: (state) => {
       if (state.players.length >= state.general_rules.min_players && state.players.length <= state.general_rules.max_players) {
-        state.gamePhase = 'CREW_SELECTION';
+        state.gamePhase = 'REVEAL_ROLES';
 
         // Sélectionner aléatoirement le premier capitaine
         const randomIndex = Math.floor(Math.random() * state.players.length);
         state.currentCaptain = state.players[randomIndex].id;
       }
+    },
+    revealRole: (state) => {
+      state.gamePhase = 'CREW_SELECTION';
     },
     distributeRoles: (state) => {
       const roleDistribution = {
@@ -145,7 +152,11 @@ const gameSlice = createSlice({
     },
     selectCrew: (state, action: PayloadAction<string[]>) => {
       state.currentCrew = action.payload;
-      state.gamePhase = 'VOTING';
+      if (state.tour > 1) {
+        state.gamePhase = 'VOTING';
+      } else {
+        state.gamePhase = 'JOURNEY';
+      }
       state.votes = [];
       state.submittedVotes = [];
     },
@@ -155,11 +166,21 @@ const gameSlice = createSlice({
       if (state.votes.length === state.players.length) {
         const approvalVotes = state.votes.filter(v => v.vote).length;
         if (approvalVotes > state.players.length / 2) {
+          state.votesAnnulation = 0;
           state.gamePhase = 'JOURNEY';
           state.submittedCards = [];
         } else {
+          state.votesAnnulation += 1;
+          if (state.votesAnnulation === 2) {
+            const currentIndex = state.players.findIndex(p => p.id === state.currentCaptain);
+            const nextIndex = (currentIndex + 1) % state.players.length;
+            state.currentCaptain = state.players[nextIndex].id;
+            state.votesAnnulation = 0;
+            state.tour += 1;
+          }
           state.gamePhase = 'CREW_SELECTION';
         }
+        
         state.votes = [];
       }
     },
@@ -207,6 +228,7 @@ const gameSlice = createSlice({
         } else {
           state.marinScore += 1;
         }
+        state.tour += 1;
 
         if (state.pirateScore >= state.settings.pointsToWin || state.marinScore >= state.settings.pointsToWin ) {
           if (state.pirateScore >= state.settings.pointsToWin) {
@@ -237,6 +259,7 @@ export const {
   configureGame,
   submitVoteSirene,
   startGame,
+  revealRole,
   distributeRoles,
   selectCrew,
   submitVote,
