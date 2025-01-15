@@ -1,78 +1,49 @@
-import { NextRequest, NextResponse } from "next/server";
-import { validateToken } from "./lib/auth"; // Assurez-vous que cette fonction est correcte
-import { v4 as uuidv4 } from "uuid";
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { JWTPayload, jwtVerify } from 'jose'
 
-export function middleware(req: NextRequest) {
-  const protectedRoutes = ["/api/protected", "/dashboard"];
-  const pathname = req.nextUrl.pathname;
+export async function middleware(request: NextRequest) {
+  // Exclure les routes publiques
+  if (
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.startsWith('/auth') ||
+    request.nextUrl.pathname.startsWith('/signin') ||
+    request.nextUrl.pathname.startsWith('/signup') ||
+    request.nextUrl.pathname.startsWith('/auth-options') ||
+    request.nextUrl.pathname.startsWith('/api')
+  ) {
+    return NextResponse.next()
+  }
 
-  console.log("Vérification du chemin :", pathname);
+  const authToken = request.cookies.get('authToken')?.value
 
-  // Vérifie si la route est protégée
-  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    console.log("Route protégée détectée :", pathname);
+  if (!authToken) {
+    return NextResponse.redirect(new URL('/auth-options', request.url))
+  }
 
-    // Récupère le token dans les cookies ou l'en-tête Authorization
-    let token = req.cookies.get("authToken")?.value;
-
-    if (!token) {
-      const authHeader = req.headers.get("Authorization");
-      if (authHeader && authHeader.startsWith("Bearer ")) {
-        token = authHeader.split(" ")[1]; // Récupère le token après "Bearer"
-      }
-    }
-
-    if (!token) {
-      console.log("Aucun token trouvé dans les cookies ou l'en-tête Authorization.");
-      const loginUrl = new URL("/signin", req.url);
-      console.log("Redirection vers la page de connexion :", loginUrl.toString());
-      return NextResponse.redirect(loginUrl);
-    }
-
-    console.log("Token trouvé :", token);
-
+  // Vérification supplémentaire pour les routes admin
+  if (request.nextUrl.pathname.startsWith('/admin')) {
     try {
-      const decoded = validateToken(token); // Valide le token JWT
-      console.log("Token validé avec succès :", decoded);
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+      console.log(secret)
+      const { payload } = await jwtVerify(authToken, secret) as { payload: JWTPayload }
 
-      // Injecte les informations utilisateur décodées dans les en-têtes
-      req.headers.set("user", JSON.stringify(decoded));
-      return NextResponse.next();
+      console.log(payload)
+
+      if (payload?.role?.toLowerCase() !== 'admin') {
+        return NextResponse.redirect(new URL('/', request.url))
+      }
     } catch (error) {
-      console.error("Erreur de validation du token :", error);
-      const loginUrl = new URL("/signin", req.url);
-      console.log("Redirection vers la page de connexion en raison d'un token invalide ou expiré :", loginUrl.toString());
-      return NextResponse.redirect(loginUrl);
+      return NextResponse.redirect(new URL('/auth-options', request.url))
     }
   }
 
-  console.log("Route non protégée :", pathname);
-
-  // Gestion des visiteurs anonymes avec un `session_uuid`
-  let session_uuid = req.cookies.get("session_uuid")?.value;
-
-  if (!session_uuid) {
-    // Générer un nouveau `session_uuid`
-    session_uuid = uuidv4();
-    console.log("Génération d'un nouveau session_uuid :", session_uuid);
-
-    // Ajouter le cookie `session_uuid`
-    const response = NextResponse.next();
-    response.cookies.set("session_uuid", session_uuid, {
-      maxAge: 365 * 24 * 60 * 60, // 1 an en secondes
-      httpOnly: true, // Empêche l'accès via le client JS
-      secure: process.env.NODE_ENV === "production", // Utiliser HTTPS en production
-      path: "/",
-    });
-
-    return response;
-  } else {
-    console.log("Session ID trouvé :", session_uuid);
-  }
-
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/dashboard"], // Ajout des routes protégées
-};
+  matcher: [
+    // Appliquer le middleware à toutes les routes sauf les fichiers statiques
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
+}
