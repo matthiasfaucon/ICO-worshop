@@ -1,14 +1,18 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene } from '@/lib/reducers/game';
-import { useState } from 'react';
+import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene, revealRole } from '@/lib/reducers/game';
+import { useEffect, useState } from 'react';
 
 export default function GamePage() {
     const dispatch = useAppDispatch();
     const gameState = useAppSelector((state) => state.game);
     const [playerName, setPlayerName] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+    const [revealedRoles, setRevealedRoles] = useState<string[]>([]);
+    const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+    const [isRevealing, setIsRevealing] = useState(false);
+    const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
     const handleAddPlayer = () => {
         if (playerName.trim()) {
@@ -56,8 +60,8 @@ export default function GamePage() {
             (crewId) => !gameState.submittedCards.includes(crewId)
         );
         const player = gameState.players.find(p => p.id === currentCardSubmitter);
-        if (player?.role === 'MARIN' && card === 'POISON') {
-            alert('Les marins ne peuvent pas choisir la carte poison!');
+        if ((player?.role === 'MARIN' || player?.role === 'SIRENE') && card === 'POISON') {
+            alert('Les marins et les sirenes ne peuvent pas choisir la carte poison!');
             return;
         }
         if (currentCardSubmitter) {
@@ -67,6 +71,35 @@ export default function GamePage() {
             }));
         }
     };
+
+    const handleTouch = (playerId: string) => {
+        setIsRevealing(true);
+        setRevealedRoles(prev => [...prev, playerId]);
+    };
+
+    const handleTimerForPirate = () => {
+        setRemainingTime(20); // Set the initial timer value to 20 seconds
+    };
+
+    console.log(gameState);
+
+    useEffect(() => {
+        if (remainingTime === null) return;
+
+        const timerInterval = setInterval(() => {
+            setRemainingTime((prev) => {
+                if (prev && prev > 1) {
+                    return prev - 1; // On décrémente le timer
+                } else {
+                    clearInterval(timerInterval); // J'arrête le timer
+                    dispatch(revealRole());
+                    return null;
+                }
+            });
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+    }, [remainingTime, dispatch]);
 
     return (
         <div className="container mx-auto p-4">
@@ -114,12 +147,110 @@ export default function GamePage() {
                 </div>
             )}
 
+            {/* Phase de révélation des rôles */}
+            {gameState.gamePhase === 'REVEAL_ROLES' && (
+                <div className="flex flex-col items-center p-4 relative min-h-screen">
+                    {!selectedPlayer ? (
+                        <>
+                            <h1 className="text-2xl font-bold mb-6">De quel côté tu vas te ranger ?</h1>
+                            <p className="text-center mb-6">Clique sur ton pseudo pour révéler ton rôle</p>
+
+                            <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6">
+                                {gameState.players.map(player => (
+                                    <button
+                                        key={player.id}
+                                        onClick={() => setSelectedPlayer(player.id)}
+                                        className={`
+                                            flex items-center gap-2 p-3 rounded-lg
+                                            ${revealedRoles.includes(player.id)
+                                                ? 'bg-gray-200 text-gray-600'
+                                                : 'bg-brown-100 hover:bg-brown-200'
+                                            }
+                                            transition-all duration-300
+                                        `}
+                                    >
+                                        <img src="/images/user-icon.png" alt="" className="w-6 h-6" />
+                                        <span>{player.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center w-full h-full">
+                            <div
+                                className="w-full max-w-md p-6 rounded-lg bg-brown-200 shadow-lg"
+                                onClick={() => handleTouch(selectedPlayer)}>
+                                {!isRevealing ? (
+                                    <>
+                                        <h2 className="text-xl text-center mb-4">Reste appuyer pour dévoiler ton rôle</h2>
+                                        <div className="aspect-square w-full max-w-sm mx-auto bg-brown-100 rounded-lg flex items-center justify-center">
+                                            <div className="text-4xl font-bold">ICO!</div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <h2 className="text-2xl text-center font-bold mb-4">
+                                            Tu es un {gameState.players.find(p => p.id === selectedPlayer)?.role === 'PIRATE' ? 'pirate' :
+                                                gameState.players.find(p => p.id === selectedPlayer)?.role === 'MARIN' ? 'marin' : 'sirène'} !
+                                        </h2>
+                                        <div className="aspect-square w-full max-w-sm mx-auto bg-red-700 rounded-lg flex items-center justify-center p-8">
+                                            <img
+                                                src={`/images/${gameState.players.find(p => p.id === selectedPlayer)?.role.toLowerCase()}.png`}
+                                                alt="Role"
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        {gameState.currentCaptain === selectedPlayer && (
+                                            <div className="flex items-center gap-2 mt-4 text-center">
+                                                <img src="/images/captain.png" alt="Captain" className="w-6 h-6" />
+                                                <p>Tu es aussi le capitaine du prochain voyage!</p>
+                                            </div>
+                                        )}
+                                        <p className="text-center mt-4">Retient bien et passe le téléphone</p>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedPlayer(null);
+                                                setIsRevealing(false);
+                                            }}
+                                            className="w-full mt-4 bg-brown-500 text-white px-6 py-3 rounded-lg hover:bg-brown-600 transition-colors"
+                                        >
+                                            J'ai compris
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {revealedRoles.length - 1 >= gameState.players.length && (
+                        <button
+                            onClick={() => handleTimerForPirate()}
+                            className="mt-6 bg-brown-500 text-white px-6 py-3 rounded-lg hover:bg-brown-600 transition-colors"
+                        >
+                            Tous le monde sait son rôle
+                        </button>
+                    )}
+
+                    {/* Afficher le timer */}
+                    {remainingTime !== null && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 text-white text-center p-4">
+                            <div className="space-y-4">
+                                <h2 className="text-4xl font-bold">{remainingTime}</h2>
+                                <p className="text-xl">Les marins ferment les yeux</p>
+                                <p className="text-xl">Les pirates et la sirène ouvrent les yeux</p>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            )}
+
             {/* Phase de sélection d'équipage */}
             {gameState.gamePhase === 'CREW_SELECTION' && (
                 <div className="mb-4">
                     <h2 className="text-xl mb-2">Sélection de l'équipage</h2>
                     <p>Capitaine actuel: {gameState.players.find(p => p.id === gameState.currentCaptain)?.name}</p>
-
+                    <p>Tour actuel: {gameState.tour}</p>
                     <div className="mt-4">
                         <h3>Sélectionnez 3 joueurs:</h3>
                         <div className="grid grid-cols-2 gap-2">
@@ -155,7 +286,7 @@ export default function GamePage() {
             )}
 
             {/* Phase de vote */}
-            {gameState.gamePhase === 'VOTING' && (
+            {gameState.gamePhase === 'VOTING' && gameState.tour > 1 && (
                 <div className="mb-4">
                     <h2 className="text-xl mb-2">Vote de l'équipage</h2>
                     <div className="mt-4">
@@ -262,7 +393,7 @@ export default function GamePage() {
             )}
 
             {/* Affichage du score en cours */}
-            {gameState.gamePhase !== 'SETUP' && gameState.gamePhase !== 'CREATE_PLAYERS' && gameState.gamePhase !== 'GAME_OVER' && (
+            {gameState.gamePhase !== 'SETUP' && gameState.gamePhase !== 'CREATE_PLAYERS' && gameState.gamePhase !== 'REVEAL_ROLES' && gameState.gamePhase !== 'GAME_OVER' && (
                 <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded">
                     <p>Score:</p>
                     <p>Pirates: {gameState.pirateScore}</p>
