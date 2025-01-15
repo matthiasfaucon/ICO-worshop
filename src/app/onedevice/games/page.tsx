@@ -14,6 +14,41 @@ export default function GamePage() {
     const [isRevealing, setIsRevealing] = useState(false);
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
+    // si gameState.gamePhase === "GAME_OVER" alors on update le score en base de données
+    async function updateScore() {
+        try {
+            if (!gameState.gameId) {
+                console.error('Game ID manquant');
+                return;
+            }
+
+            const response = await fetch(`/api/game-mono/${gameState.gameId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    who_won: gameState.winner
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Erreur lors de la mise à jour du jeu');
+            }
+
+            const updatedGame = await response.json();
+            console.log('Jeu mis à jour:', updatedGame);
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+    useEffect(() => {
+        if (gameState.gamePhase === 'GAME_OVER') {
+            updateScore();
+        }
+    }, [gameState.gamePhase]);
+
     const handleAddPlayer = () => {
         if (playerName.trim()) {
             dispatch(addPlayer({
@@ -24,9 +59,36 @@ export default function GamePage() {
         }
     };
 
-    const handleStartGame = () => {
-        dispatch(startGame());
-        dispatch(distributeRoles());
+    const handleStartGame = async () => {
+        const user = localStorage.getItem('userInfo');
+        const user_id = user ? JSON.parse(user).id : null;
+        try {
+            // Créer la partie en base de données
+            const response = await fetch('/api/game-mono', {
+                method: 'POST',
+                body: JSON.stringify({
+                    user_id: user_id
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const game = await response.json();
+
+            const gameId = game.id;
+
+            if (!response.ok) {
+                throw new Error('Erreur lors de la création de la partie');
+            }
+
+            // Démarrer la partie dans le state local
+            dispatch(startGame(gameId));
+            dispatch(distributeRoles());
+        } catch (error) {
+            console.error('Erreur:', error);
+            // Vous pouvez ajouter ici une notification d'erreur pour l'utilisateur
+        }
     };
 
     const handleCrewSelection = () => {
@@ -78,7 +140,7 @@ export default function GamePage() {
     };
 
     const handleTimerForPirate = () => {
-        setRemainingTime(20); // Set the initial timer value to 20 seconds
+        setRemainingTime(10); // Set the initial timer value to 20 seconds
     };
 
     console.log(gameState);
