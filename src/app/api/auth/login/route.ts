@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
 
     response.cookies.set("session_uuid", sessionUuid, {
       maxAge: 365 * 24 * 60 * 60, // 1 an
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       path: "/",
     });

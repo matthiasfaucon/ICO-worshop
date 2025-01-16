@@ -7,17 +7,28 @@ import Pusher from "pusher-js";
 export default function RoleDisplayPage() {
   const params = useParams();
   const router = useRouter();
-  const gameCode = params.code;
-  const [currentRole, setCurrentRole] = useState("");
-  const [isCaptain, setIsCaptain] = useState(false);
+  const gameCode = Array.isArray(params.code) ? params.code[0] : params.code; // Vérification de type
+  const [currentRole, setCurrentRole] = useState<string>("");
+  const [isCaptain, setIsCaptain] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!gameCode) {
+      console.error("Le code de la partie est manquant.");
+      return;
+    }
+
     const fetchRole = async () => {
       try {
-        const sessionUuid = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("session_uuid="))
-          ?.split("=")[1] || "";
+        const sessionUuid =
+          document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("session_uuid="))
+            ?.split("=")[1] || "";
+
+        if (!sessionUuid) {
+          console.error("Session UUID manquant.");
+          return;
+        }
 
         const response = await fetch(`/api/games/${gameCode}/role`, {
           method: "POST",
@@ -29,10 +40,9 @@ export default function RoleDisplayPage() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("Rôle récupéré :", data);
           setCurrentRole(data.role);
           setIsCaptain(data.is_captain);
-
-          console.log("Rôle récupéré :", data.role);
         } else {
           console.error("Erreur lors de la récupération du rôle.");
         }
@@ -44,33 +54,41 @@ export default function RoleDisplayPage() {
     fetchRole();
 
     // Configurer Pusher pour synchroniser les redirections
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
     });
 
     const channel = pusher.subscribe(`game-${gameCode}`);
-    channel.bind("redirect", (data) => {
+    channel.bind("redirect", (data: { role: string }) => {
       console.log("Redirection synchronisée reçue :", data);
-
-      // Rediriger en fonction du rôle reçu dans l'événement
-      if (data.role === "pirate" || data.role === "sirène") {
-        router.push(`multidevice/game/${gameCode}/pirates-display`);
-      } else if (data.role === "marin") {
-        router.push(`multidevice/game/${gameCode}/main`);
-      }
     });
 
+    // Redirection automatique après 10 secondes
+    const timer = setTimeout(() => {
+      if (currentRole === "pirate" || currentRole === "sirène") {
+        router.push(`../${gameCode}/pirates-display`);
+      } else if (currentRole === "marin") {
+        router.push(`../${gameCode}/marins-display`);
+      }
+    }, 10000); // 10 secondes
+
     return () => {
+      clearTimeout(timer); // Nettoyer le timeout
       channel.unbind_all();
       channel.unsubscribe();
     };
-  }, [gameCode, router]);
+  }, [gameCode, router, currentRole]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6 py-6">
       <h1 className="text-2xl font-bold text-slate-900 mb-6">
-        {isCaptain ? "Vous êtes le Capitaine !" : `Vous êtes ${currentRole} !`}
+        Vous êtes {currentRole} !
       </h1>
+      {isCaptain && (
+        <h2 className="text-lg font-semibold text-blue-600 mb-6">
+          Vous êtes aussi le Capitaine !
+        </h2>
+      )}
       <div className="w-32 h-32 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"

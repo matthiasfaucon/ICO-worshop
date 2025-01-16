@@ -109,7 +109,7 @@ export default function JoinGameModal({ isOpen, onClose }: JoinGameModalProps) {
             placeholder="2R9BHB"
             value={gameCode}
             onChange={(e) => setGameCode(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 text-slate-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </div>

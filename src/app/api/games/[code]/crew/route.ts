@@ -5,22 +5,23 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
   const gameCode = params.code;
 
   try {
-    // Vérifier si la partie existe
+    // Récupérer la partie par son code
     const game = await prisma.game.findUnique({
       where: { code: gameCode },
       include: {
         players: {
+          where: {
+            is_in_crew: true, // Filtrer les joueurs sélectionnés pour l'équipage
+          },
           select: {
             id: true,
             username: true,
-            session_uuid: true,
-            role: true,
-            is_captain: true,
           },
         },
       },
     });
 
+    // Vérifier si la partie existe
     if (!game) {
       return NextResponse.json(
         { message: "Partie introuvable." },
@@ -28,24 +29,12 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
       );
     }
 
-    // Récupérer les pirates et la sirène
-    const piratesAndSiren = game.players.filter(
-      (player) => player.role === "pirate" || player.role === "sirène"
-    );
-
-    console.log("Partie et joueurs récupérés :", game);
-
-    // Retourner la liste des joueurs avec les informations nécessaires
+    // Retourner les joueurs de l'équipage
     return NextResponse.json({
-      pirates: piratesAndSiren.map((p) => ({
-        id: p.id,
-        username: p.username || "Anonyme",
-        session_uuid: p.session_uuid, // Inclure le session_uuid
-        is_captain: p.is_captain, // Inclure le statut de capitaine
-      })),
+      crew: game.players,
     });
   } catch (error) {
-    console.error("Erreur lors de la récupération des pirates :", error);
+    console.error("Erreur lors de la récupération de l'équipage :", error);
     return NextResponse.json(
       { message: "Erreur interne du serveur." },
       { status: 500 }

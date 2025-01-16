@@ -64,7 +64,7 @@ export default function CreateGameMulti({
       if (response.ok) {
         const data = await response.json();
         console.log("Partie créée :", data);
-        router.push(`/waiting-room/${data.code}`);
+        router.push(`./waiting-room/${data.code}`);
       } else {
         const error = await response.json();
         console.error("Erreur :", error.message);

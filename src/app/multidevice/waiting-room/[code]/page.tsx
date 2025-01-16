@@ -6,28 +6,48 @@ import { FaChevronLeft, FaGamepad } from "react-icons/fa";
 import { useRouter, useParams } from "next/navigation";
 import Pusher from "pusher-js";
 
+// Définir le type Player
+interface Player {
+  id: string;
+  nickname: string;
+  avatar?: string;
+  sessionUUID: string;
+  isHost: boolean;
+}
+
 export default function WaitingRoomPage() {
   const router = useRouter();
   const params = useParams();
-  const gameCode = params.code; // Code de la partie
-  const [players, setPlayers] = useState([]); // Liste des joueurs
-  const [isHost, setIsHost] = useState(false); // Indique si l'utilisateur est l'hôte
+  const gameCode: string = Array.isArray(params.code) ? params.code[0] : params.code || "";
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await fetch(`/api/games/${gameCode}`);
+        const response = await fetch(`/api/games/${gameCode}`, {
+          method: "GET",
+          credentials: "include",
+        });
+
         if (response.ok) {
           const data = await response.json();
           setPlayers(data.players);
 
-          // Vérifier si l'utilisateur actuel est l'hôte
+          // Récupérer le sessionUuid depuis les cookies
           const sessionUuid = document.cookie
             .split("; ")
             .find((row) => row.startsWith("session_uuid="))
             ?.split("=")[1];
+
+          if (!sessionUuid) {
+            console.error("Session UUID manquant.");
+            return;
+          }
+
+          // Vérifier si l'utilisateur est l'hôte
           const currentPlayer = data.players.find(
-            (player) => player.sessionUUID === sessionUuid
+            (player: Player) => player.sessionUUID === sessionUuid
           );
           setIsHost(currentPlayer?.isHost || false);
         } else {
@@ -40,21 +60,19 @@ export default function WaitingRoomPage() {
 
     fetchPlayers();
 
-    // Configurer Pusher pour écouter les événements en temps réel
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
     });
 
     const channel = pusher.subscribe(`game-${gameCode}`);
 
-    // Écouter l'événement "player-joined" pour mettre à jour la liste des joueurs
-    channel.bind("player-joined", (data) => {
+    channel.bind("player-joined", (data: { player: Player }) => {
       setPlayers((prevPlayers) => [...prevPlayers, data.player]);
     });
 
-    // Écouter l'événement "game-started" pour rediriger vers role-display
+    // Redirection automatique après "game-started"
     channel.bind("game-started", () => {
-      router.push(`multidevice/game/${gameCode}/role-display`);
+      router.push(`../game/${gameCode}/role-display`);
     });
 
     return () => {
@@ -68,19 +86,27 @@ export default function WaitingRoomPage() {
       const sessionUuid = document.cookie
         .split("; ")
         .find((row) => row.startsWith("session_uuid="))
-        ?.split("=")[1] || "";
+        ?.split("=")[1];
+
+      if (!sessionUuid) {
+        console.error("Session UUID manquant.");
+        return;
+      }
 
       const response = await fetch(`/api/games/${gameCode}/start`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ sessionUuid }),
+        body: JSON.stringify({ sessionUuid }), // Inclure sessionUuid dans la requête
       });
 
       if (!response.ok) {
         const { message } = await response.json();
         console.error("Erreur lors du lancement de la partie :", message);
+      } else {
+        console.log("Partie lancée avec succès !");
       }
     } catch (err) {
       console.error("Erreur lors de la tentative de lancement de la partie :", err);
@@ -100,7 +126,7 @@ export default function WaitingRoomPage() {
           </div>
           <span className="text-gray-800 font-semibold">ICO</span>
         </div>
-        <div className="w-6"></div> {/* Espace vide pour alignement */}
+        <div className="w-6"></div>
       </div>
 
       {/* Main Content */}
@@ -115,7 +141,7 @@ export default function WaitingRoomPage() {
           <h2 className="text-xl font-bold text-slate-900">{gameCode}</h2>
         </div>
         <div className="flex justify-center">
-          <QRCode value={gameCode} size={120} />
+          <QRCode value={gameCode || "Code indisponible"} size={120} />
         </div>
       </div>
 
@@ -134,7 +160,7 @@ export default function WaitingRoomPage() {
         ))}
       </div>
 
-      {/* Bouton pour lancer la partie (visible uniquement si l'utilisateur est hôte) */}
+      {/* Bouton pour lancer la partie */}
       {isHost && (
         <div className="w-full max-w-md">
           <button
