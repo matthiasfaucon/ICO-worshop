@@ -4,7 +4,7 @@ import pusher from "@/lib/pusher";
 import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: NextRequest, { params }: { params: { code: string } }) {
-  const gameCode = params.code; // Suppression de l'utilisation de `await` ici
+  const gameCode = await params.code; // Suppression de l'utilisation de `await` ici
 
   try {
     // Récupérer les données de la partie avec les joueurs
@@ -64,9 +64,12 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
     await pusher.trigger(`game-${gameCode}`, "update-players", {
       players,
     });
-
-    return NextResponse.json({ players });
-  } catch (error) {
+    console.log(players);
+    return NextResponse.json({
+      players,
+      session_uuid: sessionUuid, // Inclure le session_uuid pour l'utilisateur actuel
+    });
+      } catch (error) {
     console.error("Erreur lors de la récupération de la partie :", error);
     return NextResponse.json({ message: "Erreur serveur." }, { status: 500 });
   }
@@ -161,7 +164,7 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
     const response = NextResponse.json({ message: "Joueur ajouté avec succès." });
     response.cookies.set("session_uuid", sessionUuid, {
       maxAge: 365 * 24 * 60 * 60, // 1 an
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
       path: "/",
     });

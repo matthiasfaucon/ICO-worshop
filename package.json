@@ -19,6 +19,7 @@
     "@next/env": "^15.1.4",
     "@prisma/client": "^6.2.1",
     "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bcryptjs": "^2.4.6",
+    "@types/jquery": "^3.5.32",
     "@types/js-cookie": "^3.0.6",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/next-pwa": "^5.6.9",
