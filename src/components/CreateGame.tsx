@@ -71,7 +71,7 @@ export default function CreateGame() {
   }, [])
 
   return (
-    <div className="bg-brown-texture h-dvh bg-cover bg-center">
+    <div className="bg-brown-texture h-screen bg-cover bg-center">
       <Header />
       <div className="mt-8 pt-8 relative bg-white/10 backdrop-blur-lg border-slate-50 border-2 border-white/20 rounded-lg shadow-lg w-11/12 h-5/6 mx-auto">
         {/* Title */}
@@ -114,7 +114,7 @@ export default function CreateGame() {
             <div className="mb-6 px-4">
               <div className="mt-4 space-y-6">
                 {/* Points to win */}
-                <div className="flex items-center justify-between items-start">
+                <div className="flex justify-between items-start">
                   <div className="px-1">
                     <label className="block text-lg font-medium text-white">
                       Nombre de points pour gagner
