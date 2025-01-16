@@ -1,5 +1,6 @@
 import { seedUsers } from "./seeds/seedUsers.js";
 import { seedCards } from "./seeds/seedCard.js";
+import { seedGameRules } from "./seeds/seedGameRules.js";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -8,7 +9,8 @@ async function seed() {
 
   console.log("Démarrage du peuplement des données...");
   await seedUsers(); 
-  await seedCards(); 
+  await seedCards();
+  await seedGameRules();
   
   console.log("Peuplement terminé !");
 }

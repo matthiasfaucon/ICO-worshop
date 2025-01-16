@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { GameRuleType } from '@prisma/client';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const type = searchParams.get('type') as GameRuleType | null;;
+        
         const rules = await prisma.gameRule.findMany({
-            orderBy: { updated_at: 'desc' }
+            where: type ? { type: { equals: type } } : {},
+            orderBy: { order: 'asc' }
         });
         return NextResponse.json(rules);
     } catch (error) {
@@ -22,7 +27,7 @@ export async function POST(request: Request) {
                 name, 
                 value, 
                 description,
-                updated_by: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                updated_by: "1cf846e9-ec91-4a77-ad90-de8fc7a6e99e"
             }
         });
         return NextResponse.json(rule);

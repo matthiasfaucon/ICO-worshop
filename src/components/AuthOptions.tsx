@@ -9,7 +9,7 @@ export default function AuthOptions() {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signIn("google", { callbackUrl: "/games" });
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
       console.error("Erreur lors de la connexion avec Google :", error);
     }
@@ -17,24 +17,25 @@ export default function AuthOptions() {
 
   const handleSignIn = () => {
     console.log("Se connecter");
-    router.push("/signin");
+    router.push("/multidevice/signin");
   };
 
   const handleSignUp = () => {
     console.log("S'inscrire");
-    router.push("/signup");
+    router.push("/multidevice/signup");
   };
 
   return (
     <div className="flex flex-col items-center justify-between min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 px-6 py-6 text-white">
       {/* Header */}
       <div className="flex justify-start w-full">
+        <a href="/multidevice">
         <button
-          onClick={() => router.back()}
           className="p-3 text-white bg-blue-500 rounded-full hover:bg-blue-400 transition duration-300"
         >
           &#8592;
         </button>
+        </a>
       </div>
 
       {/* Logo et message */}
