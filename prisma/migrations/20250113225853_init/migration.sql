@@ -1,15 +1,9 @@
--- CreateEnum
-CREATE TYPE "GameRuleType" AS ENUM ('GLOBAL', 'SPECIFIC');
-
--- CreateEnum
-CREATE TYPE "WinnerType" AS ENUM ('PIRATES', 'MARINS', 'SIRENE');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" UUID NOT NULL,
-    "username" VARCHAR(50),
-    "email" VARCHAR(100),
-    "password" VARCHAR(255),
+    "username" VARCHAR(50) NOT NULL,
+    "email" VARCHAR(100) NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
     "role" VARCHAR(20) NOT NULL DEFAULT 'USER',
     "session_uuid" UUID NOT NULL,
     "is_logged" BOOLEAN NOT NULL DEFAULT false,
@@ -31,7 +25,6 @@ CREATE TABLE "Game" (
     "current_turn" INTEGER NOT NULL DEFAULT 1,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "score" JSONB NOT NULL DEFAULT '{}',
 
     CONSTRAINT "Game_pkey" PRIMARY KEY ("id")
 );
@@ -50,8 +43,6 @@ CREATE TABLE "Player" (
     "connected" BOOLEAN NOT NULL DEFAULT true,
     "joined_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "score" INTEGER NOT NULL DEFAULT 0,
-    "session_uuid" UUID NOT NULL,
-    "username" VARCHAR(50) NOT NULL,
 
     CONSTRAINT "Player_pkey" PRIMARY KEY ("id")
 );
@@ -83,14 +74,13 @@ CREATE TABLE "Turn" (
 
 -- CreateTable
 CREATE TABLE "Card" (
-    "id" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "id" UUID NOT NULL,
+    "type" VARCHAR(20) NOT NULL,
+    "name" VARCHAR(50) NOT NULL,
     "description" TEXT,
     "effect" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),
-    "image" TEXT,
 
     CONSTRAINT "Card_pkey" PRIMARY KEY ("id")
 );
@@ -100,7 +90,7 @@ CREATE TABLE "CardAction" (
     "id" UUID NOT NULL,
     "player_id" UUID NOT NULL,
     "game_id" UUID NOT NULL,
-    "card_id" TEXT NOT NULL,
+    "card_id" UUID NOT NULL,
     "turn_id" UUID NOT NULL,
     "type" VARCHAR(20) NOT NULL,
     "played_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -166,23 +156,8 @@ CREATE TABLE "GameRule" (
     "description" TEXT,
     "updated_by" UUID NOT NULL,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "name" TEXT NOT NULL,
-    "type" "GameRuleType" NOT NULL,
-    "order" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "GameRule_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "GameMonoDevice" (
-    "id" UUID NOT NULL,
-    "created_by" UUID NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "who_won" "WinnerType",
-    "terminated_at" TIMESTAMP(3),
-    "game_duration" DOUBLE PRECISION,
-
-    CONSTRAINT "GameMonoDevice_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -201,12 +176,6 @@ CREATE UNIQUE INDEX "Game_code_key" ON "Game"("code");
 CREATE UNIQUE INDEX "PlayerStatistics_player_id_key" ON "PlayerStatistics"("player_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Card_name_key" ON "Card"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Vote_player_id_turn_id_key" ON "Vote"("player_id", "turn_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "GameStatistics_game_id_key" ON "GameStatistics"("game_id");
 
 -- CreateIndex
@@ -216,10 +185,10 @@ CREATE UNIQUE INDEX "GameRule_key_key" ON "GameRule"("key");
 ALTER TABLE "Game" ADD CONSTRAINT "Game_current_captain_id_fkey" FOREIGN KEY ("current_captain_id") REFERENCES "Player"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Player" ADD CONSTRAINT "Player_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Player" ADD CONSTRAINT "Player_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Player" ADD CONSTRAINT "Player_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Player" ADD CONSTRAINT "Player_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PlayerStatistics" ADD CONSTRAINT "PlayerStatistics_player_id_fkey" FOREIGN KEY ("player_id") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -228,22 +197,22 @@ ALTER TABLE "PlayerStatistics" ADD CONSTRAINT "PlayerStatistics_player_id_fkey" 
 ALTER TABLE "Turn" ADD CONSTRAINT "Turn_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CardAction" ADD CONSTRAINT "CardAction_card_id_fkey" FOREIGN KEY ("card_id") REFERENCES "Card"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CardAction" ADD CONSTRAINT "CardAction_player_id_fkey" FOREIGN KEY ("player_id") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CardAction" ADD CONSTRAINT "CardAction_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CardAction" ADD CONSTRAINT "CardAction_player_id_fkey" FOREIGN KEY ("player_id") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "CardAction" ADD CONSTRAINT "CardAction_card_id_fkey" FOREIGN KEY ("card_id") REFERENCES "Card"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CardAction" ADD CONSTRAINT "CardAction_turn_id_fkey" FOREIGN KEY ("turn_id") REFERENCES "Turn"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Vote" ADD CONSTRAINT "Vote_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Vote" ADD CONSTRAINT "Vote_player_id_fkey" FOREIGN KEY ("player_id") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Vote" ADD CONSTRAINT "Vote_player_id_fkey" FOREIGN KEY ("player_id") REFERENCES "Player"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Vote" ADD CONSTRAINT "Vote_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "Game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Vote" ADD CONSTRAINT "Vote_turn_id_fkey" FOREIGN KEY ("turn_id") REFERENCES "Turn"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -262,6 +231,3 @@ ALTER TABLE "BugSuggestionHistory" ADD CONSTRAINT "BugSuggestionHistory_changed_
 
 -- AddForeignKey
 ALTER TABLE "GameRule" ADD CONSTRAINT "GameRule_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "GameMonoDevice" ADD CONSTRAINT "GameMonoDevice_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

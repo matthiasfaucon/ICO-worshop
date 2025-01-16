@@ -132,7 +132,7 @@ export default function EditCard() {
             >
               <option value="">Sélectionner un type</option>
               <option value="ACTION">Action</option>
-              <option value="EQUIPMENT">Équipement</option>
+              <option value="BONUS">Bonus</option>
               <option value="ROLE">Rôle</option>
             </select>
           </div>

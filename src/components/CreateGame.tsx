@@ -32,7 +32,6 @@ export default function CreateGame() {
     }, {})
 
     dispatch(configureGame({ withBonus, pointsToWin, playersCount, min_players: generalRules["min-player"], max_players: generalRules["max-player"], min_points: generalRules["min-round-to-win"], max_points: generalRules["max-round-to-win"] }));
-    console.log(gameState);
     router.push("/onedevice/games");
 
   };
