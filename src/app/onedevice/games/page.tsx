@@ -13,9 +13,10 @@ export default function GamePage() {
     const [revealedRoles, setRevealedRoles] = useState<string[]>([]);
     const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
     const [isRevealing, setIsRevealing] = useState(false);
-    // Remplacez l'état remainingTime par endTime
     const [endTime, setEndTime] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
+
+    console.log(gameState);
 
     // Modifiez handleTimerForPirate
     const handleTimerForPirate = () => {
@@ -99,7 +100,8 @@ export default function GamePage() {
             const response = await fetch('/api/game-mono', {
                 method: 'POST',
                 body: JSON.stringify({
-                    user_id: user_id
+                    user_id: user_id,
+                    playersCount: gameState.settings.playersCount,
                 }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -192,15 +194,17 @@ export default function GamePage() {
     return (
         <div>
             <Header />
-            <section className="px-6 pt-28 pb-8 bg-[url('/bg-app.jpg')] bg-cover bg-center min-h-screen h-screen w-full flex flex-col items-center justify-center">
-                <div className="relative bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-full w-full z-10">
-                    <div className='absolute bg-black/10 rounded-lg h-full w-full z-10'></div>
-                    <div className="relative z-10 flex flex-col items-center gap-4 p-6 ">
+            <section className="p-10 bg-[url('/bg-app.svg')] bg-cover h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center">
+
+                <div className="relative bg-white/40 backdrop-blur-sm p-6 rounded-lg shadow-lg border-2 border-white/15 h-full w-full">
+                    <div className='absolute bg-black/10 inset-0 rounded-lg z-0'></div>
+                    <div className="relative z-10 flex flex-col items-center gap-4">
+
                         <h1 className="text-2xl font-bold mb-4">Joueurs</h1>
 
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
-                            <div className="mb-4">
+                            <div className="mb-4 h-14">
                                 {gameState.settings.playersCount > gameState.players.length && (
                                     <div>
                                         <h2 className="text-xl mb-2">Ajouter un joueur</h2>
@@ -209,15 +213,16 @@ export default function GamePage() {
                                                 type="text"
                                                 value={playerName}
                                                 onChange={(e) => setPlayerName(e.target.value)}
-                                                className="p-2 rounded-md text-lightGrey border border-white/50 bg-transparent h-14 w-4/5"
+                                                className="p-2 rounded text-lightGrey border-2 border-white bg-transparent"
                                                 placeholder="Nom du joueur"
                                             />
                                             <button
                                                 onClick={handleAddPlayer}
-                                                className="bg-white border-2 border-white px-4 py-2 rounded-md w-1/5">
+                                                className="bg-white border-2 border-white px-4 py-2 rounded">
                                                 <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M8.33325 1.16668C8.33325 0.70644 7.96016 0.333344 7.49992 0.333344C7.03968 0.333344 6.66658 0.70644 6.66658 1.16668V6.16668H1.66659C1.20635 6.16668 0.833252 6.53977 0.833252 7.00001C0.833252 7.46025 1.20635 7.83334 1.66659 7.83334H6.66658V12.8333C6.66658 13.2936 7.03968 13.6667 7.49992 13.6667C7.96016 13.6667 8.33325 13.2936 8.33325 12.8333V7.83334H13.3333C13.7935 7.83334 14.1666 7.46025 14.1666 7.00001C14.1666 6.53977 13.7935 6.16668 13.3333 6.16668H8.33325V1.16668Z" fill="#3B4450" />
                                                 </svg>
+
                                             </button>
                                         </div>
                                     </div>
@@ -225,17 +230,11 @@ export default function GamePage() {
                                 <hr className="my-4" />
                                 <div className="mt-4">
                                     <h3>Joueurs ({gameState.players.length}):</h3>
-                                    <div>
+                                    <ul className="mb-4">
                                         {gameState.players.map(player => (
-                                            <div key={player.id} className="flex items-center gap-2 mt-2 h-10 relative bg-white/40 backdrop-blur-sm rounded-md shadow-lg border-2 border-white/15 w-full z-10">
-                                                <div className='absolute bg-black/25 rounded-md h-full w-full z-10'></div>
-                                                <div className='flex items-center gap-2 p-10'>
-                                                    <img src="/images/user-icon.png" alt="" className="w-6 h-6" />
-                                                    <p className='text-white text-lg z-20'>{player.name}</p>
-                                                </div>
-                                            </div>
+                                            <li key={player.id}>{player.name}</li>
                                         ))}
-                                    </div>
+                                    </ul>
 
                                     {gameState.players.length >= gameState.settings.playersCount && (
                                         <button

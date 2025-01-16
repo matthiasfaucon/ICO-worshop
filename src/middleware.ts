@@ -26,10 +26,7 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/admin')) {
     try {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET)
-      console.log(secret)
       const { payload } = await jwtVerify(authToken, secret) as { payload: JWTPayload }
-
-      console.log(payload)
 
       if (payload?.role?.toLowerCase() !== 'admin') {
         return NextResponse.redirect(new URL('/', request.url))

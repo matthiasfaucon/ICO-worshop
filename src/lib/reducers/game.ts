@@ -100,6 +100,7 @@ const gameSlice = createSlice({
     },
     startGame: (state, action) => {
       state.gameId = action.payload;
+
       if (state.players.length >= state.general_rules.min_players && state.players.length <= state.general_rules.max_players) {
         state.gamePhase = 'REVEAL_ROLES';
 

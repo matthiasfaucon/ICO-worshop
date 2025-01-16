@@ -4,7 +4,8 @@ import prisma from '@/lib/prisma';
 export async function POST(request: Request) {
   try {
 
-    const { user_id } = await request.json()
+    const { user_id, playersCount } = await request.json()
+    console.log(user_id)
     if (!user_id) {
       return NextResponse.json(
         { error: 'Non autorisé' },
@@ -15,6 +16,7 @@ export async function POST(request: Request) {
     const gameMonoDevice = await prisma.gameMonoDevice.create({
       data: {
         created_by: user_id,
+        players_count: playersCount,
         created_at: new Date(),
       }
     })
@@ -34,7 +36,7 @@ export async function GET() {
   try {
     const games = await prisma.gameMonoDevice.findMany({
       include: {
-        user: {
+        User: {
           select: {
             username: true,
             email: true
