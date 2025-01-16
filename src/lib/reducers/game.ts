@@ -1,13 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type Role = 'PIRATE' | 'MARIN' | 'SIRENE';
-type BonusCard = 'POISON' | 'ILE';
-
 interface Player {
   id: string;
   name: string;
   role?: Role;
-  bonusCard?: BonusCard;
+  bonusCard?: string;
   hasVoted?: boolean;
   isInCrew?: boolean;
 }
@@ -23,6 +21,7 @@ interface GameState {
   tour: number;
   currentCaptain: string | null;
   currentCrew: string[];
+  lastCrew: string[];
   pirateScore: number;
   marinScore: number;
   gamePhase: 'SETUP' | 'CREATE_PLAYERS' | 'REVEAL_ROLES' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'PIRATES_OR_SIRENES_WIN' | 'GAME_OVER';
@@ -53,6 +52,7 @@ const initialState: GameState = {
   tour: 1,
   currentCaptain: null,
   currentCrew: [],
+  lastCrew: [],
   pirateScore: 0,
   marinScore: 0,
   gamePhase: 'SETUP',
@@ -112,7 +112,8 @@ const gameSlice = createSlice({
     revealRole: (state) => {
       state.gamePhase = 'CREW_SELECTION';
     },
-    distributeRoles: (state) => {
+    distributeRoles: (state, action: PayloadAction) => {
+      const bonusCards = action.payload;
       const roleDistribution = {
         7: { pirates: 3, marins: 3, sirene: 1 },
         8: { pirates: 3, marins: 4, sirene: 1 },
@@ -150,6 +151,15 @@ const gameSlice = createSlice({
         }
       });
 
+      // Ajouter les cartes bonus
+      if (state.settings.withBonus) {
+        shuffledPlayers.forEach(player => {
+          const randomIndex = Math.floor(Math.random() * bonusCards.length);
+          player.bonusCard = bonusCards[randomIndex].name;
+          bonusCards.splice(randomIndex, 1); // Remove the assigned card from the array
+        });
+      }
+
       shuffledPlayers = [...state.players].sort(() => Math.random() - 0.5);
 
       state.players = shuffledPlayers;
@@ -184,7 +194,7 @@ const gameSlice = createSlice({
           }
           state.gamePhase = 'CREW_SELECTION';
         }
-        
+
         state.votes = [];
       }
     },
@@ -208,7 +218,7 @@ const gameSlice = createSlice({
 
         if (mostVotedPlayerId) {
           const mostVotedPlayer = state.players.find(p => p.id === mostVotedPlayerId);
-          
+
           if (mostVotedPlayer?.role === 'SIRENE') {
             state.winner = 'PIRATES';
           } else {
@@ -234,7 +244,7 @@ const gameSlice = createSlice({
         }
         state.tour += 1;
 
-        if (state.pirateScore >= state.settings.pointsToWin || state.marinScore >= state.settings.pointsToWin ) {
+        if (state.pirateScore >= state.settings.pointsToWin || state.marinScore >= state.settings.pointsToWin) {
           if (state.pirateScore >= state.settings.pointsToWin) {
             state.gamePhase = 'PIRATES_OR_SIRENES_WIN';
           } else {
@@ -250,6 +260,7 @@ const gameSlice = createSlice({
           state.currentCaptain = state.players[nextIndex].id;
         }
         state.journeyCards = [];
+        state.lastCrew = state.currentCrew;
         state.currentCrew = [];
         state.submittedCards = [];
       }
