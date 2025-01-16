@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`antialiased`}
+        className={`antialiased bg-brown-texture bg-cover bg-center`}
       >
         <GameProvider>
           <StoreProvider>

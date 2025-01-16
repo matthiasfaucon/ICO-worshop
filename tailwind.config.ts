@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
-        'brown-texture': "url('/cards/background-app-brown.svg')",
+        'brown-texture': "url('/cards/background-app-brown.jpg')",
         'red-texture': "url('/cards/background-app-red.png')",
         'blue-texture': "url('/cards/background-app-blue.png')",
         'blue-violet-texture': "url('/cards/background-app-blue-violet.png')",

@@ -5,6 +5,7 @@ import { FaChevronLeft, FaGamepad } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { configureGame } from '@/lib/reducers/game';
+import BlurContainer from "./BlurContainer";
 
 export default function CreateGame() {
   const [withBonus, setWithBonus] = useState(false);
@@ -95,6 +96,10 @@ export default function CreateGame() {
         Votre partie
       </h1>
 
+
+    <div className="relative bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg shadow-lg p-6">
+
+
       {/* Modes */}
       <div className="mb-6">
         <div className="bg-gray-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-900">
@@ -170,6 +175,8 @@ export default function CreateGame() {
           Créer la partie
         </button>
       </div>
+      </div>
     </div>
+
   );
 }
