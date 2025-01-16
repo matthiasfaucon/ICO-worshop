@@ -3,3 +3,21 @@
 @tailwind utilities;
 
 
+@font-face {
+  font-family: 'Magellan';
+  src: url('/fonts/Magellan.woff2') format('woff2'),
+        url('/fonts/Magellan.otf') format('otf'),
+        url('/fonts/Magellan.ttf') format('ttf'),
+       url('/fonts/Magellan.woff') format('woff');
+  font-weight: 400; /* Regular */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'FilsonProRegular';
+  src: url('/fonts/FilsonProRegular.otf') format('otf');
+  font-weight: 400; /* Regular */
+  font-style: normal;
+}
+
+
