@@ -13,9 +13,10 @@ export default function GamePage() {
     const [revealedRoles, setRevealedRoles] = useState<string[]>([]);
     const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
     const [isRevealing, setIsRevealing] = useState(false);
-    // Remplacez l'état remainingTime par endTime
     const [endTime, setEndTime] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
+
+    console.log(gameState);
 
     // Modifiez handleTimerForPirate
     const handleTimerForPirate = () => {
@@ -99,7 +100,8 @@ export default function GamePage() {
             const response = await fetch('/api/game-mono', {
                 method: 'POST',
                 body: JSON.stringify({
-                    user_id: user_id
+                    user_id: user_id,
+                    playersCount: gameState.settings.playersCount,
                 }),
                 headers: {
                     'Content-Type': 'application/json',
@@ -209,33 +211,36 @@ export default function GamePage() {
                                                 type="text"
                                                 value={playerName}
                                                 onChange={(e) => setPlayerName(e.target.value)}
-                                                className="p-2 rounded-md text-lightGrey border border-white/50 bg-transparent h-14 w-4/5"
-                                                placeholder="Nom du joueur"
+                                                className="p-2 w-full rounded text-white font-bold border-2 border-white bg-transparent placeholder-gray-50::placeholder"
+                                                placeholder="Pseudo"
                                             />
                                             <button
                                                 onClick={handleAddPlayer}
-                                                className="bg-white border-2 border-white px-4 py-2 rounded-md w-1/5">
+                                                className="bg-white border-2 border-white px-4 py-2 rounded">
                                                 <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M8.33325 1.16668C8.33325 0.70644 7.96016 0.333344 7.49992 0.333344C7.03968 0.333344 6.66658 0.70644 6.66658 1.16668V6.16668H1.66659C1.20635 6.16668 0.833252 6.53977 0.833252 7.00001C0.833252 7.46025 1.20635 7.83334 1.66659 7.83334H6.66658V12.8333C6.66658 13.2936 7.03968 13.6667 7.49992 13.6667C7.96016 13.6667 8.33325 13.2936 8.33325 12.8333V7.83334H13.3333C13.7935 7.83334 14.1666 7.46025 14.1666 7.00001C14.1666 6.53977 13.7935 6.16668 13.3333 6.16668H8.33325V1.16668Z" fill="#3B4450" />
                                                 </svg>
+
                                             </button>
                                         </div>
                                     </div>
                                 )}
                                 <hr className="my-4" />
                                 <div className="mt-4">
-                                    <h3>Joueurs ({gameState.players.length}):</h3>
-                                    <div>
-                                        {gameState.players.map(player => (
-                                            <div key={player.id} className="flex items-center gap-2 mt-2 h-10 relative bg-white/40 backdrop-blur-sm rounded-md shadow-lg border-2 border-white/15 w-full z-10">
-                                                <div className='absolute bg-black/25 rounded-md h-full w-full z-10'></div>
-                                                <div className='flex items-center gap-2 p-10'>
-                                                    <img src="/images/user-icon.png" alt="" className="w-6 h-6" />
-                                                    <p className='text-white text-lg z-20'>{player.name}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <h3 className='text-center text-white font-bold text-2xl'>Joueurs ({gameState.players.length}):</h3>
+
+                                    <div className="h-screen w-full overflow-y-auto rounded-md p-4">
+                                        <ul className="space-y-2">
+                                            {gameState.players.map(player => (
+                                            <li
+                                                key={player.id}
+                                                className="bg-white border border-gray-300 rounded-md p-3 shadow-sm"
+                                            >
+                                                {player.name}
+                                            </li>
+                                            ))}
+                                        </ul>
+                                        </div>
 
                                     {gameState.players.length >= gameState.settings.playersCount && (
                                         <button
