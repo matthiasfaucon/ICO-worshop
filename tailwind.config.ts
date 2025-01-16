@@ -24,6 +24,8 @@ export default {
           500: '#8B7355',
           600: '#6B5842',
         },
+        blackflag: "#3B4450",
+        lightGrey: "#BDC2C8",
         red: {
           700: '#B91C1C',
         }

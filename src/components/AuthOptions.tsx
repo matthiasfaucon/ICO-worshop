@@ -17,12 +17,12 @@ export default function AuthOptions() {
 
   const handleSignIn = () => {
     console.log("Se connecter");
-    router.push("/multidevice/signin");
+    router.push("/signin");
   };
 
   const handleSignUp = () => {
     console.log("S'inscrire");
-    router.push("/multidevice/signup");
+    router.push("/signup");
   };
 
   return (

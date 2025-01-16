@@ -3,7 +3,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function seedGameRules() {
-  console.log("Peuplement des règles...");
+    console.log("Peuplement des règles...");
+
+    const users = await prisma.user.findMany();
+    if (users.length === 0) {
+        console.error("Aucun utilisateur trouvé, veuillez exécuter le seed des utilisateurs avant de continuer.");
+        return;
+    }
+
+    const user = users[0];
 
   const gameRules = [
     {
@@ -11,8 +19,8 @@ export async function seedGameRules() {
         "key": "game-goals",
         "value": "Le jeu repose sur une mécanique de points. Les marins et la sirène marquent des points en jouant des cartes « ÎLE » et en progressant vers leur destination. Les pirates, de leur côté, marquent en empoisonnant l’équipage. La partie se termine lorsqu’une équipe remporte dix manches. Si les marins gagnent, la sirène triomphe également. Si les pirates l’emportent, ils doivent identifier la sirène lors d’un vote final. Si la majorité se trompe, la sirène gagne seule.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:00:00.000Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "But du jeu",
         "type": "GLOBAL",
         "order": 2
@@ -22,8 +30,8 @@ export async function seedGameRules() {
         "key": "min-round-to-win",
         "value": "5",
         "description": "C'est le nombre minimum de manche pour gagner",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:17:09.636Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Nombre de manches minimum pour gagner",
         "type": "SPECIFIC",
         "order": 2
@@ -33,8 +41,8 @@ export async function seedGameRules() {
         "key": "intro",
         "value": "Le jeu commence par une mise en situation. Un groupe de marins transporte un trésor à travers des eaux dangereuses. Cependant, parmi eux se cachent des pirates déterminés à s’emparer du butin. Les joueurs incarnent différents rôles, chacun ayant un objectif spécifique. Les marins et la sirène doivent collaborer pour déjouer les plans des pirates et protéger le trésor. En revanche, les pirates doivent infiltrer l’équipage, gagner leur confiance et utiliser des cartes « POISON » pour saboter leurs efforts.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:21:20.673Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Introduction",
         "type": "GLOBAL",
         "order": 1
@@ -44,8 +52,8 @@ export async function seedGameRules() {
         "key": "min-player",
         "value": "7",
         "description": "Le minimum de joueur",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:15:04.149Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Mininum de joueur",
         "type": "SPECIFIC",
         "order": 4
@@ -55,8 +63,8 @@ export async function seedGameRules() {
         "key": "action-card-impact",
         "value": "Les cartes d’action jouent un rôle central dans le jeu. Les cartes « ÎLE » sont essentielles pour les marins, tandis que les cartes « POISON » sont l’arme principale des pirates. D’autres cartes, comme « MAL DE MER » ou « ANTIDOTE », modifient les conditions d’une manche en influençant les équipages ou en annulant des effets adverses.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:30:32.496Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Cartes d’action et leur impact",
         "type": "GLOBAL",
         "order": 4
@@ -66,8 +74,8 @@ export async function seedGameRules() {
         "key": "materials-and-cards",
         "value": "Le jeu utilise plusieurs types de cartes pour structurer les parties. Les cartes de rôle déterminent si un joueur est marin, pirate ou la sirène. D’autres cartes, comme les cartes d’action (« ÎLE », « POISON », etc.) ou les cartes bonus (« OBSERVATEUR », « CHARLATAN », etc.), ajoutent des possibilités stratégiques. Les cartes sont distribuées au début selon le nombre de joueurs et déterminent les actions disponibles.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:23:27.793Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Matériel et cartes",
         "type": "GLOBAL",
         "order": 3
@@ -77,8 +85,8 @@ export async function seedGameRules() {
         "key": "advice-for-players",
         "value": "Chaque rôle bénéficie de conseils spécifiques. Les marins doivent observer attentivement les comportements pour démasquer les pirates et reconnaître leurs alliés. Les pirates doivent semer le doute et parfois jouer des cartes favorables aux marins pour gagner leur confiance. La sirène, quant à elle, doit maintenir un équilibre délicat en soutenant les marins tout en semant la confusion chez les pirates, augmentant ainsi ses chances de victoire individuelle.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:33:07.412Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Conseils pour les joueurs",
         "type": "GLOBAL",
         "order": 7
@@ -88,8 +96,8 @@ export async function seedGameRules() {
         "key": "bonus-and-strategy",
         "value": "Les cartes bonus offrent une dimension supplémentaire de stratégie. Elles peuvent être utilisées à des moments précis pour bouleverser le déroulement de la partie. Par exemple, la carte « OBSERVATEUR » permet de vérifier secrètement une carte d’un autre joueur, tandis que « TRIBORD » change le sens du jeu. Ces cartes permettent des retournements imprévus et favorisent les stratégies individuelles.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:32:20.854Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Cartes bonus et stratégies avancées",
         "type": "GLOBAL",
         "order": 6
@@ -99,8 +107,8 @@ export async function seedGameRules() {
         "key": "max-round-to-win",
         "value": "10",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-15T10:45:07.083Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Nombre de manches maximum pour gagner",
         "type": "SPECIFIC",
         "order": 3
@@ -110,8 +118,8 @@ export async function seedGameRules() {
         "key": "max-player",
         "value": "20",
         "description": "Le maximum de joueur",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:15:54.664Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Maximum de joueur",
         "type": "SPECIFIC",
         "order": 1
@@ -121,8 +129,8 @@ export async function seedGameRules() {
         "key": "game-steps",
         "value": "La partie débute par une phase de mise en place. Le capitaine est désigné pour distribuer les rôles et superviser le début du jeu. Les pirates et la sirène se reconnaissent en ouvrant les yeux, tandis que les marins restent dans l’ignorance. Pendant chaque manche, un équipage de trois personnes est choisi. Chaque membre joue secrètement une carte parmi celles disponibles : « ÎLE » ou « POISON ». Les résultats des manches sont déterminés par les cartes jouées. Si toutes les cartes sont des « ÎLE », les marins marquent un point. Sinon, les pirates remportent la manche avec une carte « POISON ». Les manches se succèdent avec des votes et des choix tactiques jusqu’à la fin de la partie.",
         "description": "",
-        "updated_by": "07a6a8b2-15bb-4894-b27d-4498ceeabfc2",
-        "updated_at": "2025-01-14T19:24:17.366Z",
+        "updated_by": user.id,
+        "updated_at": new Date(),
         "name": "Déroulement de la partie",
         "type": "GLOBAL",
         "order": 5

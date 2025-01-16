@@ -26,6 +26,16 @@ model User {
   players        Player[]
 }
 
+model GameMonoDevice {
+  id          String   @id @default(uuid()) @db.Uuid
+  created_by  String   @db.Uuid
+  created_at  DateTime @default(now())
+  who_won     WinnerType?
+  terminated_at DateTime?
+  game_duration Float?
+  user        User     @relation(fields: [created_by], references: [id])
+}
+
 model Game {
   id                 String          @id @default(uuid()) @db.Uuid
   code               String          @unique @db.VarChar(10)
@@ -179,23 +189,13 @@ model GameRule {
   user        User         @relation(fields: [updated_by], references: [id])
 }
 
-model GameMonoDevice {
-  id            String      @id @db.Uuid
-  created_by    String      @db.Uuid
-  created_at    DateTime    @default(now())
-  who_won       WinnerType?
-  terminated_at DateTime?
-  game_duration Float?
-  User          User        @relation(fields: [created_by], references: [id])
+enum WinnerType {
+  PIRATES
+  MARINS
+  SIRENE
 }
 
 enum GameRuleType {
   GLOBAL
   SPECIFIC
-}
-
-enum WinnerType {
-  PIRATES
-  MARINS
-  SIRENE
 }

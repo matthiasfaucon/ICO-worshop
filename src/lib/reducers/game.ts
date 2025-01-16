@@ -18,6 +18,7 @@ interface VoteResult {
 }
 
 interface GameState {
+  gameId: string | null;
   players: Player[];
   tour: number;
   currentCaptain: string | null;
@@ -47,6 +48,7 @@ interface GameState {
 }
 
 const initialState: GameState = {
+  gameId: null,
   players: [],
   tour: 1,
   currentCaptain: null,
@@ -96,7 +98,8 @@ const gameSlice = createSlice({
     addPlayer: (state, action: PayloadAction<Player>) => {
       state.players.push(action.payload);
     },
-    startGame: (state) => {
+    startGame: (state, action) => {
+      state.gameId = action.payload;
       if (state.players.length >= state.general_rules.min_players && state.players.length <= state.general_rules.max_players) {
         state.gamePhase = 'REVEAL_ROLES';
 

@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
 
     // Vérifier s'il existe un session_uuid dans les cookies
     let sessionId = req.cookies.get("session_uuid")?.value;
-console.log("iciiiii");
-console.log(sessionId)
+    console.log("iciiiii");
+    console.log(sessionId)
     if (!sessionId) {
       // Générer un nouveau `session_uuid` s'il n'existe pas
       sessionId = uuidv4();
@@ -81,6 +81,19 @@ console.log(sessionId)
       { message: "Utilisateur créé avec succès.", user: responsePayload },
       { status: 201 }
     );
+
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email, role: newUser.role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+
+    );
+
+    response.cookies.set("authToken", token, {
+      maxAge: 60 * 60, // 1 heure
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
 
     response.cookies.set("session_uuid", sessionId, {
       maxAge: 365 * 24 * 60 * 60, // 1 an

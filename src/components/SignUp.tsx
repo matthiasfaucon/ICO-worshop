@@ -11,26 +11,25 @@ export default function SignupForm() {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch("/api/auth/signUp", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password, username }),
       });
-
+      
       if (response.ok) {
         const data = await response.json();
         console.log("Inscription réussie :", data);
-
+        
         // Stocker les informations de l'utilisateur dans le localStorage
         localStorage.setItem("userInfo", JSON.stringify(data.user));
-
+        
         // Rediriger vers la page d'accueil
         router.push("/");
       } else {
         const { message } = await response.json();
-        console.error("Erreur lors de l'inscription :", message);
         alert(message); // Afficher un message d'erreur à l'utilisateur
       }
     } catch (error) {

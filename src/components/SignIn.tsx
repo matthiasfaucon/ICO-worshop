@@ -52,7 +52,7 @@ export default function SignInForm() {
         localStorage.setItem("userInfo", JSON.stringify(userInfo));
 
         // Redirigez l'utilisateur après une connexion réussie
-        router.push("/multidevice");
+        router.push("/");
       } else {
         const data = await response.json();
         setError(data.message || "Une erreur est survenue.");
