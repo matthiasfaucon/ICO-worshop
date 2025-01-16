@@ -200,7 +200,7 @@ export default function GamePage() {
 
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
-                            <div className="mb-4 w-full">
+                            <div className="mb-4 w-full h-dvh">
                                 {gameState.settings.playersCount > gameState.players.length && (
                                     <div>
                                         <div>
@@ -229,12 +229,12 @@ export default function GamePage() {
                                 <div className="mt-4">
                                     <h3 className='text-center text-white font-bold text-2xl'>Joueurs ({gameState.players.length}):</h3>
 
-                                    <div className="h-screen w-full overflow-y-auto rounded-md p-4">
+                                    <div className="max-h-64 w-full overflow-y-auto rounded-md my-4">
                                         <ul className="space-y-2">
                                             {gameState.players.map(player => (
                                             <li
                                                 key={player.id}
-                                                className="bg-white border border-gray-300 rounded-md p-3 shadow-sm"
+                                                className="border-2 bg-white/15 backdrop-blur-sm text-white font-bold border-gray-300 rounded-md p-3 shadow-sm"
                                             >
                                                 {player.name}
                                             </li>
@@ -242,25 +242,35 @@ export default function GamePage() {
                                         </ul>
                                         </div>
 
-                                    {gameState.players.length >= gameState.settings.playersCount && (
+                                        <div className="border-t-2 border-gray-300 flex gap-2 flex-col items-center pt-2">
+                                        {!(
+                                            gameState.players.length >= gameState.settings.playersCount
+                                        ) && (
+                                            <p className="text-white font-bold">
+                                            Vous devez être entre 7 et 20 joueurs
+                                            </p>
+                                        )}
                                         <button
                                             onClick={handleStartGame}
-                                            className="bg-green-500 text-white px-4 py-2 rounded">
+                                            disabled={gameState.players.length < gameState.settings.playersCount}
+                                            className="w-full py-3 rounded-lg font-bold 
+                                            bg-white text-slate-800 
+                                            disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                        >
                                             Commencer la partie
                                         </button>
-                                    )}
+                                        </div>
                                 </div>
                             </div>
                         )}
 
-                        
-
+                    
                         {/* Phase de révélation des rôles */}
                         {gameState.gamePhase === 'REVEAL_ROLES' && (
-                            <div className="flex flex-col items-center p-4 relative min-h-screen">
+                            <div className="flex flex-col items-center relative">
                                 {!selectedPlayer ? (
                                     <>
-                                        <h1 className="text-2xl font-bold mb-6">De quel côté tu vas te ranger ?</h1>
+                                        <h1 className="text-xl font-bold mb-6">De quel côté tu vas te ranger ?</h1>
                                         <p className="text-center mb-6">Clique sur ton pseudo pour révéler ton rôle</p>
 
                                         <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6">
