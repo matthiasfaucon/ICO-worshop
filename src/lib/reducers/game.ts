@@ -24,7 +24,7 @@ interface GameState {
   lastCrew: string[];
   pirateScore: number;
   marinScore: number;
-  gamePhase: 'SETUP' | 'CREATE_PLAYERS' | 'REVEAL_ROLES' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'PIRATES_OR_SIRENES_WIN' | 'GAME_OVER';
+  gamePhase: 'SETUP' | 'CREATE_PLAYERS' | 'REVEAL_ROLES' | 'CREW_SELECTION' | 'VOTING' | 'JOURNEY' | 'PIRATES_OR_SIRENES_WIN' | 'GAME_OVER' | 'REPLAY';
   winner: 'PIRATES' | 'MARINS' | 'SIRENE' | null;
   votes: VoteResult[];
   votesAnnulation: number;
@@ -265,7 +265,34 @@ const gameSlice = createSlice({
         state.submittedCards = [];
       }
     },
-    resetGame: () => initialState,
+    resetGame: (state, payload) => {
+      const replayWithSameConfig = payload;
+      if (replayWithSameConfig) {
+        state.gamePhase = 'REPLAY';
+        state.players.forEach(player => {
+          player.role = undefined;
+          player.bonusCard = undefined;
+          player.hasVoted = undefined;
+          player.isInCrew = undefined;
+        });
+        state.tour = 1;
+        state.currentCaptain = null;
+        state.currentCrew = [];
+        state.lastCrew = [];
+        state.pirateScore = 0;
+        state.marinScore = 0;
+        state.winner = null;
+        state.votes = [];
+        state.votesAnnulation = 0;
+        state.votesSirene = [];
+        state.journeyCards = [];
+        state.submittedVotes = [];
+        state.submittedVotesSirene = [];
+        state.submittedCards = [];
+      } else {
+        state = initialState;
+      }
+    }
   },
 });
 
