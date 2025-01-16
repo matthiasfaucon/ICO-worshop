@@ -72,7 +72,7 @@ export default function CreateGame() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 px-6 py-6">
+    <div className="flex flex-col min-h-screen px-6 py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <a href="/">
