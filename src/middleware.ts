@@ -10,7 +10,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/signin') ||
     request.nextUrl.pathname.startsWith('/signup') ||
     request.nextUrl.pathname.startsWith('/auth-options') ||
-    request.nextUrl.pathname.startsWith('/api')
+    request.nextUrl.pathname.startsWith('/api') ||
+    request.nextUrl.pathname === '/'
   ) {
     return NextResponse.next()
   }
