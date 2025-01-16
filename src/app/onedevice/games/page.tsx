@@ -2,11 +2,13 @@
 
 import Header from '@/components/header';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene, revealRole } from '@/lib/reducers/game';
+import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene, revealRole, resetGame } from '@/lib/reducers/game';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function GamePage() {
     const dispatch = useAppDispatch();
+    const router = useRouter();
     const gameState = useAppSelector((state) => state.game);
     const [playerName, setPlayerName] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
@@ -76,9 +78,14 @@ export default function GamePage() {
             console.error('Erreur:', error);
         }
     }
+
     useEffect(() => {
         if (gameState.gamePhase === 'GAME_OVER') {
             updateScore();
+        }
+
+        if (gameState.gamePhase === 'REPLAY') {
+            handleStartGame();
         }
     }, [gameState.gamePhase]);
 
@@ -201,6 +208,15 @@ export default function GamePage() {
 
         return () => clearInterval(timerInterval);
     }, [remainingTime, dispatch]);
+
+    const handleReplay = (replayWithSameConfig: boolean) => {
+        dispatch(resetGame(replayWithSameConfig))
+        if (replayWithSameConfig) {
+            router.push('/onedevice/games');
+        } else {
+            router.push('/');
+        }
+    };
 
     return (
         <div className='bg-brown-texture h-dvh bg-cover bg-center'>
@@ -528,6 +544,12 @@ export default function GamePage() {
                                     <p>Pirates: {gameState.pirateScore}</p>
                                     <p>Marins: {gameState.marinScore}</p>
                                 </div>
+                                <button onClick={() => handleReplay(false)} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                                    Rejouer
+                                </button>
+                                <button onClick={() => handleReplay(true)} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                                    Rejouer avec les mêmes paramètres et joueurs
+                                </button>
                             </div>
                         )}
 
