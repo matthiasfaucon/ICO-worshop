@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+const { fontFamily } = require('tailwindcss/defaultTheme')
 
 export default {
   content: [
@@ -8,6 +9,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        magellan: ['Magellan', ...fontFamily.sans],
+        filson: ['FilsonProRegular', ...fontFamily.sans],
+      },
       backgroundImage: {
         'brown-texture': "url('/cards/background-app-brown.svg')",
         'red-texture': "url('/cards/background-app-red.png')",
