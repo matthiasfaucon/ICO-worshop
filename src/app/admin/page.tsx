@@ -54,7 +54,7 @@ export default function AdminPage() {
           </Link>
 
           <Link
-            href="/stats"
+            href="/statistics"
             className="relative group transition-transform duration-300 hover:scale-105"
           >
             <div className="absolute inset-px rounded-lg bg-white" />
@@ -68,13 +68,13 @@ export default function AdminPage() {
           </Link>
 
           <Link
-            href="/bugs"
+            href="admin/bugsSuggestions"
             className="relative group lg:col-span-2 transition-transform duration-300 hover:scale-105"
           >
             <div className="absolute inset-px rounded-lg bg-white lg:rounded-br-[1.5rem]" />
             <div className="relative flex h-56 flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-br-[calc(1.5rem+1px)]">
               <div className="p-6 pt-4">
-                <p className="text-md font-medium tracking-tight text-gray-950">Gestion des bugs/suggestions</p>
+                <p className="text-md font-medium tracking-tight text-gray-950">Gestion des bugs et des suggestions</p>
                 <h3 className="text-sm font-semibold text-indigo-600">Gérer</h3>
               </div>
             </div>

@@ -40,15 +40,28 @@ export default function AdminRulesPage() {
   }, []);
 
   const getTypeBadge = (type: string) => {
-    return type === "GLOBAL" ? (
-      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10">
-        GLOBAL
-      </span>
-    ) : (
-      <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/10">
-        LOCAL
-      </span>
-    );
+    switch (type) {
+      case "GLOBAL":
+        return (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+            Global
+          </span>
+        );
+        break;
+      case "SPECIFIC":
+        return (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+            Spécifique
+          </span>
+        );
+        break;
+      default:
+        return (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+            Inconnu
+          </span>
+        );
+    }
   };
 
   if (loading) {

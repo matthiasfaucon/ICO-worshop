@@ -10,6 +10,8 @@ export default function CreateBugReport() {
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
+        const user = localStorage.getItem('userInfo');
+        const user_id = user ? JSON.parse(user).id : null;
         e.preventDefault();
         try {
             const response = await fetch('/api/admin/bugs', {
@@ -19,7 +21,7 @@ export default function CreateBugReport() {
                 },
                 body: JSON.stringify({
                     ...formData,
-                    user_id: 'user_id' // À remplacer par l'ID de l'utilisateur connecté
+                    user_id: user_id,
                 }),
             });
 

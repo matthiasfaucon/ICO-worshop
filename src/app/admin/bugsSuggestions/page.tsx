@@ -10,6 +10,7 @@ type BugSuggestion = {
     created_at: string;
     user: {
         username: string;
+        id: string;
     };
     history: {
         id: string;
@@ -47,6 +48,8 @@ export default function AdminBugsPage() {
 
     const handleStatusChange = async (id: string, newStatus: string) => {
         try {
+            const user = localStorage.getItem('userInfo');
+            const user_id = user ? JSON.parse(user).id : null;
             const response = await fetch(`/api/admin/bugsSuggestion/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -54,7 +57,7 @@ export default function AdminBugsPage() {
                 },
                 body: JSON.stringify({
                     status: newStatus,
-                    changed_by: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+                    changed_by: user_id
                 }),
             });
 
@@ -195,8 +198,10 @@ export default function AdminBugsPage() {
                                             <h4 className="text-sm font-medium text-gray-700 mb-2">Historique</h4>
                                             <div className="space-y-2">
                                                 {item.history.map((h) => (
-                                                    <div key={h.id} className="text-sm text-gray-500">
-                                                        {new Date(h.change_date).toLocaleString()}: {h.old_status} → {h.new_status}
+                                                    <div key={h.id} className="text-sm text-gray-500 flex justify-between items-center">
+                                                        <span>{new Date(h.change_date).toLocaleString()}</span>
+                                                        <span>{h.old_status} → {h.new_status}</span>
+                                                        <span>par {item.user.username} ({item.user.id})</span>
                                                     </div>
                                                 ))}
                                             </div>
