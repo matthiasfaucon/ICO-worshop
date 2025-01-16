@@ -190,9 +190,9 @@ export default function GamePage() {
     }, [remainingTime, dispatch]);
 
     return (
-        <div>
+        <div className='bg-brown-texture h-dvh bg-cover bg-center min-h-screen'>
             <Header />
-            <section className="px-6 pt-28 pb-8 bg-[url('/bg-app.jpg')] bg-cover bg-center min-h-screen h-screen w-full flex flex-col items-center justify-center">
+            <section className="px-6 mt-8 pb-8 flex flex-col items-center justify-center">
                 <div className="relative bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-full w-full z-10">
                     <div className='absolute bg-black/10 rounded-lg h-full w-full z-10'></div>
                     <div className="relative z-10 flex flex-col items-center gap-4 p-6 ">

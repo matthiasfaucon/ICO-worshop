@@ -115,7 +115,7 @@ export default function CreateGame() {
             <div className="mb-6 px-4">
               <div className="mt-4 space-y-6">
                 {/* Points to win */}
-                <div className="flex items-center justify-between items-start">
+                <div className="flex justify-between items-start">
                   <div className="px-1">
                     <label className="block text-lg font-medium text-white">
                       Nombre de points pour gagner

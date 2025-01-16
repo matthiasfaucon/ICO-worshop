@@ -28,6 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+    
       <body
         className={`antialiased h-dvh`}
       >
