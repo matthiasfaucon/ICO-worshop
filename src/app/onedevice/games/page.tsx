@@ -203,29 +203,27 @@ export default function GamePage() {
     }, [remainingTime, dispatch]);
 
     return (
-        <div>
+        <div className='bg-brown-texture h-dvh bg-cover bg-center'>
             <Header />
-            <section className="p-10 bg-[url('/bg-app.svg')] bg-cover h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center">
-
-                <div className="relative bg-white/40 backdrop-blur-sm p-6 rounded-lg shadow-lg border-2 border-white/15 h-full w-full">
-                    <div className='absolute bg-black/10 inset-0 rounded-lg z-0'></div>
-                    <div className="relative z-10 flex flex-col items-center gap-4">
-
-                        <h1 className="text-2xl font-bold mb-4">Joueurs</h1>
+                <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
+                    <div className="relative z-10 flex flex-col items-center gap-4 p-6 ">
+                        <h1 className="text-4xl font-magellan text-white mb-4">Joueurs</h1>
 
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
-                            <div className="mb-4 h-14">
+                            <div className="mb-4 w-full h-dvh">
                                 {gameState.settings.playersCount > gameState.players.length && (
                                     <div>
-                                        <h2 className="text-xl mb-2">Ajouter un joueur</h2>
+                                        <div>
+                                            <h2 className="text-xl mb-2 text-white font-filson font-bold">Ajouter un joueur</h2>
+                                        </div>
                                         <div className="flex gap-2">
                                             <input
                                                 type="text"
                                                 value={playerName}
                                                 onChange={(e) => setPlayerName(e.target.value)}
-                                                className="p-2 rounded text-lightGrey border-2 border-white bg-transparent"
-                                                placeholder="Nom du joueur"
+                                                className="p-2 w-full rounded text-white font-bold border-2 border-white bg-transparent placeholder-gray-50::placeholder"
+                                                placeholder="Pseudo"
                                             />
                                             <button
                                                 onClick={handleAddPlayer}
@@ -240,30 +238,50 @@ export default function GamePage() {
                                 )}
                                 <hr className="my-4" />
                                 <div className="mt-4">
-                                    <h3>Joueurs ({gameState.players.length}):</h3>
-                                    <ul className="mb-4">
-                                        {gameState.players.map(player => (
-                                            <li key={player.id}>{player.name}</li>
-                                        ))}
-                                    </ul>
+                                    <h3 className='text-center text-white font-bold text-2xl'>Joueurs ({gameState.players.length}):</h3>
 
-                                    {gameState.players.length >= gameState.settings.playersCount && (
+                                    <div className="max-h-64 w-full overflow-y-auto rounded-md my-4">
+                                        <ul className="space-y-2">
+                                            {gameState.players.map(player => (
+                                            <li
+                                                key={player.id}
+                                                className="border-2 bg-white/15 backdrop-blur-sm text-white font-bold border-gray-300 rounded-md p-3 shadow-sm"
+                                            >
+                                                {player.name}
+                                            </li>
+                                            ))}
+                                        </ul>
+                                        </div>
+
+                                        <div className="border-t-2 border-gray-300 flex gap-2 flex-col items-center pt-2">
+                                        {!(
+                                            gameState.players.length >= gameState.settings.playersCount
+                                        ) && (
+                                            <p className="text-white font-bold">
+                                            Vous devez être entre 7 et 20 joueurs
+                                            </p>
+                                        )}
                                         <button
                                             onClick={handleStartGame}
-                                            className="bg-green-500 text-white px-4 py-2 rounded">
+                                            disabled={gameState.players.length < gameState.settings.playersCount}
+                                            className="w-full py-3 rounded-lg font-bold 
+                                            bg-white text-slate-800 
+                                            disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                        >
                                             Commencer la partie
                                         </button>
-                                    )}
+                                        </div>
                                 </div>
                             </div>
                         )}
 
+                    
                         {/* Phase de révélation des rôles */}
                         {gameState.gamePhase === 'REVEAL_ROLES' && (
-                            <div className="flex flex-col items-center p-4 relative min-h-screen">
+                            <div className="flex flex-col items-center relative">
                                 {!selectedPlayer ? (
                                     <>
-                                        <h1 className="text-2xl font-bold mb-6">De quel côté tu vas te ranger ?</h1>
+                                        <h1 className="text-xl font-bold mb-6">De quel côté tu vas te ranger ?</h1>
                                         <p className="text-center mb-6">Clique sur ton pseudo pour révéler ton rôle</p>
 
                                         <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6">
@@ -524,8 +542,6 @@ export default function GamePage() {
                     </div>
 
                 </div>
-
-            </section>
 
         </div>
     );
