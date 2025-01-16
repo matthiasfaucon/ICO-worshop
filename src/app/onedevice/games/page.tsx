@@ -190,20 +190,20 @@ export default function GamePage() {
     }, [remainingTime, dispatch]);
 
     return (
-        <div>
+        <div className='bg-brown-texture h-dvh bg-cover bg-center'>
             <Header />
-            <section className="px-6 pt-28 pb-8 bg-[url('/bg-app.jpg')] bg-cover bg-center min-h-screen h-screen w-full flex flex-col items-center justify-center">
-                <div className="relative bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-full w-full z-10">
-                    <div className='absolute bg-black/10 rounded-lg h-full w-full z-10'></div>
+                <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
                     <div className="relative z-10 flex flex-col items-center gap-4 p-6 ">
-                        <h1 className="text-2xl font-bold mb-4">Joueurs</h1>
+                        <h1 className="text-4xl font-magellan text-white mb-4">Joueurs</h1>
 
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
-                            <div className="mb-4">
+                            <div className="mb-4 w-full">
                                 {gameState.settings.playersCount > gameState.players.length && (
                                     <div>
-                                        <h2 className="text-xl mb-2">Ajouter un joueur</h2>
+                                        <div>
+                                            <h2 className="text-xl mb-2 text-white font-filson font-bold">Ajouter un joueur</h2>
+                                        </div>
                                         <div className="flex gap-2">
                                             <input
                                                 type="text"
@@ -247,6 +247,8 @@ export default function GamePage() {
                                 </div>
                             </div>
                         )}
+
+                        
 
                         {/* Phase de révélation des rôles */}
                         {gameState.gamePhase === 'REVEAL_ROLES' && (
@@ -504,8 +506,6 @@ export default function GamePage() {
                     </div>
 
                 </div>
-
-            </section>
 
         </div>
     );
