@@ -23,7 +23,6 @@ model User {
   bugHistory     BugSuggestionHistory[]
   GameMonoDevice GameMonoDevice[]
   gameRules      GameRule[]
-  gameMonoDevice GameMonoDevice[]
   players        Player[]
 }
 
@@ -190,16 +189,6 @@ model GameRule {
   user        User         @relation(fields: [updated_by], references: [id])
 }
 
-model GameMonoDevice {
-  id            String      @id @db.Uuid
-  created_by    String      @db.Uuid
-  created_at    DateTime    @default(now())
-  who_won       WinnerType?
-  terminated_at DateTime?
-  game_duration Float?
-  User          User        @relation(fields: [created_by], references: [id])
-}
-
 enum WinnerType {
   PIRATES
   MARINS
@@ -209,10 +198,4 @@ enum WinnerType {
 enum GameRuleType {
   GLOBAL
   SPECIFIC
-}
-
-enum WinnerType {
-  PIRATES
-  MARINS
-  SIRENE
 }
