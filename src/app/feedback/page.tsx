@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 type FeedbackData = {
     type: 'BUG' | 'SUGGESTION';
     description: string;
-    user_id: string;
+    user_id: string | null;
 };
 
 export default function FeedbackPage() {
@@ -15,7 +15,7 @@ export default function FeedbackPage() {
     const [formData, setFormData] = useState<FeedbackData>({
         type: 'BUG',
         description: '',
-        user_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'
+        user_id: null
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -24,6 +24,11 @@ export default function FeedbackPage() {
         setError(null);
         setSuccess(null);
         setIsSubmitting(true);
+
+        const user = localStorage.getItem('userInfo');
+        const user_id = user ? JSON.parse(user).id : null;
+        setFormData({ ...formData, user_id: user_id });
+        console.log(formData);
 
         try {
             const response = await fetch('/api/admin/bugsSuggestion', {
@@ -40,11 +45,7 @@ export default function FeedbackPage() {
             }
 
             setSuccess('Merci pour votre feedback !');
-            setFormData({
-                type: 'BUG',
-                description: '',
-                user_id: null
-            });
+
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Une erreur est survenue');
         } finally {

@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function POST(request: Request) {
     try {
-        const { type, description } = await request.json();
+        const { type, description, user_id } = await request.json();
 
         // Créer le feedback
         const feedback = await prisma.bugSuggestion.create({
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
                 status: 'PENDING',
                 user: {
                     connect: {
-                        id: 'user_id' // À remplacer par l'ID de l'utilisateur connecté
+                        id: user_id
                     }
                 }
             }
@@ -35,7 +35,8 @@ export async function GET() {
             include: {
                 user: {
                     select: {
-                        username: true
+                        username: true,
+                        id: true
                     }
                 },
                 history: true

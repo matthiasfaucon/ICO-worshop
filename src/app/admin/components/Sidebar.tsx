@@ -12,6 +12,7 @@ const Sidebar = () => {
     { label: "Gestion des utilisateurs", path: "/admin/users" },
     { label: "Statistiques", path: "/admin/statistics" },
     { label: "Gestion des règles", path: "/admin/rules" },
+    { label: "Gestion des bugs et des suggestions", path: "/admin/bugsSuggestions" },
   ];
 
   return (
