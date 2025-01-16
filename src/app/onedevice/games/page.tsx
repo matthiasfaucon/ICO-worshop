@@ -97,7 +97,7 @@ export default function GamePage() {
         const user_id = user ? JSON.parse(user).id : null;
         try {
             // Créer la partie en base de données
-            const response = await fetch('/api/game-mono', {
+            const responseGame = await fetch('/api/game-mono', {
                 method: 'POST',
                 body: JSON.stringify({
                     user_id: user_id,
@@ -108,17 +108,28 @@ export default function GamePage() {
                 }
             });
 
-            const game = await response.json();
+            const game = await responseGame.json();
 
             const gameId = game.id;
 
-            if (!response.ok) {
+            if (!responseGame.ok) {
                 throw new Error('Erreur lors de la création de la partie');
             }
 
+            const responseBonusCard = await fetch(`/api/admin/cards?type=bonus`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const bonusCards = await responseBonusCard.json();
+
+            console.log('Cartes bonus:', bonusCards);
+
             // Démarrer la partie dans le state local
             dispatch(startGame(gameId));
-            dispatch(distributeRoles());
+            dispatch(distributeRoles(bonusCards));
         } catch (error) {
             console.error('Erreur:', error);
             // Vous pouvez ajouter ici une notification d'erreur pour l'utilisateur
@@ -300,6 +311,11 @@ export default function GamePage() {
                                                             className="w-full h-full object-contain"
                                                         />
                                                     </div>
+                                                    { gameState.settings.withBonus && (
+                                                        <h2 className="text-2xl text-center font-bold mb-4">
+                                                            Ta carte bonus est : {gameState.players.find(p => p.id === selectedPlayer)?.bonusCard } !
+                                                        </h2>
+                                                    )}
                                                     {gameState.currentCaptain === selectedPlayer && (
                                                         <div className="flex items-center gap-2 mt-4 text-center">
                                                             <img src="/images/captain.png" alt="Captain" className="w-6 h-6" />
@@ -374,9 +390,14 @@ export default function GamePage() {
                                         ))}
                                     </div>
 
+                                    {selectedPlayers.length === 3 && selectedPlayers.every(playerId => gameState.lastCrew.includes(playerId)) && (
+                                        <p className="text-red-500 mt-4">Vous ne pouvez pas proposer le même équipage que le tour précédent,
+                                        il faut changer au moins un joueur</p>
+                                    )}
+
                                     <button
                                         onClick={handleCrewSelection}
-                                        disabled={selectedPlayers.length !== 3}
+                                        disabled={selectedPlayers.length !== 3 || selectedPlayers.every(playerId => gameState.lastCrew.includes(playerId))}
                                         className="mt-4 bg-green-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
                                     >
                                         Valider l'équipage

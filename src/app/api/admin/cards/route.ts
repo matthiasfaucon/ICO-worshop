@@ -4,9 +4,15 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
-        const cards = await prisma.card.findMany();
+        const { searchParams } = new URL(request.url);
+        const type = searchParams.get('type');
+
+        const cards = await prisma.card.findMany({
+            where: type ? { type: type.toUpperCase() } : {}
+        });
+
         return NextResponse.json(cards);
     } catch (error) {
         return NextResponse.json({ error: "Erreur lors de la récupération des cartes" }, { status: 500 });
