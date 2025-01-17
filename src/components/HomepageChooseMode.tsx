@@ -52,7 +52,7 @@ export default function HomepageChooseMode() {
 
       </div>
 
-        <div className="px-6 flex flex-col gap-2">
+        <div className="px-6 flex flex-col gap-2 mb-6">
         <button
           onClick={() => handleModeSelect("onedevice")}
           className="w-full py-3 rounded-lg font-bold border-white border-2 text-white">
@@ -60,7 +60,7 @@ export default function HomepageChooseMode() {
         </button>
         <button
           onClick={() => handleModeSelect("multidevice")}
-          className="w-full py-3 rounded-lg font-bold bg-white text-slate-800">
+          className="w-full py-3 rounded-lg font-bold bg-white text-slate-800 mb-6">
           Jouer sur plusieurs écrans
         </button>
         </div>

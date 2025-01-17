@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FaInfoCircle, FaTrophy, FaTimesCircle, FaUser } from "react-icons/fa";
+import { FaInfoCircle, FaTrophy, FaTimesCircle, FaUser, FaBookDead } from "react-icons/fa";
 import JoinGameModal from "./JoinGameModal"; // Votre composant pour rejoindre une partie
 import { v4 as uuidv4 } from "uuid";
+import RulesSlider from './RulesSlider';
 
 export default function ConnectedHome() {
   const [victories, setVictories] = useState(4);
@@ -14,6 +15,8 @@ export default function ConnectedHome() {
   const [sessionUUID, setSessionUUID] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false); // Indique si l'utilisateur est connecté
+  const [showRules, setShowRules] = useState(false);
+
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -105,13 +108,13 @@ export default function ConnectedHome() {
     <div className="flex flex-col items-center justify-between min-h-screen bg-gradient-to-b from-blue-50 to-blue-200 px-6 py-8">
     {/* Header */}
     <div className="flex justify-between items-center w-full max-w-md">
-      <button onClick={handleInfo} className="p-2 hover:text-blue-600 transition duration-200">
-        <FaInfoCircle className="text-blue-800 text-3xl" />
-      </button>
+      <button className="rounded-full" onClick={() => setShowRules(true)}>
+                 <FaBookDead className="text-xl text-slate-700" />
+            </button>
       <div className="w-16 h-16 bg-white border border-blue-300 rounded-lg flex items-center justify-center shadow-lg">
         <FaTrophy className="text-blue-600 text-3xl" />
       </div>
-      <a href="/multidevice/auth-options">
+      <a href="/auth-options">
         <button className="p-2 hover:text-blue-600 transition duration-200">
           <FaUser className="text-blue-800 text-3xl" />
         </button>
@@ -201,6 +204,8 @@ export default function ConnectedHome() {
   
     {/* Join Game Modal */}
     <JoinGameModal isOpen={isModalOpen} onClose={handleCloseModal} />
+      {showRules && <RulesSlider onClose={() => setShowRules(false)} />}
+    
   </div>
   
   );
