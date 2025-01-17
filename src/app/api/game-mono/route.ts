@@ -32,9 +32,13 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('user_id');
+    console.log(userId)
     const games = await prisma.gameMonoDevice.findMany({
+      where: userId ? { created_by: userId } : {},
       include: {
         User: {
           select: {
@@ -46,15 +50,15 @@ export async function GET() {
       orderBy: {
         created_at: 'desc'
       }
-    })
+    });
 
-    return NextResponse.json(games, { status: 200 })
+    return NextResponse.json(games, { status: 200 });
 
   } catch (error) {
-    console.error('Erreur lors de la récupération des jeux:', error)
+    console.error('Erreur lors de la récupération des jeux:', error);
     return NextResponse.json(
       { error: 'Erreur lors de la récupération des jeux' },
       { status: 500 }
-    )
+    );
   }
-} 
+}
