@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { validateToken } from '@/lib/auth';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
     try {
@@ -14,10 +15,26 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
     try {
-        const { name, value, description, updated_by, order, type } = await request.json();
+        const token = request.headers.get("Authorization")?.split(" ")[1];
+        console.log(token);
+        if (!token) {
+            return NextResponse.json(
+                { message: "Token manquant." },
+                { status: 401 }
+            );
+        }
+
+        const decoded: any = validateToken(token);
+        if (!decoded) {
+            return NextResponse.json(
+                { message: "Token invalide ou expiré." },
+                { status: 401 }
+            );
+        }
+        const { name, value, description, order, type } = await request.json();
         const rule = await prisma.gameRule.update({
             where: { id: params.id },
-            data: { name, value, description, updated_by, order, type }
+            data: { name, value, description, updated_by: decoded.id, order, type }
         });
         return NextResponse.json(rule);
     } catch (error) {

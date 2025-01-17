@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/app/admin/components/Sidebar";
+import Cookies from "js-cookie";
 
 type RuleFormData = {
   key: string;
@@ -21,7 +22,7 @@ export default function CreateRulePage() {
     type: "GLOBAL",
     order: 1,
     value: "",
-    description: "",
+    description: ""
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -30,10 +31,15 @@ export default function CreateRulePage() {
     setError(null);
 
     try {
+      const token = Cookies.get("authToken")
+      if (!token) {
+        throw new Error("Vous devez être connecté pour créer une règle");
+      }
       const response = await fetch("/api/admin/game-rules", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
@@ -109,7 +115,7 @@ export default function CreateRulePage() {
                 required
               >
                 <option value="GLOBAL">Global</option>
-                <option value="LOCAL">Local</option>
+                <option value="SPECIFIC">Spécifique</option>
               </select>
             </div>
 

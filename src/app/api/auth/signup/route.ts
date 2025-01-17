@@ -35,18 +35,11 @@ export async function POST(req: NextRequest) {
 
     // Vérifier s'il existe un session_uuid dans les cookies
     let sessionId = req.cookies.get("session_uuid")?.value;
-    console.log("iciiiii");
-    console.log(sessionId)
     if (!sessionId) {
       // Générer un nouveau `session_uuid` s'il n'existe pas
       sessionId = uuidv4();
     }
 
-
-    console.log("testttinnnntt");
-
-
-    console.log(email);
     // Création de l'utilisateur avec le session_uuid
     const newUser = await prisma.user.create({
       data: {
@@ -59,9 +52,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log(newUser);
-
-    console.log("testtttt");
     // Préparer la réponse JSON
     const responsePayload = {
       id: newUser.id,
@@ -73,8 +63,6 @@ export async function POST(req: NextRequest) {
       created_at: newUser.created_at,
       updated_at: newUser.updated_at,
     };
-
-    console.log(responsePayload);
 
     // Retourne une réponse avec un cookie pour le session_uuid
     const response = NextResponse.json(
@@ -90,7 +78,7 @@ export async function POST(req: NextRequest) {
     );
 
     response.cookies.set("authToken", token, {
-      maxAge: 60 * 60, // 1 heure
+      maxAge: 60 * 60 * 24, // 1 heure
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });

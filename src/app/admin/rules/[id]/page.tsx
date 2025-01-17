@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Sidebar from "@/app/admin/components/Sidebar";
+import Cookies from "js-cookie";
 
 type GameRule = {
   id: string;
@@ -53,14 +54,18 @@ export default function AdminOneRulePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const token = Cookies.get("authToken")
+      if (!token) {
+        throw new Error("Vous devez être connecté pour créer une règle");
+      }
       const response = await fetch(`/api/admin/game-rules/${params.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...form,
-          updated_by: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", // Replace with actual admin ID
+          ...form
         }),
       });
 
