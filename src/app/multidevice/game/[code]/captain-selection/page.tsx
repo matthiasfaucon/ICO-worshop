@@ -22,13 +22,16 @@ export default function CaptainSelectionPage() {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await fetch(`/api/games/${gameCode}/players`, { method: "GET" });
+        const response = await fetch(`/api/games/${gameCode}/players`, {
+          method: "GET",
+        });
         if (response.ok) {
           const data = await response.json();
 
           // Trier les joueurs pour que le capitaine soit en premier
-          const sortedPlayers = data.players.sort((a: Player, b: Player) =>
-            Number(b.is_captain) - Number(a.is_captain)
+          const sortedPlayers = data.players.sort(
+            (a: Player, b: Player) =>
+              Number(b.is_captain) - Number(a.is_captain)
           );
           setPlayers(sortedPlayers);
         } else {
@@ -47,8 +50,16 @@ export default function CaptainSelectionPage() {
     });
     const channel = pusher.subscribe(`game-${gameCode}`);
 
+    channel.bind("redirect-to-trip", () => {
+      router.push(`/multidevice/game/${gameCode}/trip`);
+    });
+
     channel.bind("redirect-to-vote", () => {
       router.push(`/multidevice/game/${gameCode}/vote`);
+    });
+
+    channel.bind("redirect-to-waiting", () => {
+      router.push(`/multidevice/game/${gameCode}/player-wait`);
     });
 
     return () => {
@@ -88,7 +99,10 @@ export default function CaptainSelectionPage() {
       });
 
       if (response.ok) {
-        console.log("Équipage validé !");
+        const data = await response.json();
+
+        // Redirections prises en charge via événements Pusher
+        console.log("Équipage validé :", data);
       } else {
         console.error("Erreur lors de la validation de l'équipage.");
       }
@@ -100,25 +114,34 @@ export default function CaptainSelectionPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6 py-6">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-yellow-100 via-orange-100 to-red-100 px-6 py-6">
       {/* Header */}
-      <h1 className="text-xl font-bold text-slate-900">Qui part en voyage ?</h1>
-      <p className="text-gray-500 my-2">{`${selectedPlayers.length}/${maxSelection}`}</p>
+      <h1 className="text-2xl font-extrabold text-orange-900 mb-2 animate-pulse">
+        🏝️ Qui part en voyage ?
+      </h1>
+      <p className="text-orange-700 text-lg italic mb-6">{`${selectedPlayers.length}/${maxSelection}`}</p>
 
       {/* Liste des joueurs */}
-      <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+      <div className="grid grid-cols-2 gap-6 w-full max-w-md">
         {players.map((player) => (
           <div
             key={player.id}
-            className={`flex justify-between items-center p-4 rounded-lg border ${
+            className={`flex items-center justify-between p-4 rounded-lg shadow-md transform transition-transform ${
               selectedPlayers.includes(player.id)
-                ? "bg-blue-100 border-blue-500"
-                : "bg-gray-100 border-gray-300"
-            }`}
+                ? "bg-orange-200 border-orange-500 scale-105"
+                : "bg-white border-gray-300"
+            } border cursor-pointer hover:scale-105`}
             onClick={() => toggleSelection(player.id)}
           >
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gray-300 text-gray-700 rounded-full flex items-center justify-center font-bold">
+            <div className="flex items-center gap-3">
+              {/* Avatar */}
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold shadow ${
+                  selectedPlayers.includes(player.id)
+                    ? "bg-orange-400 text-white"
+                    : "bg-orange-100 text-orange-800"
+                }`}
+              >
                 {player.username
                   .split(" ")
                   .map((word) => word[0])
@@ -126,10 +149,16 @@ export default function CaptainSelectionPage() {
                   .join("")
                   .toUpperCase()}
               </div>
-              <span className="text-sm text-slate-900 font-medium">{player.username}</span>
+              {/* Nom du joueur */}
+              <span className="text-md text-orange-900 font-semibold">
+                {player.username}
+              </span>
             </div>
+            {/* Validation Icon */}
             {selectedPlayers.includes(player.id) && (
-              <span className="text-blue-500 font-bold">&#10003;</span>
+              <span className="text-orange-700 font-bold text-xl">
+                &#10003;
+              </span>
             )}
           </div>
         ))}
@@ -139,13 +168,13 @@ export default function CaptainSelectionPage() {
       <button
         onClick={handleSubmit}
         disabled={selectedPlayers.length !== maxSelection || loading}
-        className={`mt-6 py-3 px-6 rounded-lg  font-semibold text-slate-900 ${
+        className={`mt-8 py-3 px-8 rounded-lg font-semibold text-lg transform transition-all ${
           selectedPlayers.length === maxSelection && !loading
-            ? "bg-blue-600 hover:bg-blue-700 text-slate-900"
-            : "bg-gray-300 cursor-not-allowed text-slate-900"
+            ? "bg-orange-600 text-white hover:bg-orange-700 hover:scale-105"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
         }`}
       >
-        {loading ? "Validation..." : "Valider l'équipage"}
+        {loading ? "Validation en cours..." : "Valider l'équipage"}
       </button>
     </div>
   );

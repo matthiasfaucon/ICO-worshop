@@ -6,10 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const token = req.headers.get("Authorization")?.split(" ")[1];
     if (!token) {
-      return NextResponse.json(
-        { message: "Token manquant." },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Token manquant." }, { status: 401 });
     }
 
     const decoded: any = validateToken(token);
@@ -63,7 +60,7 @@ export async function POST(req: NextRequest) {
     console.log("Création de la partie avec le code :", gameCode);
 
     // Définir un rôle au hasard pour le créateur
-    const roles = ["marin", "pirate", "sirène"];
+    const roles = ["marin", "pirate", "sirene"];
     const randomRole = roles[Math.floor(Math.random() * roles.length)];
 
     console.log(`Rôle attribué au créateur de la partie : ${randomRole}`);

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-
-export async function POST(req: NextRequest, { params }: { params: { code: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { code: string } }
+) {
   const gameCode = params.code;
 
   try {

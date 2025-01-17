@@ -18,7 +18,9 @@ interface Player {
 export default function WaitingRoomPage() {
   const router = useRouter();
   const params = useParams();
-  const gameCode: string = Array.isArray(params.code) ? params.code[0] : params.code || "";
+  const gameCode: string = Array.isArray(params.code)
+    ? params.code[0]
+    : params.code || "";
   const [players, setPlayers] = useState<Player[]>([]);
   const [isHost, setIsHost] = useState(false);
 
@@ -51,10 +53,15 @@ export default function WaitingRoomPage() {
           );
           setIsHost(currentPlayer?.isHost || false);
         } else {
-          console.error("Erreur lors de la récupération des joueurs existants.");
+          console.error(
+            "Erreur lors de la récupération des joueurs existants."
+          );
         }
       } catch (err) {
-        console.error("Erreur lors de la requête pour récupérer les joueurs :", err);
+        console.error(
+          "Erreur lors de la requête pour récupérer les joueurs :",
+          err
+        );
       }
     };
 
@@ -109,53 +116,70 @@ export default function WaitingRoomPage() {
         console.log("Partie lancée avec succès !");
       }
     } catch (err) {
-      console.error("Erreur lors de la tentative de lancement de la partie :", err);
+      console.error(
+        "Erreur lors de la tentative de lancement de la partie :",
+        err
+      );
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen bg-gray-50 px-6 py-6">
+    <div className="flex flex-col items-center justify-between min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 px-6 py-6">
       {/* Header */}
-      <div className="flex items-center justify-between w-full max-w-md bg-gray-200 px-4 py-2 rounded-lg mb-6">
-        <button onClick={() => router.back()} className="text-gray-700 hover:text-gray-900">
+      <div className="flex items-center justify-between w-full max-w-md bg-white shadow-md px-4 py-3 rounded-lg mb-6">
+        <button
+          onClick={() => router.back()}
+          className="text-gray-500 hover:text-gray-800 transition duration-200"
+        >
           <FaChevronLeft size={20} />
         </button>
-        <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-gray-300 flex items-center justify-center rounded-md">
-            <FaGamepad className="text-gray-600" />
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-indigo-200 flex items-center justify-center rounded-md shadow-md">
+            <FaGamepad className="text-indigo-600" size={18} />
           </div>
-          <span className="text-gray-800 font-semibold">ICO</span>
+          <span className="text-indigo-800 font-bold text-lg">ICO</span>
         </div>
         <div className="w-6"></div>
       </div>
 
       {/* Main Content */}
-      <h1 className="text-lg font-bold text-slate-900 text-center mb-6">
-        {players.length} personnes ont rejoint la partie
+      <h1 className="text-xl font-extrabold text-slate-900 text-center mb-8 tracking-wide">
+        {players.length} joueur{players.length > 1 ? "s" : ""} ont rejoint la
+        partie
       </h1>
 
       {/* Bloc avec le code et QR Code */}
-      <div className="bg-gray-100 rounded-lg shadow-lg px-4 py-6 w-full max-w-md mb-6">
-        <div className="text-center mb-4">
-          <p className="text-sm font-semibold text-slate-700">Code de la partie</p>
-          <h2 className="text-xl font-bold text-slate-900">{gameCode}</h2>
+      <div className="bg-white rounded-lg shadow-xl px-6 py-8 w-full max-w-md mb-8">
+        <div className="text-center mb-6">
+          <p className="text-sm font-medium text-gray-500 uppercase">
+            Code de la partie
+          </p>
+          <h2 className="text-2xl font-extrabold text-indigo-800 tracking-wider">
+            {gameCode}
+          </h2>
         </div>
         <div className="flex justify-center">
-          <QRCode value={gameCode || "Code indisponible"} size={120} />
+          <QRCode
+            value={gameCode || "Code indisponible"}
+            size={120}
+            className="shadow-lg rounded-lg"
+          />
         </div>
       </div>
 
       {/* Liste des joueurs */}
-      <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6">
+      <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-8">
         {players.map((player) => (
           <div
             key={player.id}
-            className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg shadow-sm"
+            className="flex items-center space-x-3 bg-white px-4 py-3 rounded-lg shadow-md hover:shadow-lg transition duration-300"
           >
-            <div className="w-8 h-8 bg-gray-200 border border-gray-300 rounded-full flex items-center justify-center font-semibold">
+            <div className="w-10 h-10 bg-indigo-100 border border-indigo-300 rounded-full flex items-center justify-center font-semibold text-indigo-700">
               {player.avatar || "??"}
             </div>
-            <span className="text-slate-900 font-semibold">{player.nickname}</span>
+            <span className="text-slate-800 font-semibold truncate">
+              {player.nickname}
+            </span>
           </div>
         ))}
       </div>
@@ -165,7 +189,7 @@ export default function WaitingRoomPage() {
         <div className="w-full max-w-md">
           <button
             onClick={handleStartGame}
-            className="w-full py-3 bg-blue-700 text-white rounded-lg shadow-md hover:bg-blue-800 transition duration-300"
+            className="w-full py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-300 font-bold text-lg"
           >
             Lancer la partie
           </button>

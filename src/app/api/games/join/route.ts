@@ -11,13 +11,17 @@ const pusher = new Pusher({
 });
 
 export async function POST(req: NextRequest) {
-    console.log("etsfdse");
+  console.log("etsfdse");
 
   try {
     const { gameCode } = await req.json();
 
     // Validation des données
-    if (!gameCode || typeof gameCode !== "string" || gameCode.trim().length === 0) {
+    if (
+      !gameCode ||
+      typeof gameCode !== "string" ||
+      gameCode.trim().length === 0
+    ) {
       return NextResponse.json(
         { message: "Code de partie invalide." },
         { status: 400 }
@@ -25,7 +29,6 @@ export async function POST(req: NextRequest) {
     }
 
     console.log("etsfdse");
-
 
     // Vérifiez si la partie existe
     const game = await prisma.game.findUnique({
@@ -44,7 +47,8 @@ export async function POST(req: NextRequest) {
     // Récupération du sessionUUID et du pseudo
     const playerSessionUUID = req.headers.get("session-uuid");
     const playerNickname =
-      req.headers.get("nickname") || `Visiteur-${Math.random().toString(36).substring(2, 8)}`;
+      req.headers.get("nickname") ||
+      `Visiteur-${Math.random().toString(36).substring(2, 8)}`;
 
     if (!playerSessionUUID) {
       return NextResponse.json(
@@ -78,7 +82,10 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Erreur lors de la tentative de rejoindre une partie :", error);
+    console.error(
+      "Erreur lors de la tentative de rejoindre une partie :",
+      error
+    );
     return NextResponse.json(
       { message: "Erreur interne du serveur." },
       { status: 500 }
