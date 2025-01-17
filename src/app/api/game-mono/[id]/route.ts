@@ -32,8 +32,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     // Calculer la durée en secondes
     const gameDuration = (new Date().getTime() - existingGame.created_at.getTime()) / 1000;
 
-    console.log(params.id);
-
     // Mettre à jour le jeu
     const game = await prisma.gameMonoDevice.update({
       where: {

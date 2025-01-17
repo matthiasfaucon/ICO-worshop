@@ -44,7 +44,6 @@ export default function Page() {
                 const response = await fetch("/api/game-mono");
                 if (!response.ok) throw new Error("Failed to fetch stats");
                 const data = await response.json();
-                console.log(data);
 
                 setGames(data);
 

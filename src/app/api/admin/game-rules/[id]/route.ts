@@ -16,7 +16,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
     try {
         const token = request.headers.get("Authorization")?.split(" ")[1];
-        console.log(token);
         if (!token) {
             return NextResponse.json(
                 { message: "Token manquant." },

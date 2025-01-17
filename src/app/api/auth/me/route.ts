@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log("Token reçu :", token);
     const decoded: any = validateToken(token);
 
     const user = await prisma.user.findUnique({
@@ -44,8 +43,6 @@ export async function GET(req: NextRequest) {
         { status: 404 }
       );
     }
-
-    console.log("Utilisateur trouvé :", user);
 
     // Retourne toutes les informations de l'utilisateur
     return NextResponse.json(user);
