@@ -38,9 +38,10 @@ interface GameState {
   settings: {
     withBonus: boolean,
     pointsToWin: number,
-    playersCount: number
+    playersCount: number,
+    timerDuration?: number
   },
-  journeyCards: BonusCard[];
+  journeyCards: [];
   submittedVotes: string[];
   submittedVotesSirene: string[];
   submittedCards: string[];
@@ -81,11 +82,12 @@ const gameSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
-    configureGame: (state, action: PayloadAction<{ withBonus: boolean, pointsToWin: number, playersCount: number, min_players: number, max_players: number, min_points: number, max_points: number }>) => {
+    configureGame: (state, action: PayloadAction<{ withBonus: boolean, pointsToWin: number, playersCount: number, timerDuration: number, min_players: number, max_players: number, min_points: number, max_points: number }>) => {
       state.settings = {
         withBonus: action.payload.withBonus,
         pointsToWin: action.payload.pointsToWin,
-        playersCount: action.payload.playersCount
+        playersCount: action.payload.playersCount,
+        timerDuration: action.payload.timerDuration
       }
       state.general_rules = {
         min_players: action.payload.min_players,
