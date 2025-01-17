@@ -11,7 +11,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/signup') ||
     request.nextUrl.pathname.startsWith('/auth-options') ||
     request.nextUrl.pathname.startsWith('/api') ||
-    request.nextUrl.pathname === '/'
+    request.nextUrl.pathname === '/' ||
+    request.nextUrl.pathname.startsWith('/multi-device')
   ) {
     return NextResponse.next()
   }
