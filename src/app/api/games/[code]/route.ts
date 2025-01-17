@@ -72,7 +72,6 @@ export async function GET(
     await pusher.trigger(`game-${gameCode}`, "update-players", {
       players,
     });
-    console.log(players);
     return NextResponse.json({
       players,
       session_uuid: sessionUuid, // Inclure le session_uuid pour l'utilisateur actuel
@@ -102,7 +101,6 @@ export async function POST(
 
     if (!sessionUuid) {
       sessionUuid = uuidv4();
-      console.log("Nouveau session_uuid généré :", sessionUuid);
     }
 
     // Récupérer les pseudos depuis les headers ou générer un pseudo aléatoire
@@ -124,10 +122,8 @@ export async function POST(
           username: username,
         },
       });
-      console.log("Nouvel utilisateur créé :", user);
     }
 
-    console.log("Utilisateur trouvé ou créé :", user);
 
     // Vérifier l'existence de la partie
     const game = await prisma.game.findUnique({
@@ -148,7 +144,6 @@ export async function POST(
     });
 
     if (!existingPlayer) {
-      console.log("Ajouter un nouveau joueur");
 
       // Fournir une valeur par défaut si `user.username` est null
       const playerUsername =
@@ -168,7 +163,6 @@ export async function POST(
         include: { user: { select: { username: true } } },
       });
 
-      console.log("Nouveau joueur ajouté :", newPlayer);
 
       // Émettre un événement via Pusher
       await pusher.trigger(`game-${gameCode}`, "player-joined", {
