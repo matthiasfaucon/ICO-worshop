@@ -314,7 +314,7 @@ export default function GamePage() {
                                             flex items-center gap-2 p-3 rounded-lg
                                             ${revealedRoles.includes(player.id)
                                                             ? 'bg-brown-400 text-gray-600'
-                                                            : 'bg-white/5 backdrop-blur-sm text-white font-bold'
+                                                            : ' text-white font-bold'
                                                         }
                                             transition-all duration-300 border-2
                                         `}
