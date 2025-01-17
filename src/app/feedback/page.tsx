@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 type FeedbackData = {
     type: 'BUG' | 'SUGGESTION';
@@ -25,16 +26,19 @@ export default function FeedbackPage() {
         setSuccess(null);
         setIsSubmitting(true);
 
-        const user = localStorage.getItem('userInfo');
-        const user_id = user ? JSON.parse(user).id : null;
-        setFormData({ ...formData, user_id: user_id });
-        console.log(formData);
+        const token = Cookies.get("authToken");
+        if (!token) {
+            alert("Vous devez être connecté pour créer une partie.");
+            router.push("/signin");
+            return;
+        }
 
         try {
             const response = await fetch('/api/admin/bugsSuggestion', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(formData),
             });

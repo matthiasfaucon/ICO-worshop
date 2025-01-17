@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 type BugSuggestion = {
     id: string;
@@ -48,16 +49,20 @@ export default function AdminBugsPage() {
 
     const handleStatusChange = async (id: string, newStatus: string) => {
         try {
-            const user = localStorage.getItem('userInfo');
-            const user_id = user ? JSON.parse(user).id : null;
+            const token = Cookies.get("authToken");
+            if (!token) {
+                alert("Vous devez être connecté pour créer une partie.");
+                router.push("/signin");
+                return;
+            }
             const response = await fetch(`/api/admin/bugsSuggestion/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                    status: newStatus,
-                    changed_by: user_id
+                    status: newStatus
                 }),
             });
 
@@ -68,11 +73,11 @@ export default function AdminBugsPage() {
             const updatedBug = await response.json();
 
             // Mettre à jour les données localement
-            setData(prevData => 
-                prevData?.map(item => 
-                    item.id === id 
-                        ? { 
-                            ...item, 
+            setData(prevData =>
+                prevData?.map(item =>
+                    item.id === id
+                        ? {
+                            ...item,
                             status: newStatus,
                             history: [...item.history, {
                                 id: crypto.randomUUID(),
@@ -80,7 +85,7 @@ export default function AdminBugsPage() {
                                 new_status: newStatus,
                                 change_date: new Date().toISOString()
                             }]
-                        } 
+                        }
                         : item
                 ) ?? null
             );
@@ -106,8 +111,8 @@ export default function AdminBugsPage() {
     };
 
     const getTypeColor = (type: string) => {
-        return type === 'BUG' 
-            ? 'bg-red-100 text-red-800' 
+        return type === 'BUG'
+            ? 'bg-red-100 text-red-800'
             : 'bg-blue-100 text-blue-800';
     };
 

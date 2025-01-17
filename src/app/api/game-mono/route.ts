@@ -1,21 +1,29 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma';
+import { validateToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-
-    const { user_id, playersCount } = await request.json()
-    console.log(user_id)
-    if (!user_id) {
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    if (!token) {
       return NextResponse.json(
-        { error: 'Non autorisé' },
+        { message: "Token manquant." },
         { status: 401 }
-      )
+      );
     }
+
+    const decoded: any = validateToken(token);
+    if (!decoded) {
+      return NextResponse.json(
+        { message: "Token invalide ou expiré." },
+        { status: 401 }
+      );
+    }
+    const { playersCount } = await request.json()
 
     const gameMonoDevice = await prisma.gameMonoDevice.create({
       data: {
-        created_by: user_id,
+        created_by: decoded.id,
         players_count: playersCount,
         created_at: new Date(),
       }
@@ -34,11 +42,23 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('user_id');
-    console.log(userId)
+    const token = request.headers.get("Authorization")?.split(" ")[1];
+    if (!token) {
+      return NextResponse.json(
+        { message: "Token manquant." },
+        { status: 401 }
+      );
+    }
+
+    const decoded: any = validateToken(token);
+    if (!decoded) {
+      return NextResponse.json(
+        { message: "Token invalide ou expiré." },
+        { status: 401 }
+      );
+    }
     const games = await prisma.gameMonoDevice.findMany({
-      where: userId ? { created_by: userId } : {},
+      where: decoded.id ? { created_by: decoded.id } : {},
       include: {
         User: {
           select: {
