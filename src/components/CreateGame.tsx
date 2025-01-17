@@ -73,7 +73,7 @@ export default function CreateGame() {
   return (
     <div className="bg-brown-texture h-screen bg-cover bg-center">
       <Header />
-      <div className="mt-8 pt-8 relative bg-white/10 backdrop-blur-lg border-slate-50 border-2 border-white/20 rounded-lg shadow-lg w-11/12 h-5/6 mx-auto">
+      <div className="mt-8 pt-6 relative bg-white/10 backdrop-blur-lg border-slate-50 border-2 border-white/20 rounded-lg shadow-lg w-11/12 h-5/6 mx-auto">
         {/* Title */}
         <h1 className="text-center text-white mb-6 font-magellan  text-4xl">
           Votre partie
