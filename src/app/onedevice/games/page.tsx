@@ -387,7 +387,7 @@ export default function GamePage() {
                                     </div>
                                 )}
 
-                                {revealedRoles.length - 1 >= gameState.players.length && (
+                                {revealedRoles.length >= gameState.players.length && (
                                     <button
                                         onClick={() => handleTimerForPirate()}
                                         className="mt-6 bg-brown-500 text-white px-6 py-3 rounded-lg hover:bg-brown-600 transition-colors"
