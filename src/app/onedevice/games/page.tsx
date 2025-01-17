@@ -214,7 +214,7 @@ export default function GamePage() {
         if (replayWithSameConfig) {
             router.push('/onedevice/games');
         } else {
-            router.push('/');
+            router.push('/onedevice');
         }
     };
 
