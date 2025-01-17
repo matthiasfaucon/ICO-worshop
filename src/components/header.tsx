@@ -52,13 +52,13 @@ export default function Header() {
             className="rounded-full"
             onClick={() => setShowRules(true)}
           >
-            <FaBookDead className="text-xl" />
+            <FaBookDead className="text-xl text-black" />
           </button>
 
           {/* Bouton Feedback conditionnel */}
           {(gamePhase === 'SETUP' || gamePhase === 'GAME_OVER') && (
             <Link href="/feedback">
-              <MdOutlineFeedback className="text-xl" />
+              <MdOutlineFeedback className="text-xl text-black" />
             </Link>
           )}
         </div>

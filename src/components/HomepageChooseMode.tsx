@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaUserCircle } from "react-icons/fa";
+import HeaderHome from "./HeaderHome";
 
 export default function HomepageChooseMode() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,49 +24,48 @@ export default function HomepageChooseMode() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-between min-h-screen bg-gradient-to-b from-blue-900 via-purple-900 to-black text-white px-6 py-6">
+    <div className="bg-brown-texture h-dvh bg-cover bg-center">
+      <HeaderHome />
       {/* Header */}
-      <div className="absolute top-6 right-6">
-        <Link href="/profil" className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-          <FaUserCircle className="text-gray-800" />
-        </Link>
+
+        <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
+
+              {/* Main Content */}
+      <div className="flex flex-col items-center mt-8 w-full">
+        <h1 className="text-4xl text-center font-magellan  text-white mb-4 px-6">Prépare-toi pour l’aventure !</h1>
+
+       <div className="w-full">
+
+       {/* <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full flex items-center justify-around">
+
+        <div className="bg-red-400 w-36 h-32 bg-pirate bg-cover bg-center">
+        </div>
+
+          <p className="text-white font-magellan text-center ">VS</p>
+
+          <div className="bg-blue-400 w-36 h-32 bg-marin bg-cover bg-center">
+          </div>
+
+        </div> */}
+
+      <div className="w-full h-[450px] bg-home bg-contain bg-center bg-no-repeat">
+
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col items-center mt-20">
-        <h1 className="text-4xl font-bold mb-8">Bienvenue sur ICO !</h1>
-        <h2 className="text-2xl font-semibold w-3/4 text-center mb-8">Sélectionnez votre mode de jeu :</h2>
-       <div>
+        <div className="px-6 flex flex-col gap-2">
         <button
           onClick={() => handleModeSelect("onedevice")}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
+          className="w-full py-3 rounded-lg font-bold border-white border-2 text-white">
           Jouer sur un écran
         </button>
         <button
           onClick={() => handleModeSelect("multidevice")}
-          className="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition mt-4">
+          className="w-full py-3 rounded-lg font-bold bg-white text-slate-800">
           Jouer sur plusieurs écrans
         </button>
-       </div>
-      </div>
+        </div>
 
-      {/* Footer Icons */}
-      <div className="absolute bottom-6 w-full flex justify-around">
-        <div className="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </div>
-        <div className="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18" />
-          </svg>
-        </div>
-        <div className="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20v-8m0-4V4m4 4H8" />
-          </svg>
-        </div>
+       </div>
       </div>
 
       {/* Modal */}
@@ -98,6 +98,7 @@ export default function HomepageChooseMode() {
           </div>
         </div>
       )}
-    </div>
+        </div>
+      </div>
   );
 }
