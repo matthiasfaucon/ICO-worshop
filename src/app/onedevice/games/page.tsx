@@ -133,6 +133,8 @@ export default function GamePage() {
                 }
             });
 
+            
+
             const bonusCards = await responseBonusCard.json();
 
             // Démarrer la partie dans le state local
@@ -359,7 +361,6 @@ export default function GamePage() {
                                                     )}
                                                     {gameState.currentCaptain === selectedPlayer && (
                                                         <div className="flex items-center justify-center gap-2 text-center p-6">
-                                                            {/* <img src="/images/captain.png" alt="Captain" className="w-6 h-6" /> */}
                                                             <p className='text-white font-bold'>Tu es aussi le capitaine du prochain voyage!</p>
                                                         </div>
                                                     )}
