@@ -70,7 +70,7 @@ export default function RulesSlider({ onClose }: { onClose: () => void }) {
     }
 
     return (
-        <div className="fixed inset-0 z-20 bg-brown-600 bg-opacity-90 flex flex-col">
+        <div className="fixed inset-0 z-20 bg-brown-600 flex flex-col">
             {/* Header */}
             <div className="flex justify-between items-center bg-white shadow px-6 py-4">
                 <h2 className="text-xl font-bold text-gray-800">Règles</h2>
