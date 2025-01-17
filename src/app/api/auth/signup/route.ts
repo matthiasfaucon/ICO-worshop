@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       is_logged: newUser.is_logged,
       session_uuid: newUser.session_uuid,
       created_at: newUser.created_at,
-      updated_at: newUser.updated_at,
+      updated_at: newUser.updated_at
     };
 
     // Retourne une réponse avec un cookie pour le session_uuid

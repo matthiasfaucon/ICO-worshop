@@ -33,6 +33,7 @@ export default function ProfilPage() {
     const handleLogout = () => {
         localStorage.removeItem('userInfo');
         Cookies.remove('authToken');
+        Cookies.remove('session_uuid');
         router.push('/');
     };
 
