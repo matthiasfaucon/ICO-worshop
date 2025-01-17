@@ -5,8 +5,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const body = await request.json();
 
-    console.log("====================================");
-    console.log(body); // Assurez-vous que le corps de la requête est bien passé
     const { who_won } = body;
 
 
@@ -16,8 +14,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         { status: 400 }
       );
     }
-
-    console.log(params.id);
 
     // Vérifier si le jeu existe
     const existingGame = await prisma.gameMonoDevice.findUnique({

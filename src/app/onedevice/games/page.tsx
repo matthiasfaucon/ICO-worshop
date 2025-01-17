@@ -28,10 +28,10 @@ export default function GamePage() {
 
     // Remplacez l'useEffect du timer par celui-ci
     useEffect(() => {
-        if (!gameState.gameId) {
-            router.push('/onedevice');
-            return;
-        }
+        // if (!gameState.gameId) {
+        //     router.push('/onedevice');
+        //     return;
+        // }
         if (!endTime) return;
 
         const timerInterval = setInterval(() => {
