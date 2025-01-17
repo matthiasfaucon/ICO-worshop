@@ -222,14 +222,13 @@ export default function GamePage() {
         <div className='bg-brown-texture h-dvh bg-cover bg-center'>
             <Header />
                 <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
-                    <div className="relative z-10 flex flex-col items-center gap-4 p-6 ">
-                        <h1 className="text-4xl font-magellan text-white mb-4">Joueurs</h1>
-
+                    <div className="relative z-10 flex flex-col items-center gap-4">
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
-                            <div className="mb-4 w-full h-dvh">
+                            <div className="mb-4 w-full">
+                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">Joueurs</h1>
                                 {gameState.settings.playersCount > gameState.players.length && (
-                                    <div>
+                                    <div className='p-6'>
                                         <div>
                                             <h2 className="text-xl mb-2 text-white font-filson font-bold">Ajouter un joueur</h2>
                                         </div>
@@ -253,7 +252,7 @@ export default function GamePage() {
                                     </div>
                                 )}
                                 <hr className="my-4" />
-                                <div className="mt-4">
+                                <div className="mt-4 px-6">
                                     <h3 className='text-center text-white font-bold text-2xl'>Joueurs ({gameState.players.length}):</h3>
 
                                     <div className="max-h-64 w-full overflow-y-auto rounded-md my-4">
@@ -294,13 +293,14 @@ export default function GamePage() {
                     
                         {/* Phase de révélation des rôles */}
                         {gameState.gamePhase === 'REVEAL_ROLES' && (
-                            <div className="flex flex-col items-center relative">
+                            <div className="flex flex-col items-center relative pt-6 w-full">
                                 {!selectedPlayer ? (
                                     <>
-                                        <h1 className="text-xl font-bold mb-6">De quel côté tu vas te ranger ?</h1>
-                                        <p className="text-center mb-6">Clique sur ton pseudo pour révéler ton rôle</p>
-
-                                        <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6">
+                                    <h1 className="text-4xl text-center font-magellan text-white mb-4">Vos Roles</h1>
+                                    <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                        <p className="text-white font-filson ">Clique sur ton pseudo pour révéler ton rôle</p>
+                                    </div>
+                                        <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6 px-6 pt-6">
                                             {gameState.players.map(player => (
                                                 <button
                                                     key={player.id}
@@ -308,13 +308,13 @@ export default function GamePage() {
                                                     className={`
                                             flex items-center gap-2 p-3 rounded-lg
                                             ${revealedRoles.includes(player.id)
-                                                            ? 'bg-gray-200 text-gray-600'
-                                                            : 'bg-brown-100 hover:bg-brown-200'
+                                                            ? 'bg-brown-400 text-gray-600'
+                                                            : 'bg-white/5 backdrop-blur-sm text-white font-bold'
                                                         }
-                                            transition-all duration-300
+                                            transition-all duration-300 border-2
                                         `}
                                                 >
-                                                    <img src="/images/user-icon.png" alt="" className="w-6 h-6" />
+                                                    <img src="/cards/icon-image.svg" alt="" className="w-6 h-6" />
                                                     <span>{player.name}</span>
                                                 </button>
                                             ))}
@@ -323,24 +323,30 @@ export default function GamePage() {
                                 ) : (
                                     <div className="flex flex-col items-center justify-center w-full h-full">
                                         <div
-                                            className="w-full max-w-md p-6 rounded-lg bg-brown-200 shadow-lg"
+                                            className="w-full max-w-md rounded-lg"
                                             onClick={() => handleTouch(selectedPlayer)}>
                                             {!isRevealing ? (
                                                 <>
-                                                    <h2 className="text-xl text-center mb-4">Reste appuyer pour dévoiler ton rôle</h2>
-                                                    <div className="aspect-square w-full max-w-sm mx-auto bg-brown-100 rounded-lg flex items-center justify-center">
-                                                        <div className="text-4xl font-bold">ICO!</div>
+                                                <h1 className="text-4xl text-center font-magellan text-white mb-4">De quel côté tu vas te ranger ?</h1>
+                                                <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                                    <p className="text-white font-filson text-center ">Clique sur ton pseudo pour révéler ton rôle</p>
+                                                </div>
+                                                    <div className="aspect-square w-full max-w-sm mx-auto p-6 flex items-center justify-center">
+                                                        <div className="text-4xl font-bold bg-dos-carte w-full h-full bg-center bg-cover bg-no-repeat"></div>
                                                     </div>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <h2 className="text-2xl text-center font-bold mb-4">
+                                                    <h1 className="text-4xl text-center font-magellan text-white mb-4">
                                                         Tu es un {gameState.players.find(p => p.id === selectedPlayer)?.role === 'PIRATE' ? 'pirate' :
                                                             gameState.players.find(p => p.id === selectedPlayer)?.role === 'MARIN' ? 'marin' : 'sirène'} !
-                                                    </h2>
-                                                    <div className="aspect-square w-full max-w-sm mx-auto bg-red-700 rounded-lg flex items-center justify-center p-8">
+                                                    </h1>
+                                                    <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                                        <p className="text-white font-filson text-center ">Ton objectif est d’empoisonner les marins sans te faire démasquer pour gagner le trésor</p>
+                                                    </div>
+                                                    <div className="w-full max-w-sm mx-auto flex items-center justify-center px-6 py-2 ">
                                                         <img
-                                                            src={`/images/${gameState.players.find(p => p.id === selectedPlayer)?.role.toLowerCase()}.png`}
+                                                            src={`/cards/${gameState.players.find(p => p.id === selectedPlayer)?.role.toLowerCase()}.png`}
                                                             alt="Role"
                                                             className="w-full h-full object-contain"
                                                         />
@@ -351,21 +357,25 @@ export default function GamePage() {
                                                         </h2>
                                                     )}
                                                     {gameState.currentCaptain === selectedPlayer && (
-                                                        <div className="flex items-center gap-2 mt-4 text-center">
-                                                            <img src="/images/captain.png" alt="Captain" className="w-6 h-6" />
-                                                            <p>Tu es aussi le capitaine du prochain voyage!</p>
+                                                        <div className="flex items-center justify-center gap-2 text-center p-6">
+                                                            {/* <img src="/images/captain.png" alt="Captain" className="w-6 h-6" /> */}
+                                                            <p className='text-white font-bold'>Tu es aussi le capitaine du prochain voyage!</p>
                                                         </div>
                                                     )}
-                                                    <p className="text-center mt-4">Retient bien et passe le téléphone</p>
-                                                    <button
+                                                    <div className='px-6'>
+                                                    <p className="text-center text-white mb-2">Retient bien et passe le téléphone</p>
+                                                    <button 
                                                         onClick={() => {
                                                             setSelectedPlayer(null);
                                                             setIsRevealing(false);
                                                         }}
-                                                        className="w-full mt-4 bg-brown-500 text-white px-6 py-3 rounded-lg hover:bg-brown-600 transition-colors"
-                                                    >
+                                                        className="w-full py-3 rounded-lg font-bold 
+                                                            bg-white text-slate-800 
+                                                            disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                                                        >
                                                         J'ai compris
                                                     </button>
+                                                    </div>
                                                 </>
                                             )}
                                         </div>
@@ -383,26 +393,69 @@ export default function GamePage() {
 
                                 {/* Afficher le timer */}
                                 {remainingTime !== null && (
-                                    <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90 text-white text-center p-4">
-                                        <div className="space-y-4">
-                                            <h2 className="text-4xl font-bold">{remainingTime}</h2>
-                                            <p className="text-xl">Les marins ferment les yeux</p>
-                                            <p className="text-xl">Les pirates et la sirène ouvrent les yeux</p>
+                                <div
+                                    className="fixed inset-0 flex items-center justify-center bg-cover bg-center text-white text-center p-6"
+                                    style={{
+                                    backgroundImage: "url('/cards/background-red.jpg')",
+                                    }}
+                                >
+                                    <div className="bg-black/40 backdrop-blur-md rounded-lg p-6 w-full max-w-md">
+                                    {/* Title */}
+                                    <h1 className="text-3xl font-bold font-magellan text-white mb-4">
+                                        La bande de pirates
+                                    </h1>
+
+                                    {/* Subtitle */}
+                                    <p className="text-sm text-white mb-6 leading-5">
+                                        Tout le monde ferme les yeux. Les pirates les rouvrent pour se reconnaître.
+                                        <br />
+                                        N’oubliez personne !
+                                    </p>
+
+                                    {/* Timer */}
+                                    <div className="relative w-32 h-32 mx-auto">
+                                        {/* Background Circle */}
+                                        <div className="absolute inset-0 rounded-full border-4 border-gray-400" />
+
+                                        {/* Animated Circle */}
+                                        <div
+                                        className="absolute inset-0 rounded-full border-4"
+                                        style={{
+                                            borderImage: "linear-gradient(167deg, rgba(121,83,13,1) 0%, rgba(166,95,17,1) 35%, rgba(240,157,52,1) 100%)",
+                                            borderImageSlice: 1,
+                                            clipPath: "circle(50%)",
+                                            transform: `rotate(${(remainingTime / 60) * 360}deg)`,
+                                            transition: "transform 1s linear",
+                                        }}
+                                        />
+
+                                        {/* Timer Text */}
+                                        <div className="flex items-center justify-center absolute inset-0 text-3xl font-bold text-white">
+                                        {remainingTime}s
                                         </div>
                                     </div>
+
+                                    {/* Bottom button */}
+                                    <button className="mt-6 w-full py-3 bg-white text-slate-800 font-bold rounded-lg shadow">
+                                        On est prêt pour l’aventure
+                                    </button>
+                                    </div>
+                                </div>
                                 )}
+
 
                             </div>
                         )}
 
                         {/* Phase de sélection d'équipage */}
                         {gameState.gamePhase === 'CREW_SELECTION' && (
-                            <div className="mb-4">
-                                <h2 className="text-xl mb-2">Sélection de l'équipage</h2>
-                                <p>Capitaine actuel: {gameState.players.find(p => p.id === gameState.currentCaptain)?.name}</p>
-                                <p>Tour actuel: {gameState.tour}</p>
-                                <div className="mt-4">
-                                    <h3>Sélectionnez 3 joueurs:</h3>
+                            <div className="mb-4 w-full pt-6">
+                                <h1 className="text-4xl text-center font-magellan text-white mb-4">Qui part en voyage ?</h1>
+                                <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                    <p className="text-white font-filson text-center font-bold">Tour actuel: {gameState.tour}</p>
+                                </div>
+                            
+                                <div className="mt-4 px-6">
                                     <div className="grid grid-cols-2 gap-2">
                                         {gameState.players.map(player => (
                                             <button
@@ -415,8 +468,8 @@ export default function GamePage() {
                                                     }
                                                 }}
                                                 className={`p-2 rounded ${selectedPlayers.includes(player.id)
-                                                    ? 'bg-blue-500 text-white'
-                                                    : 'bg-gray-200'
+                                                    ? 'bg-blue-400 text-white font-bold'
+                                                    : 'bg-white/5 backdrop-blur-sm text-white font-bold'
                                                     }`}
                                             >
                                                 {player.name}
@@ -432,7 +485,7 @@ export default function GamePage() {
                                     <button
                                         onClick={handleCrewSelection}
                                         disabled={selectedPlayers.length !== 3 || selectedPlayers.every(playerId => gameState.lastCrew.includes(playerId))}
-                                        className="mt-4 bg-green-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
+                                        className="mt-4 bg-green-500 text-white px-4 py-2 rounded disabled:bg-gray-400 w-full"
                                     >
                                         Valider l'équipage
                                     </button>
@@ -442,26 +495,27 @@ export default function GamePage() {
 
                         {/* Phase de vote */}
                         {gameState.gamePhase === 'VOTING' && gameState.tour > 1 && (
-                            <div className="mb-4">
-                                <h2 className="text-xl mb-2">Vote de l'équipage</h2>
+                            <div className="mb-4 pt-6 w-full">
+                                <h1 className="text-4xl text-center font-magellan text-white mb-4">Cet équipage part ?</h1>
                                 <div className="mt-4">
+                                <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
                                     {gameState.players
                                         .filter(player => !gameState.submittedVotes.includes(player.id))[0] && (
-                                            <p className="text-lg font-bold text-blue-600 mb-4">
+                                            <p className="font-bold text-white text-center">
                                                 C'est au tour de {gameState.players.find(player => !gameState.submittedVotes.includes(player.id))?.name} de voter
                                             </p>
                                         )}
+                                </div>
 
-                                    <h3 className="mt-4">Équipage proposé:</h3>
-                                    <ul className="mb-4">
+                                    <ul className="mb-4 pt-6">
                                         {gameState.currentCrew.map(crewId => (
-                                            <li key={crewId}>
+                                            <li className='bg-white/5 mx-auto backdrop-blur-sm text-white font-bold border-2 text-center w-min px-4 rounded-lg mb-4' key={crewId}>
                                                 {gameState.players.find(p => p.id === crewId)?.name}
                                             </li>
                                         ))}
                                     </ul>
 
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 flex-col px-6">
                                         <button
                                             onClick={() => handleVote(true)}
                                             className="bg-green-500 text-white px-4 py-2 rounded"
@@ -481,37 +535,49 @@ export default function GamePage() {
 
                         {/* Phase de voyage */}
                         {gameState.gamePhase === 'JOURNEY' && (
-                            <div className="mb-4">
-                                <h2 className="text-xl mb-2">Voyage en cours</h2>
-                                <div className="mt-4">
-                                    {gameState.currentCrew
+                            <div className="mb-4 w-full pt-6">
+                                <div className='bg-white/5 mx-auto backdrop-blur-sm text-white font-bold border-2 text-center w-min px-4 rounded-lg mb-4'>
+                                {gameState.currentCrew
                                         .find(crewId => !gameState.submittedCards.includes(crewId)) && (
-                                            <p className="text-lg font-bold text-blue-600 mb-4">
-                                                C'est au tour de {
+                                            <p className="text-lg">
+                                                {
                                                     gameState.players.find(
                                                         p => p.id === gameState.currentCrew.find(
                                                             crewId => !gameState.submittedCards.includes(crewId)
                                                         )
                                                     )?.name
-                                                } de choisir une carte
+                                                }
                                             </p>
                                         )}
-
-                                    <h3 className="mt-4">Choisissez votre carte:</h3>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleJourneyCardSubmit('ILE')}
-                                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                                        >
-                                            Île
-                                        </button>
-                                        <button
-                                            onClick={() => handleJourneyCardSubmit('POISON')}
-                                            className="bg-purple-500 text-white px-4 py-2 rounded"
-                                        >
-                                            Poison
-                                        </button>
+                                </div>
+                                <h1 className="text-4xl text-center font-magellan text-white mb-4">Choisis ton action</h1>
+                                <div className="mt-4">
+                                <div className="flex justify-center flex-col items-center gap-6 mt-6">
+                                    {/* Carte Île */}
+                                    <div
+                                        onClick={() => handleJourneyCardSubmit('ILE')}
+                                        className="relative group cursor-pointer"
+                                    >
+                                        <img
+                                        src="/cards/Carte_Ile.png"
+                                        alt="Carte Île"
+                                        className="w-52 h-52 border-2 border-white rounded-md object-cover shadow-md transition-transform transform group-hover:scale-105"
+                                        />
                                     </div>
+
+                                    {/* Carte Poison */}
+                                    <div
+                                        onClick={() => handleJourneyCardSubmit('POISON')}
+                                        className="relative group cursor-pointer"
+                                    >
+                                        <img
+                                        src="/cards/Carte_Poison.png"
+                                        alt="Carte Poison"
+                                        className="w-52 h-52 border-2 border-white rounded-lg object-cover shadow-md transition-transform transform group-hover:scale-105"
+                                        />
+                                    </div>
+                                    </div>
+
                                 </div>
                             </div>
                         )}
@@ -534,22 +600,26 @@ export default function GamePage() {
 
                         {/* Phase de fin de partie */}
                         {gameState.gamePhase === 'GAME_OVER' && (
-                            <div className="mb-4">
-                                <h2 className="text-xl mb-2">Partie terminée!</h2>
-                                <p className="text-2xl font-bold">
-                                    {gameState.winner === 'PIRATES' ? 'Les Pirates ont gagné!' : gameState.winner === 'MARINS' ? 'Les Marins ont gagné!' : 'La Sirène a gagné!'}
-                                </p>
+                            <div className="mb-4 w-full pt-6">
+                                <h1 className="text-4xl text-center font-magellan text-white mb-4">{gameState.winner === 'PIRATES' ? 'Les Pirates ont gagné!' : gameState.winner === 'MARINS' ? 'Les Marins ont gagné!' : 'La Sirène a gagné!'}</h1>
                                 <div className="mt-4">
                                     <p>Score final:</p>
                                     <p>Pirates: {gameState.pirateScore}</p>
                                     <p>Marins: {gameState.marinScore}</p>
                                 </div>
-                                <button onClick={() => handleReplay(false)} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-                                    Rejouer
-                                </button>
-                                <button onClick={() => handleReplay(true)} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
-                                    Rejouer avec les mêmes paramètres et joueurs
-                                </button>
+
+                                <div className='flex flex-col gap-2 items-center px-6 pt-6'>
+                                    <button onClick={() => handleReplay(false)} className="w-full py-3 rounded-lg font-bold 
+                                            bg-white text-slate-800 
+                                            disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed">
+                                        Rejouer
+                                    </button>
+                                    <button onClick={() => handleReplay(true)} className="w-full py-3 rounded-lg font-bold 
+                                            bg-white text-slate-800 
+                                            disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed">
+                                        Rejouer avec les mêmes paramètres et joueurs
+                                    </button>
+                                </div>
                             </div>
                         )}
 
