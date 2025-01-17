@@ -10,15 +10,18 @@ export default function ProfilPage() {
 
     useEffect(() => {
         async function fetchData() {
-            const user = localStorage.getItem('userInfo');
-            const user_id = user ? JSON.parse(user).id : null;
-            if (!user_id) {
-                console.log('Non autorisé');
-                router.push('/');
+            const token = Cookies.get("authToken");
+            if (!token) {
+                alert("Vous devez être connecté pour créer une partie.");
+                router.push("/signin");
                 return;
             }
 
-            const response = await fetch(`/api/game-mono?user_id=${user_id}`);
+            const response = await fetch(`/api/game-mono`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             let data = await response.json();
             // prendre les 5 derniers jeux
             data = data.slice(0, 5);

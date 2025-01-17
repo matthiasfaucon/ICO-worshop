@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function CreateBugReport() {
     const router = useRouter();
@@ -10,18 +11,22 @@ export default function CreateBugReport() {
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
-        const user = localStorage.getItem('userInfo');
-        const user_id = user ? JSON.parse(user).id : null;
+        const token = Cookies.get("authToken");
+        if (!token) {
+            alert("Vous devez être connecté pour créer une partie.");
+            router.push("/signin");
+            return;
+        }
         e.preventDefault();
         try {
             const response = await fetch('/api/admin/bugs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    ...formData,
-                    user_id: user_id,
+                    ...formData
                 }),
             });
 

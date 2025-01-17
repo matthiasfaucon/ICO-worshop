@@ -4,6 +4,7 @@ import Header from '@/components/header';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene, revealRole, resetGame } from '@/lib/reducers/game';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 
 export default function GamePage() {
@@ -17,8 +18,6 @@ export default function GamePage() {
     const [isRevealing, setIsRevealing] = useState(false);
     const [endTime, setEndTime] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
-
-    console.log(gameState);
 
     // Modifiez handleTimerForPirate
     const handleTimerForPirate = () => {
@@ -100,18 +99,22 @@ export default function GamePage() {
     };
 
     const handleStartGame = async () => {
-        const user = localStorage.getItem('userInfo');
-        const user_id = user ? JSON.parse(user).id : null;
+        const token = Cookies.get("authToken");
+        if (!token) {
+            alert("Vous devez être connecté pour créer une partie.");
+            router.push("/signin");
+            return;
+        }
         try {
             // Créer la partie en base de données
             const responseGame = await fetch('/api/game-mono', {
                 method: 'POST',
                 body: JSON.stringify({
-                    user_id: user_id,
                     playersCount: gameState.settings.playersCount,
                 }),
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
                 }
             });
 
@@ -131,8 +134,6 @@ export default function GamePage() {
             });
 
             const bonusCards = await responseBonusCard.json();
-
-            console.log('Cartes bonus:', bonusCards);
 
             // Démarrer la partie dans le state local
             dispatch(startGame(gameId));
