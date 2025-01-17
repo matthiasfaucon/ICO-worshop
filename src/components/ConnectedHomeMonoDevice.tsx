@@ -22,12 +22,12 @@ export default function ConnectedHome() {
   useEffect(() => {
     // Récupérer le `session_uuid` et `authToken` depuis les cookies
     const authToken = Cookies.get("authToken");
-  if (!authToken) {
-    console.warn("authToken non trouvé dans les cookies");
-  } else {
-    console.log("authToken trouvé :", authToken);
-    // Effectuez les actions nécessaires
-  }
+    if (!authToken) {
+      console.warn("authToken non trouvé dans les cookies");
+    } else {
+      console.log("authToken trouvé :", authToken);
+      // Effectuez les actions nécessaires
+    }
 
     const sessionUuidFromCookie = document.cookie
       .split("; ")
