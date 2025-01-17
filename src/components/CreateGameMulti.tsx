@@ -77,107 +77,94 @@ export default function CreateGameMulti({
   };
 
   const handlePlayersCountChange = (value: number) => {
-    setPlayersCount(Math.max(5, Math.min(value, 20)));
+    setPlayersCount(Math.max(3, Math.min(value, 20)));
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 px-6 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => router.back()}
-          className="p-2 text-slate-700 hover:text-slate-900"
-        >
-          <FaChevronLeft size={24} />
-        </button>
-        <div className="flex items-center space-x-2">
-          <FaGamepad size={24} className="text-slate-700" />
-          <span className="text-lg font-semibold text-slate-900">ICO</span>
-        </div>
-        <div className="w-6"></div>
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-100 to-gray-50 px-6 py-8">
+    {/* Header */}
+    <div className="flex items-center justify-between mb-8">
+      <button
+        onClick={() => router.back()}
+        className="p-3 text-blue-700 hover:text-blue-900 rounded-full bg-white shadow-md transition-transform transform hover:scale-110"
+      >
+        <FaChevronLeft size={24} />
+      </button>
+      <div className="flex items-center space-x-3">
+        <FaGamepad size={28} className="text-blue-700" />
+        <span className="text-xl font-bold text-blue-800">ICO</span>
       </div>
-
-      {/* Title */}
-      <h1 className="text-xl font-bold text-center text-slate-900 mb-6">
-        Créez votre partie
-      </h1>
-
-      {/* Modes */}
-      <div className="mb-6">
-        <div className="bg-gray-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-900">
-          Modes
-        </div>
-        <div className="flex space-x-4 mt-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={withSiren}
-              onChange={() => setWithSiren(!withSiren)}
-              className="form-checkbox text-blue-600"
-            />
-            <span className="text-slate-900">Avec la Sirène</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={withBonus}
-              onChange={() => setWithBonus(!withBonus)}
-              className="form-checkbox text-blue-600"
-            />
-            <span className="text-slate-900">Avec les Bonus</span>
-          </label>
-        </div>
+      <div className="w-6"></div>
+    </div>
+  
+    {/* Title */}
+    <h1 className="text-2xl font-extrabold text-center text-blue-800 mb-8">
+      🌟 Créez votre partie 🌟
+    </h1>
+  
+    {/* Modes */}
+    <div className="mb-8">
+      <div className="bg-blue-200 text-blue-900 font-bold text-sm rounded-lg px-4 py-2">
+        Modes
       </div>
-
-      {/* Parameters */}
-      <div className="mb-6">
-        <div className="bg-gray-200 rounded-lg px-4 py-2 text-sm font-semibold text-slate-900">
-          Paramètres
-        </div>
-        <div className="mt-4 space-y-4">
-          {/* Points to Win */}
-          <div>
-            <label className="block text-sm font-medium text-slate-900 mb-1">
-              Nombre de points pour gagner
-            </label>
-            <div className="flex items-center space-x-4">
-              <input
-                type="number"
-                value={pointsToWin}
-                onChange={(e) => setPointsToWin(Number(e.target.value))}
-                className="w-20 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <span className="text-sm text-slate-500">Temps estimé : 30 min</span>
-            </div>
-          </div>
-
-          {/* Players Count */}
-          <div>
-            <label className="block text-sm font-medium text-slate-900 mb-1">
-              Nombre de joueurs
-            </label>
-            <input
-              type="number"
-              value={playersCount}
-              onChange={(e) => handlePlayersCountChange(Number(e.target.value))}
-              className="w-20 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-sm text-slate-500 mt-2 block">
-              Min : 5, Max : 20
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Create Game Button */}
-      <div className="mt-auto">
-        <button
-          onClick={handleCreateGame}
-          className="w-full py-3 bg-blue-700 text-white rounded-lg shadow-md hover:bg-blue-800 transition duration-300"
-        >
-          Créer la partie
-        </button>
+      <div className="flex space-x-6 mt-6">
+        <label className="flex items-center space-x-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={withSiren}
+            onChange={() => setWithSiren(!withSiren)}
+            className="form-checkbox text-blue-600 focus:ring-2 focus:ring-blue-500 rounded"
+          />
+          <span className="text-blue-800 font-medium">Avec la Sirène</span>
+        </label>
+        <label className="flex items-center space-x-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={withBonus}
+            onChange={() => setWithBonus(!withBonus)}
+            className="form-checkbox text-blue-600 focus:ring-2 focus:ring-blue-500 rounded"
+          />
+          <span className="text-blue-800 font-medium">Avec les Bonus</span>
+        </label>
       </div>
     </div>
+  
+    {/* Parameters */}
+    <div className="mb-8">
+      <div className="bg-blue-200 text-blue-900 font-bold text-sm rounded-lg px-4 py-2">
+        Paramètres
+      </div>
+      <div className="mt-6 space-y-6">
+        {/* Points to Win */}
+        <div>
+          <label className="block text-sm font-medium text-blue-900 mb-2">
+            Nombre de points pour gagner
+          </label>
+          <div className="flex items-center space-x-4">
+            <input
+              type="number"
+              value={pointsToWin}
+              onChange={(e) => setPointsToWin(Number(e.target.value))}
+              className="w-24 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-500">Temps estimé : 30 min</span>
+          </div>
+        </div>
+  
+ 
+      </div>
+    </div>
+  
+    {/* Create Game Button */}
+    <div className="mt-auto">
+      <button
+        onClick={handleCreateGame}
+        className="w-full py-4 text-lg bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-transform duration-300"
+      >
+        🎮 Créer la Partie 🎮
+      </button>
+    </div>
+  </div>
+  
   );
 }

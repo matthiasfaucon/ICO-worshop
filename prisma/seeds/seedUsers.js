@@ -8,7 +8,6 @@ function generateRandomEmail() {
   return `${randomString}@example.com`;
 }
 
-// Fonction pour générer un username unique
 function generateRandomUsername() {
   return `User_${Math.random().toString(36).substring(2, 10)}`;
 }
