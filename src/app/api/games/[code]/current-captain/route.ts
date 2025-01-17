@@ -8,19 +8,15 @@ export async function GET(
   const gameCode = params.code;
 
   try {
-    // Récupérer la partie par son code
+    // Récupérer la partie et le capitaine actuel
     const game = await prisma.game.findUnique({
       where: { code: gameCode },
       include: {
-        players: {
-          where: {
-            is_in_crew: true, // Filtrer les joueurs sélectionnés pour l'équipage
-          },
+        current_captain: {
           select: {
-            id: true,
+            session_uuid: true,
             username: true,
-            session_uuid: true, // Inclure le sessionUuid
-            role: true, // Inclure le rôle
+            id: true,
           },
         },
       },
@@ -34,12 +30,27 @@ export async function GET(
       );
     }
 
-    // Retourner les joueurs de l'équipage avec leurs rôles
+    // Vérifier si un capitaine est défini pour la partie
+    if (!game.current_captain) {
+      return NextResponse.json(
+        { message: "Aucun capitaine pour le tour actuel." },
+        { status: 404 }
+      );
+    }
+
+    // Retourner les informations du capitaine actuel
     return NextResponse.json({
-      crew: game.players,
+      currentCaptain: {
+        sessionUuid: game.current_captain.session_uuid,
+        username: game.current_captain.username,
+        id: game.current_captain.id,
+      },
     });
   } catch (error) {
-    console.error("Erreur lors de la récupération de l'équipage :", error);
+    console.error(
+      "Erreur lors de la récupération du capitaine actuel :",
+      error
+    );
     return NextResponse.json(
       { message: "Erreur interne du serveur." },
       { status: 500 }

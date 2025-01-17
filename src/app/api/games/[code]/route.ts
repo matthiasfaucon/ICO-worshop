@@ -3,7 +3,10 @@ import prisma from "@/lib/prisma";
 import pusher from "@/lib/pusher";
 import { v4 as uuidv4 } from "uuid";
 
-export async function GET(req: NextRequest, { params }: { params: { code: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { code: string } }
+) {
   const gameCode = await params.code; // Suppression de l'utilisation de `await` ici
 
   try {
@@ -20,7 +23,10 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
     });
 
     if (!game) {
-      return NextResponse.json({ message: "Partie introuvable." }, { status: 404 });
+      return NextResponse.json(
+        { message: "Partie introuvable." },
+        { status: 404 }
+      );
     }
 
     // Récupérer le session_uuid depuis les cookies
@@ -55,7 +61,9 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
         id: player.id,
         nickname,
         avatar: avatarLetters, // Les lettres pour l'icône
-        sessionUUID: isAnonymous ? sessionUuid : player.user?.session_uuid || null,
+        sessionUUID: isAnonymous
+          ? sessionUuid
+          : player.user?.session_uuid || null,
         isHost: player.is_host, // Inclure le statut d'hôte
       };
     });
@@ -69,17 +77,23 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
       players,
       session_uuid: sessionUuid, // Inclure le session_uuid pour l'utilisateur actuel
     });
-      } catch (error) {
+  } catch (error) {
     console.error("Erreur lors de la récupération de la partie :", error);
     return NextResponse.json({ message: "Erreur serveur." }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { code: string } }) {
-  const gameCode = params.code;
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { code: string } }
+) {
+  const gameCode = await params.code;
 
   if (!gameCode) {
-    return NextResponse.json({ message: "Code de partie manquant." }, { status: 400 });
+    return NextResponse.json(
+      { message: "Code de partie manquant." },
+      { status: 400 }
+    );
   }
 
   try {
@@ -94,7 +108,8 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
     // Récupérer les pseudos depuis les headers ou générer un pseudo aléatoire
     const usernameFromHeader = req.headers.get("x-username");
     const nicknameFromHeader =
-      req.headers.get("x-nickname") || `Visiteur-${Math.random().toString(36).substring(2, 8)}`;
+      req.headers.get("x-nickname") ||
+      `Visiteur-${Math.random().toString(36).substring(2, 8)}`;
     const username = usernameFromHeader || nicknameFromHeader;
 
     // Vérifier ou créer l'utilisateur
@@ -121,7 +136,10 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
     });
 
     if (!game) {
-      return NextResponse.json({ message: "Partie introuvable." }, { status: 404 });
+      return NextResponse.json(
+        { message: "Partie introuvable." },
+        { status: 404 }
+      );
     }
 
     // Vérifier si le joueur existe déjà dans la partie
@@ -133,7 +151,9 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
       console.log("Ajouter un nouveau joueur");
 
       // Fournir une valeur par défaut si `user.username` est null
-      const playerUsername = user.username || `Visiteur-${Math.random().toString(36).substring(2, 8)}`;
+      const playerUsername =
+        user.username ||
+        `Visiteur-${Math.random().toString(36).substring(2, 8)}`;
 
       // Ajouter un joueur à la partie
       const newPlayer = await prisma.player.create({
@@ -161,7 +181,9 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
     }
 
     // Mettre à jour les cookies pour inclure le `session_uuid`
-    const response = NextResponse.json({ message: "Joueur ajouté avec succès." });
+    const response = NextResponse.json({
+      message: "Joueur ajouté avec succès.",
+    });
     response.cookies.set("session_uuid", sessionUuid, {
       maxAge: 365 * 24 * 60 * 60, // 1 an
       httpOnly: false,
@@ -173,7 +195,10 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
   } catch (error) {
     console.error("Erreur lors de l'ajout d'un joueur :", error);
     return NextResponse.json(
-      { message: "Erreur serveur. Assurez-vous que la requête est correctement formée." },
+      {
+        message:
+          "Erreur serveur. Assurez-vous que la requête est correctement formée.",
+      },
       { status: 500 }
     );
   }

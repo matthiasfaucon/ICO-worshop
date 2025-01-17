@@ -65,7 +65,7 @@ export default function RoleDisplayPage() {
 
     // Redirection automatique après 10 secondes
     const timer = setTimeout(() => {
-      if (currentRole === "pirate" || currentRole === "sirène") {
+      if (currentRole === "pirate" || currentRole === "sirene") {
         router.push(`../${gameCode}/pirates-display`);
       } else if (currentRole === "marin") {
         router.push(`../${gameCode}/marins-display`);
@@ -80,19 +80,24 @@ export default function RoleDisplayPage() {
   }, [gameCode, router, currentRole]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6 py-6">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">
-        Vous êtes {currentRole} !
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 px-6 py-8">
+      {/* Titre principal */}
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-4 animate-fade-in">
+        Vous êtes <span className="text-blue-600">{currentRole}</span> !
       </h1>
+
+      {/* Indication de rôle de capitaine */}
       {isCaptain && (
-        <h2 className="text-lg font-semibold text-blue-600 mb-6">
+        <h2 className="text-xl font-semibold text-indigo-600 bg-indigo-100 px-4 py-2 rounded-lg shadow-md mb-6">
           Vous êtes aussi le Capitaine !
         </h2>
       )}
-      <div className="w-32 h-32 bg-gray-200 border border-gray-300 rounded-lg flex items-center justify-center">
+
+      {/* Icône ou avatar */}
+      <div className="w-40 h-40 bg-white border border-gray-300 rounded-full flex items-center justify-center shadow-lg mb-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-16 w-16 text-gray-500"
+          className="h-20 w-20 text-gray-400"
           viewBox="0 0 20 20"
           fill="currentColor"
         >
@@ -103,8 +108,11 @@ export default function RoleDisplayPage() {
           />
         </svg>
       </div>
-      <p className="text-center text-sm text-gray-600 mt-4">
-        Préparez-vous pour le début de la partie !
+
+      {/* Texte d'information */}
+      <p className="text-center text-sm text-gray-700 leading-relaxed">
+        Préparez-vous pour le début de la partie !<br />
+        Le capitaine choisira bientôt son équipage.
       </p>
     </div>
   );

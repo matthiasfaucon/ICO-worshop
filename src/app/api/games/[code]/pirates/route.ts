@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(req: NextRequest, { params }: { params: { code: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { code: string } }
+) {
   const gameCode = params.code;
 
   try {
@@ -30,7 +33,7 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
 
     // Récupérer les pirates et la sirène
     const piratesAndSiren = game.players.filter(
-      (player) => player.role === "pirate" || player.role === "sirène"
+      (player) => player.role === "pirate" || player.role === "sirene"
     );
 
     console.log("Partie et joueurs récupérés :", game);

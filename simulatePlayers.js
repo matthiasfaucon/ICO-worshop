@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// Paramètres de la partie
-const gameCode = "J1UNDH"; // Code de la partie à rejoindre
+const gameCode = "GR3THN"; // Code de la partie à rejoindre
 const apiEndpoint = `http://localhost:3000/api/games/${gameCode}`;
 const sessionUUIDs = Array.from({ length: 7 }, () => generateUUID());
 

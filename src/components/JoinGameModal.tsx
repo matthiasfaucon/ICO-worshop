@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaTimes } from "react-icons/fa";
+import { FaQrcode, FaTimes } from "react-icons/fa";
 import Pusher from "pusher-js";
 
 interface JoinGameModalProps {
@@ -86,61 +86,64 @@ export default function JoinGameModal({ isOpen, onClose }: JoinGameModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-10">
-      <div className="relative bg-white rounded-lg shadow-lg w-96 p-6">
-        {/* Bouton pour fermer la modale */}
+    <div className="relative bg-white rounded-lg shadow-xl w-96 p-6 transition-transform transform scale-100 hover:scale-105">
+      {/* Bouton pour fermer la modale */}
+      <button
+        onClick={onClose}
+        className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition duration-300"
+      >
+        <FaTimes className="text-2xl" />
+      </button>
+  
+      {/* Header */}
+      <h2 className="text-2xl font-extrabold text-blue-800 mb-6 text-center">
+        🌟 Rejoignez une Partie 🌟
+      </h2>
+  
+      {/* Input pour le code de la partie */}
+      <div className="mb-6">
+        <label htmlFor="gameCode" className="block text-sm font-semibold text-gray-700 mb-2">
+          Entrez le code de la partie
+        </label>
+        <input
+          id="gameCode"
+          type="text"
+          placeholder="2R9BHB"
+          value={gameCode}
+          onChange={(e) => setGameCode(e.target.value)}
+          className="w-full px-4 py-3 text-gray-800 border border-blue-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+      </div>
+  
+      {/* Séparateur avec "Ou" */}
+      <div className="flex items-center my-6">
+        <div className="flex-grow border-t border-gray-300"></div>
+        <span className="mx-4 text-gray-500 text-sm">Ou</span>
+        <div className="flex-grow border-t border-gray-300"></div>
+      </div>
+  
+      {/* Option pour scanner le QR code */}
+      <div className="text-center mb-6">
         <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 transition duration-200"
+          onClick={() => console.log("Scanner le QR code")}
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-semibold transition duration-300"
         >
-          <FaTimes className="text-lg" />
+          <FaQrcode className="mr-2 text-xl" /> Scanner le QR code
         </button>
-
-        {/* Header */}
-        <h2 className="text-lg font-bold text-gray-800 mb-4 text-center">Rejoindre une partie</h2>
-
-        {/* Input pour le code de la partie */}
-        <div className="mb-4">
-          <label htmlFor="gameCode" className="block text-sm font-semibold text-gray-700 mb-2">
-            Code de la partie
-          </label>
-          <input
-            id="gameCode"
-            type="text"
-            placeholder="2R9BHB"
-            value={gameCode}
-            onChange={(e) => setGameCode(e.target.value)}
-            className="w-full px-4 py-2 text-slate-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        </div>
-
-        {/* Séparateur avec "Ou" */}
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-4 text-gray-500 text-sm">Ou</span>
-          <div className="flex-grow border-t border-gray-300"></div>
-        </div>
-
-        {/* Option pour scanner le QR code */}
-        <div className="text-center mb-6">
-          <button
-            onClick={() => console.log("Scanner le QR code")}
-            className="text-blue-600 underline text-sm"
-          >
-            Scannez le QR code
-          </button>
-        </div>
-
-        {/* Boutons */}
-        <div className="mt-4">
-          <button
-            onClick={handleJoin}
-            className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
-          >
-            Commencer l’aventure
-          </button>
-        </div>
+      </div>
+  
+      {/* Boutons */}
+      <div className="mt-6">
+        <button
+          onClick={handleJoin}
+          className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-transform duration-300"
+        >
+           Commencer l’Aventure 
+        </button>
       </div>
     </div>
+  </div>
+  
   );
 }

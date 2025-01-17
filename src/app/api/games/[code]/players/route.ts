@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(req: NextRequest, { params }: { params: { code: string } }) {
-  const gameCode = params.code; // Pas besoin d'utiliser await ici, params.code est synchrone
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { code: string } }
+) {
+  const gameCode = await params.code; // Pas besoin d'utiliser await ici, params.code est synchrone
 
   try {
-    console.log(`Requête reçue pour récupérer les joueurs de la partie avec le code : ${gameCode}`);
+    console.log(
+      `Requête reçue pour récupérer les joueurs de la partie avec le code : ${gameCode}`
+    );
 
-    // Vérifier si la partie existe
     const game = await prisma.game.findUnique({
       where: { code: gameCode },
       include: {
@@ -15,15 +19,14 @@ export async function GET(req: NextRequest, { params }: { params: { code: string
           select: {
             id: true,
             username: true,
-            session_uuid: true, // Inclure le session_uuid
-            is_captain: true,   // Inclure is_captain
-            role: true,         // Inclure le rôle du joueur
+            session_uuid: true,
+            is_captain: true,
+            role: true,
           },
         },
       },
     });
 
-    // Log explicite pour vérifier la structure des données récupérées
     console.log("Résultat de la requête Prisma pour la partie :", game);
 
     if (!game) {
