@@ -28,6 +28,10 @@ export default function GamePage() {
 
     // Remplacez l'useEffect du timer par celui-ci
     useEffect(() => {
+        if (!gameState.gameId) {
+            router.push('/onedevice');
+            return;
+        }
         if (!endTime) return;
 
         const timerInterval = setInterval(() => {
@@ -274,7 +278,7 @@ export default function GamePage() {
                                             gameState.players.length >= gameState.settings.playersCount
                                         ) && (
                                             <p className="text-white font-bold">
-                                            Vous devez être entre 7 et 20 joueurs
+                                                Vous devez être {gameState.settings.playersCount} joueurs pour commencer
                                             </p>
                                         )}
                                         <button

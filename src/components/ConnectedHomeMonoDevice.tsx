@@ -25,7 +25,6 @@ export default function ConnectedHome() {
   if (!authToken) {
     console.warn("authToken non trouvé dans les cookies");
   } else {
-    console.log("authToken trouvé :", authToken);
     // Effectuez les actions nécessaires
   }
 
