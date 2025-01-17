@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function HomepageChooseMode() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,38 +25,28 @@ export default function HomepageChooseMode() {
   return (
     <div className="relative flex flex-col items-center justify-between min-h-screen bg-gradient-to-b from-blue-900 via-purple-900 to-black text-white px-6 py-6">
       {/* Header */}
-      <div className="absolute top-6 left-6">
-        <div className="flex items-center space-x-2">
-          <img
-            src="/france-flag.png"
-            alt="Langue"
-            className="w-8 h-8 rounded-full"
-          />
-          <span className="text-sm font-medium">Français</span>
-        </div>
-      </div>
       <div className="absolute top-6 right-6">
-        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-          <img src="/avatar-placeholder.png" alt="Profil" />
-        </div>
+        <Link href="/profil" className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+          <FaUserCircle className="text-gray-800" />
+        </Link>
       </div>
 
       {/* Main Content */}
       <div className="flex flex-col items-center mt-20">
-        <h1 className="text-4xl font-bold mb-8">ICO !</h1>
-        <div
-          className="w-20 h-20 bg-gray-100 border border-gray-300 rounded-full flex items-center justify-center cursor-pointer mb-12"
-          onClick={handlePlayClick}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-12 w-12 text-gray-500"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </div>
+        <h1 className="text-4xl font-bold mb-8">Bienvenue sur ICO !</h1>
+        <h2 className="text-2xl font-semibold w-3/4 text-center mb-8">Sélectionnez votre mode de jeu :</h2>
+       <div>
+        <button
+          onClick={() => handleModeSelect("onedevice")}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition">
+          Jouer sur un écran
+        </button>
+        <button
+          onClick={() => handleModeSelect("multidevice")}
+          className="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition mt-4">
+          Jouer sur plusieurs écrans
+        </button>
+       </div>
       </div>
 
       {/* Footer Icons */}
