@@ -26,10 +26,10 @@ export default function ProfilPage() {
 
             if (data.length === 0) {
                 alert("Vous n'avez pas encore de partie enregistrée.");
-                return;
-            }
+            } else {
             // prendre les 5 derniers jeux
-            data = data.slice(0, 5);
+                data = data?.slice(0, 5);
+            }
             setUserGames(data);
         }
         fetchData();
