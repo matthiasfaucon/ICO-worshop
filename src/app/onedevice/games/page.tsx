@@ -225,7 +225,7 @@ export default function GamePage() {
                     <div className="relative z-10 flex flex-col items-center gap-4">
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
-                            <div className="mb-4 w-full">
+                            <div className="mb-4 w-full pt-6">
                                  <h1 className="text-4xl text-center font-magellan text-white mb-4">Joueurs</h1>
                                 {gameState.settings.playersCount > gameState.players.length && (
                                     <div className='p-6'>
