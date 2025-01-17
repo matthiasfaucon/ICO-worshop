@@ -4,8 +4,8 @@
   "description": "ICO est un nouveau jeu de société inspiré du célèbre jeu 'loup-garou'. L’objectif des créateurs est de conserver la dynamique collective sans l’élimination précoce de joueurs. ICO repose sur des mécaniques interactives qui renforcent l’implication de chacun tout au long de la partie.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ff0000",
-  "theme_color": "#0000ff",
+  "background_color": "#000000",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

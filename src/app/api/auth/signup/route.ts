@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     // Vérifiez si l'utilisateur existe déjà
     const existingUser = await prisma.user.findUnique({
       where: { email },
+      select: { id: true, email: true, username: true, role: true, session_uuid: true, is_logged: true, created_at: true, updated_at: true }
     });
 
     if (existingUser) {
@@ -39,6 +40,17 @@ export async function POST(req: NextRequest) {
       // Générer un nouveau `session_uuid` s'il n'existe pas
       sessionId = uuidv4();
     }
+
+    // Vérifiez si un autre utilisateur utilise déjà ce `session_uuid`
+    const conflictingUser = await prisma.user.findUnique({
+      where: { session_uuid: sessionId },
+    });
+
+    if (conflictingUser) {
+      // Si le `session_uuid` est déjà pris, générez-en un nouveau
+      sessionId = uuidv4();
+    }
+
 
     // Création de l'utilisateur avec le session_uuid
     const newUser = await prisma.user.create({

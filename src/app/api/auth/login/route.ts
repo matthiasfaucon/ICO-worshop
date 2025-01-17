@@ -63,7 +63,6 @@ export async function POST(req: NextRequest) {
     if (conflictingUser && conflictingUser.id !== user.id) {
       // Si le `session_uuid` est déjà pris, générez-en un nouveau
       sessionUuid = uuidv4();
-      console.log("Conflit détecté, nouveau session_uuid généré :", sessionUuid);
     }
 
     // Mise à jour du `session_uuid` et du statut de connexion
@@ -82,8 +81,6 @@ export async function POST(req: NextRequest) {
         is_logged: true,
       },
     });
-
-    console.log("Utilisateur mis à jour avec succès :", updatedUser);
 
     // Générer un token JWT
     const token = jwt.sign(
