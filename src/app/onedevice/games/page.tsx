@@ -514,7 +514,7 @@ export default function GamePage() {
 
                                     <ul className="mb-4 pt-6">
                                         {gameState.currentCrew.map(crewId => (
-                                            <li className='bg-white/5 mx-auto backdrop-blur-sm text-white font-bold border-2 text-center w-min px-4 rounded-lg mb-4' key={crewId}>
+                                            <li className=' mx-auto text-white font-bold border-2 text-center w-min px-4 rounded-lg mb-4' key={crewId}>
                                                 {gameState.players.find(p => p.id === crewId)?.name}
                                             </li>
                                         ))}
