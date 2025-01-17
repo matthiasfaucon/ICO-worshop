@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 export default function ProfilPage() {
     const [userGames, setUserGames] = useState([]);
     const router = useRouter();
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             const token = Cookies.get("authToken");
             if (!token) {
-                alert("Vous devez être connecté pour créer une partie.");
                 router.push("/signin");
                 return;
             }
@@ -25,7 +25,7 @@ export default function ProfilPage() {
             let data = await response.json();
 
             if (data.length === 0) {
-                alert("Vous n'avez pas encore de partie enregistrée.");
+                setError(true);
             } else {
             // prendre les 5 derniers jeux
                 data = data?.slice(0, 5);
