@@ -541,7 +541,7 @@ export default function GamePage() {
                         {/* Phase de voyage */}
                         {gameState.gamePhase === 'JOURNEY' && (
                             <div className="mb-4 w-full pt-6">
-                                <div className='bg-white/5 mx-auto backdrop-blur-sm text-white font-bold border-2 text-center w-min px-4 rounded-lg mb-4'>
+                                <div className=' mx-auto  text-white font-bold border-2 text-center w-min px-4 rounded-lg mb-4'>
                                 {gameState.currentCrew
                                         .find(crewId => !gameState.submittedCards.includes(crewId)) && (
                                             <p className="text-lg">
