@@ -474,7 +474,7 @@ export default function GamePage() {
                                                 }}
                                                 className={`p-2 rounded ${selectedPlayers.includes(player.id)
                                                     ? 'bg-blue-400 text-white font-bold'
-                                                    : 'bg-white/5 backdrop-blur-sm text-white font-bold'
+                                                    : 'text-white font-bold'
                                                     }`}
                                             >
                                                 {player.name}
