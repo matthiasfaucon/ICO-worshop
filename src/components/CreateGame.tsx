@@ -89,7 +89,7 @@ export default function CreateGame() {
           Votre partie
         </h1>
 
-        <div className="p-4 bg-white/10 border-white/20 backdrop-blur-lg  border-y-2">
+        <div className="p-4 border-white/20 border-y-2">
           <p className="text-white font-filson ">Si tu débutes, on te conseille de commencer sans les bonus !</p>
         </div>
 

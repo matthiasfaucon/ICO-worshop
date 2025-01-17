@@ -265,7 +265,7 @@ export default function GamePage() {
                                             {gameState.players.map(player => (
                                             <li
                                                 key={player.id}
-                                                className="border-2 bg-white/15 backdrop-blur-sm text-white font-bold border-gray-300 rounded-md p-3 shadow-sm"
+                                                className="border-2 text-white font-bold border-gray-300 rounded-md p-3 shadow-sm"
                                             >
                                                 {player.name}
                                             </li>
@@ -302,7 +302,7 @@ export default function GamePage() {
                                 {!selectedPlayer ? (
                                     <>
                                     <h1 className="text-4xl text-center font-magellan text-white mb-4">Vos Roles</h1>
-                                    <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                    <div className=" border-white/20 border-y-2 p-4 w-full">
                                         <p className="text-white font-filson ">Clique sur ton pseudo pour révéler ton rôle</p>
                                     </div>
                                         <div className="grid grid-cols-2 gap-4 w-full max-w-md mb-6 px-6 pt-6">
@@ -333,7 +333,7 @@ export default function GamePage() {
                                             {!isRevealing ? (
                                                 <>
                                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">De quel côté tu vas te ranger ?</h1>
-                                                <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                                <div className="  border-white/20 border-y-2 p-4 w-full">
                                                     <p className="text-white font-filson text-center ">Clique sur ton pseudo pour révéler ton rôle</p>
                                                 </div>
                                                     <div className="aspect-square w-full max-w-sm mx-auto p-6 flex items-center justify-center">
@@ -346,7 +346,7 @@ export default function GamePage() {
                                                         Tu es un {gameState.players.find(p => p.id === selectedPlayer)?.role === 'PIRATE' ? 'pirate' :
                                                             gameState.players.find(p => p.id === selectedPlayer)?.role === 'MARIN' ? 'marin' : 'sirène'} !
                                                     </h1>
-                                                    <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                                    <div className=" border-white/20  border-y-2 p-4 w-full">
                                                         <p className="text-white font-filson text-center ">Ton objectif est d’empoisonner les marins sans te faire démasquer pour gagner le trésor</p>
                                                     </div>
                                                     <div className="w-full max-w-sm mx-auto flex items-center justify-center px-6 py-2 ">
@@ -456,7 +456,7 @@ export default function GamePage() {
                         {gameState.gamePhase === 'CREW_SELECTION' && (
                             <div className="mb-4 w-full pt-6">
                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">Qui part en voyage ?</h1>
-                                <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                <div className=" border-white/20 border-y-2 p-4 w-full">
                                     <p className="text-white font-filson text-center font-bold">Tour actuel: {gameState.tour}</p>
                                 </div>
                             
@@ -503,7 +503,7 @@ export default function GamePage() {
                             <div className="mb-4 pt-6 w-full">
                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">Cet équipage part ?</h1>
                                 <div className="mt-4">
-                                <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
+                                <div className=" border-white/20 border-y-2 p-4 w-full">
                                     {gameState.players
                                         .filter(player => !gameState.submittedVotes.includes(player.id))[0] && (
                                             <p className="font-bold text-white text-center">
