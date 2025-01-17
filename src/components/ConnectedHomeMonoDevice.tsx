@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaInfoCircle, FaTrophy, FaTimesCircle, FaUser } from "react-icons/fa";
 import JoinGameModal from "./JoinGameModal"; // Votre composant pour rejoindre une partie
 import { v4 as uuidv4 } from "uuid";
+import Cookies from "js-cookie";
 
 export default function ConnectedHome() {
   const [victories, setVictories] = useState(4);
@@ -20,10 +21,13 @@ export default function ConnectedHome() {
   // Fonction pour charger les données utilisateur
   useEffect(() => {
     // Récupérer le `session_uuid` et `authToken` depuis les cookies
-    const authToken = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("authToken="))
-      ?.split("=")[1];
+    const authToken = Cookies.get("authToken");
+  if (!authToken) {
+    console.warn("authToken non trouvé dans les cookies");
+  } else {
+    console.log("authToken trouvé :", authToken);
+    // Effectuez les actions nécessaires
+  }
 
     const sessionUuidFromCookie = document.cookie
       .split("; ")
@@ -32,6 +36,8 @@ export default function ConnectedHome() {
 
     const storedUserInfo = localStorage.getItem("userInfo");
     const storedNickname = localStorage.getItem("nickname");
+
+    console.log(authToken)
 
     if (authToken && storedUserInfo) {
       const userInfo = JSON.parse(storedUserInfo);
