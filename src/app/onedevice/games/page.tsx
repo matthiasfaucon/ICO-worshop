@@ -18,22 +18,38 @@ export default function GamePage() {
     const [endTime, setEndTime] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
+    console.log(gameState);
+
+    // Modifiez handleTimerForPirate
     const handleTimerForPirate = () => {
-        setRemainingTime(30);
-        setInterval(diminuerTemps, 1000);
+        const end = new Date();
+        end.setSeconds(end.getSeconds() + 10); // 10 secondes de timer
+        setEndTime(end);
     };
 
-    function diminuerTemps() {
-        setRemainingTime((prev) => {
-            if (prev && prev > 1) {
-                return prev - 1; // On décrémente le timer
-            } else {
-                dispatch(revealRole());
-                return null;
-            }
-        });
-    }
+    // Remplacez l'useEffect du timer par celui-ci
+    useEffect(() => {
+        if (!endTime) return;
 
+        const timerInterval = setInterval(() => {
+            const now = new Date();
+            const diff = Math.ceil((endTime.getTime() - now.getTime()) / 1000);
+
+            if (diff <= 0) {
+                clearInterval(timerInterval);
+                setEndTime(null);
+                setRemainingTime(null);
+                dispatch(revealRole());
+            } else {
+                setRemainingTime(diff);
+            }
+        }, 100);
+
+        return () => clearInterval(timerInterval);
+    }, [endTime, dispatch]);
+
+
+    // si gameState.gamePhase === "GAME_OVER" alors on update le score en base de données
     async function updateScore() {
         try {
             if (!gameState.gameId) {
@@ -63,7 +79,6 @@ export default function GamePage() {
         }
     }
 
-    // si gameState.gamePhase === "GAME_OVER" alors on update le score en base de données
     useEffect(() => {
         if (gameState.gamePhase === 'GAME_OVER') {
             updateScore();
@@ -173,14 +188,7 @@ export default function GamePage() {
 
     const handleTouch = (playerId: string) => {
         setIsRevealing(true);
-        // Si playerId n'est pas dans setRevealedRoles, on l'ajoute
-        if (!revealedRoles.includes(playerId) || revealedRoles.length === 0) {
-            setRevealedRoles(prev => {
-                const updatedRoles = [...prev, playerId];
-                console.log('Revealed roles:', updatedRoles);
-                return updatedRoles;
-            });
-        }
+        setRevealedRoles(prev => [...prev, playerId]);
     };
 
     useEffect(() => {
@@ -296,9 +304,7 @@ export default function GamePage() {
                                             {gameState.players.map(player => (
                                                 <button
                                                     key={player.id}
-                                                    onClick={() => {
-                                                        setSelectedPlayer(player.id);
-                                                    }}
+                                                    onClick={() => setSelectedPlayer(player.id)}
                                                     className={`
                                             flex items-center gap-2 p-3 rounded-lg
                                             ${revealedRoles.includes(player.id)
@@ -308,7 +314,7 @@ export default function GamePage() {
                                             transition-all duration-300 border-2
                                         `}
                                                 >
-                                                    <img src="/cards/icon-image.svg" alt="" className="w-6 h-6"  />
+                                                    <img src="/cards/icon-image.svg" alt="" className="w-6 h-6" />
                                                     <span>{player.name}</span>
                                                 </button>
                                             ))}
@@ -317,7 +323,8 @@ export default function GamePage() {
                                 ) : (
                                     <div className="flex flex-col items-center justify-center w-full h-full">
                                         <div
-                                            className="w-full max-w-md rounded-lg">
+                                            className="w-full max-w-md rounded-lg"
+                                            onClick={() => handleTouch(selectedPlayer)}>
                                             {!isRevealing ? (
                                                 <>
                                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">De quel côté tu vas te ranger ?</h1>
@@ -325,14 +332,14 @@ export default function GamePage() {
                                                     <p className="text-white font-filson text-center ">Clique sur ton pseudo pour révéler ton rôle</p>
                                                 </div>
                                                     <div className="aspect-square w-full max-w-sm mx-auto p-6 flex items-center justify-center">
-                                                        <div className="text-4xl font-bold bg-dos-carte w-full h-full bg-center bg-cover bg-no-repeat"  onClick={() => handleTouch(selectedPlayer)}></div>
+                                                        <div className="text-4xl font-bold bg-dos-carte w-full h-full bg-center bg-cover bg-no-repeat"></div>
                                                     </div>
                                                 </>
                                             ) : (
                                                 <>
                                                     <h1 className="text-4xl text-center font-magellan text-white mb-4">
-                                                        Tu es {gameState.players.find(p => p.id === selectedPlayer)?.role === 'PIRATE' ? 'un pirate' :
-                                                            gameState.players.find(p => p.id === selectedPlayer)?.role === 'MARIN' ? 'un marin' : 'une sirène'} !
+                                                        Tu es un {gameState.players.find(p => p.id === selectedPlayer)?.role === 'PIRATE' ? 'pirate' :
+                                                            gameState.players.find(p => p.id === selectedPlayer)?.role === 'MARIN' ? 'marin' : 'sirène'} !
                                                     </h1>
                                                     <div className=" bg-white/10 border-white/20 backdrop-blur-lg  border-y-2 p-4 w-full">
                                                         <p className="text-white font-filson text-center ">Ton objectif est d’empoisonner les marins sans te faire démasquer pour gagner le trésor</p>
@@ -375,7 +382,7 @@ export default function GamePage() {
                                     </div>
                                 )}
 
-                                {revealedRoles.length >= gameState.players.length && (
+                                {revealedRoles.length - 1 >= gameState.players.length && (
                                     <button
                                         onClick={() => handleTimerForPirate()}
                                         className="mt-6 bg-brown-500 text-white px-6 py-3 rounded-lg hover:bg-brown-600 transition-colors"
@@ -399,63 +406,38 @@ export default function GamePage() {
                                     </h1>
 
                                     {/* Subtitle */}
-                                    <p className="text-lg text-white mb-6 leading-5 font-filson">
-                                        Tout le monde ferme les yeux. 
+                                    <p className="text-sm text-white mb-6 leading-5">
+                                        Tout le monde ferme les yeux. Les pirates les rouvrent pour se reconnaître.
                                         <br />
-                                        Les pirates les rouvrent pour se reconnaître.
-                                        <br />
-                                        <span className="text-yellow-400">N'oubliez personne !</span>
+                                        N’oubliez personne !
                                     </p>
 
                                     {/* Timer */}
-                                    <div className="relative w-40 h-40 mx-auto mb-6">
+                                    <div className="relative w-32 h-32 mx-auto">
                                         {/* Background Circle */}
-                                        <div className="absolute inset-0 rounded-full border-8 border-gray-600/40" />
+                                        <div className="absolute inset-0 rounded-full border-4 border-gray-400" />
 
                                         {/* Animated Circle */}
-                                        <svg className="absolute inset-0 w-full h-full -rotate-90">
-                                            <circle
-                                                cx="80"
-                                                cy="80"
-                                                r="36"
-                                                strokeWidth="8"
-                                                stroke="url(#gradient)"
-                                                fill="none"
-                                                strokeLinecap="round"
-                                                style={{
-                                                    strokeDasharray: `${2 * Math.PI * 36}`,
-                                                    strokeDashoffset: `${2 * Math.PI * 36 * (1 - remainingTime / 30)}`,
-                                                    transition: "stroke-dashoffset 1s linear"
-                                                }}
-                                            />
-                                        </svg>
-                                        <defs>
-                                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                                <stop offset="0%" stopColor="#F09D34" />
-                                                <stop offset="50%" stopColor="#A65F11" />
-                                                <stop offset="100%" stopColor="#79530D" />
-                                            </linearGradient>
-                                        </defs>
+                                        <div
+                                        className="absolute inset-0 rounded-full border-4"
+                                        style={{
+                                            borderImage: "linear-gradient(167deg, rgba(121,83,13,1) 0%, rgba(166,95,17,1) 35%, rgba(240,157,52,1) 100%)",
+                                            borderImageSlice: 1,
+                                            clipPath: "circle(50%)",
+                                            transform: `rotate(${(remainingTime / 60) * 360}deg)`,
+                                            transition: "transform 1s linear",
+                                        }}
+                                        />
 
                                         {/* Timer Text */}
-                                        <div className="flex items-center justify-center absolute inset-0">
-                                            <span className="text-5xl font-bold text-white font-magellan">
-                                                {remainingTime}
-                                            </span>
+                                        <div className="flex items-center justify-center absolute inset-0 text-3xl font-bold text-white">
+                                        {remainingTime}s
                                         </div>
                                     </div>
 
                                     {/* Bottom button */}
-                                    <button 
-                                        onClick={() => {
-                                            setEndTime(null);
-                                            setRemainingTime(null);
-                                            setRevealedRoles([]);
-                                            dispatch(revealRole());
-                                        }}
-                                        className="mt-6 w-full py-3 bg-gradient-to-r from-yellow-600 to-yellow-800 text-white font-bold rounded-lg shadow-lg hover:from-yellow-700 hover:to-yellow-900 transition-all duration-300 font-filson"
-                                    >
-                                        On est prêt pour l'aventure
+                                    <button className="mt-6 w-full py-3 bg-white text-slate-800 font-bold rounded-lg shadow">
+                                        On est prêt pour l’aventure
                                     </button>
                                     </div>
                                 </div>

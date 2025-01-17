@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { GameRuleType } from '@prisma/client';
+import { validateToken } from '@/lib/auth';
 
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const type = searchParams.get('type') as GameRuleType | null;;
-        
+
         const rules = await prisma.gameRule.findMany({
             where: type ? { type: { equals: type } } : {},
             orderBy: { order: 'asc' }
@@ -19,15 +20,31 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const token = request.headers.get("Authorization")?.split(" ")[1];
+        if (!token) {
+            return NextResponse.json(
+                { message: "Token manquant." },
+                { status: 401 }
+            );
+        }
+
+        const decoded: any = validateToken(token);
+        if (!decoded) {
+            return NextResponse.json(
+                { message: "Token invalide ou expiré." },
+                { status: 401 }
+            );
+        }
+
         const { key, type, name, value, description } = await request.json();
         const rule = await prisma.gameRule.create({
-            data: { 
-                key, 
-                type, 
-                name, 
-                value, 
+            data: {
+                key,
+                type,
+                name,
+                value,
                 description,
-                updated_by: "1cf846e9-ec91-4a77-ad90-de8fc7a6e99e"
+                updated_by: decoded.id
             }
         });
         return NextResponse.json(rule);
