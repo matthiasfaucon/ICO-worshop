@@ -19,7 +19,8 @@ export default function GamePage() {
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
     const handleTimerForPirate = () => {
-        setRemainingTime(30);
+        const duration = gameState.settings.timerDuration
+        setRemainingTime(duration);
         setInterval(diminuerTemps, 1000);
     };
 

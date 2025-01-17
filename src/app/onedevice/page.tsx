@@ -1,5 +1,7 @@
-import CreateGame from "@/components/CreateGame";
+"use client";
 
-export default function CreateGamePage() {
-  return <CreateGame />;
+import ConnectedHomeMonoDevice from "@/components/ConnectedHomeMonoDevice";
+
+export default function HomeMulti() {
+  return <ConnectedHomeMonoDevice />;
 }

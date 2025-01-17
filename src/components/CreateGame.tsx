@@ -10,6 +10,7 @@ export default function CreateGame() {
   const [withBonus, setWithBonus] = useState(false);
   const [pointsToWin, setPointsToWin] = useState(10);
   const [playersCount, setPlayersCount] = useState(10);
+  const [timerDuration, setTimerDuration] = useState(10);
 
   const router = useRouter();
   const [gameRules, setGameRules] = useState({});
@@ -31,9 +32,8 @@ export default function CreateGame() {
       return acc
     }, {})
 
-    dispatch(configureGame({ withBonus, pointsToWin, playersCount, min_players: generalRules["min-player"], max_players: generalRules["max-player"], min_points: generalRules["min-round-to-win"], max_points: generalRules["max-round-to-win"] }));
+    dispatch(configureGame({ withBonus, pointsToWin, playersCount, timerDuration, min_players: generalRules["min-player"], max_players: generalRules["max-player"], min_points: generalRules["min-round-to-win"], max_points: generalRules["max-round-to-win"] }));
     router.push("/onedevice/games");
-
   };
 
   const handlePlayersCountChange = (value: number) => {
@@ -45,6 +45,16 @@ export default function CreateGame() {
       setPlayersCount(value);
     }
   };
+
+  const handleTimerDurationChange = (value: number) => {
+    if (value < gameRules["min-timer-duration"]) {
+      setTimerDuration(gameRules["min-timer-duration"]);
+    } else if (value > gameRules["max-timer-duration"]) {
+      setTimerDuration(gameRules["max-timer-duration"]);
+    } else {
+      setTimerDuration(value);
+    }
+  }
 
   useEffect(() => {
     async function fetchGameRules() {
@@ -119,7 +129,9 @@ export default function CreateGame() {
                     <label className="block text-lg font-medium text-white">
                       Nombre de points pour gagner
                     </label>
-                    <span className="text-sm text-white/80">Temps estimé : 30 min</span>
+                    <span className="text-sm text-white/80">
+                      Min : {gameRules["min-round-to-win"]}, Max : {gameRules["max-round-to-win"]} (Temps estimé : 30 min)
+                    </span>
                   </div>
                   <input
                     type="number"
@@ -147,6 +159,26 @@ export default function CreateGame() {
                     min={gameRules["min-player"]}
                     max={gameRules["max-player"]}
                     onChange={(e) => handlePlayersCountChange(Number(e.target.value))}
+                    className="w-16 h-12 text-center text-lg font-medium text-white bg-transparent border border-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
+                  />
+                </div>
+
+                 {/* Timer Count */}
+                 <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-lg font-medium text-white">
+                      Durée du timer des pirates
+                    </label>
+                    <span className="text-sm text-white/80">
+                      Min : {gameRules["min-timer-duration"]} s, Max : {gameRules["max-timer-duration"]} s
+                    </span>
+                  </div>
+                  <input
+                    type="number"
+                    value={playersCount}
+                    min={gameRules["min-timer-duration"]}
+                    max={gameRules["max-timer-duration"]}
+                    onChange={(e) => handleTimerDurationChange(Number(e.target.value))}
                     className="w-16 h-12 text-center text-lg font-medium text-white bg-transparent border border-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
                   />
                 </div>

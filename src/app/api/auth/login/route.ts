@@ -53,7 +53,6 @@ export async function POST(req: NextRequest) {
 
     if (!sessionUuid) {
       sessionUuid = uuidv4();
-      console.log("Nouveau session_uuid généré :", sessionUuid);
     }
 
     // Vérifiez si un autre utilisateur utilise déjà ce `session_uuid`

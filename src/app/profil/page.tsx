@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 
 export default function ProfilPage() {
@@ -28,6 +29,8 @@ export default function ProfilPage() {
 
     const handleLogout = () => {
         localStorage.removeItem('userInfo');
+        // enlever le cookie authToken
+        Cookies.remove('authToken');
         router.push('/');
     };
 
