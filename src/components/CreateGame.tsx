@@ -175,7 +175,7 @@ export default function CreateGame() {
                   </div>
                   <input
                     type="number"
-                    value={playersCount}
+                    value={timerDuration}
                     min={gameRules["min-timer-duration"]}
                     max={gameRules["max-timer-duration"]}
                     onChange={(e) => handleTimerDurationChange(Number(e.target.value))}

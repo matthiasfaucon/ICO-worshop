@@ -114,6 +114,9 @@ const gameSlice = createSlice({
     revealRole: (state) => {
       state.gamePhase = 'CREW_SELECTION';
     },
+    loadGameState: (state, action: PayloadAction<GameState>) => {
+      return action.payload;
+    },
     distributeRoles: (state, action: PayloadAction) => {
       const bonusCards = action.payload;
       const roleDistribution = {
@@ -294,6 +297,13 @@ const gameSlice = createSlice({
       } else {
         state = initialState;
       }
+    },
+    loadFromLocalStorage: (state) => {
+      const savedState = localStorage.getItem('gameState');
+      if (savedState) {
+        return JSON.parse(savedState);
+      }
+      return state;
     }
   },
 });
@@ -308,7 +318,9 @@ export const {
   selectCrew,
   submitVote,
   submitJourneyCard,
-  resetGame
+  resetGame,
+  loadGameState,
+  loadFromLocalStorage
 } = gameSlice.actions;
 
 export default gameSlice.reducer; 

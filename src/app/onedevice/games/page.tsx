@@ -2,7 +2,7 @@
 
 import Header from '@/components/header';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene, revealRole, resetGame } from '@/lib/reducers/game';
+import { addPlayer, startGame, selectCrew, submitVote, submitJourneyCard, distributeRoles, submitVoteSirene, revealRole, resetGame, loadGameState, loadFromLocalStorage } from '@/lib/reducers/game';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
@@ -19,19 +19,41 @@ export default function GamePage() {
     const [endTime, setEndTime] = useState<Date | null>(null);
     const [remainingTime, setRemainingTime] = useState<number | null>(null);
 
+    // Déplacer le useEffect de chargement du localStorage tout en haut
+    useEffect(() => {
+        const savedGameState = localStorage.getItem('gameState');
+        if (savedGameState) {
+            try {
+                const parsedState = JSON.parse(savedGameState);
+                // Vérifier que le state est valide avant de le charger
+                if (parsedState && parsedState.gamePhase) {
+                    dispatch(loadFromLocalStorage());
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement du state:', error);
+                localStorage.removeItem('gameState');
+            }
+        }
+    }, [dispatch]);
+
     // Modifiez handleTimerForPirate
     const handleTimerForPirate = () => {
         const end = new Date();
-        end.setSeconds(end.getSeconds() + 10); // 10 secondes de timer
+        const remainingTime = gameState?.settings?.timerDuration ?? 10;
+        end.setSeconds(end.getSeconds() + remainingTime ); // 10 secondes de timer
         setEndTime(end);
     };
 
-    // Remplacez l'useEffect du timer par celui-ci
     useEffect(() => {
-        // if (!gameState.gameId) {
-        //     router.push('/onedevice');
-        //     return;
-        // }
+        const savedGameState = localStorage.getItem('gameState');
+        console.log('savedGameState:', savedGameState);
+        if (savedGameState) {
+            dispatch(loadFromLocalStorage());
+        }
+    }, []);
+
+    useEffect(() => {
+
         if (!endTime) return;
 
         const timerInterval = setInterval(() => {
@@ -41,6 +63,7 @@ export default function GamePage() {
             if (diff <= 0) {
                 clearInterval(timerInterval);
                 setEndTime(null);
+                setRevealedRoles([]);
                 setRemainingTime(null);
                 dispatch(revealRole());
             } else {
@@ -53,7 +76,7 @@ export default function GamePage() {
 
 
     // si gameState.gamePhase === "GAME_OVER" alors on update le score en base de données
-    async function updateScore() {
+    async function updateScoreInBDD() {
         try {
             if (!gameState.gameId) {
                 console.error('Game ID manquant');
@@ -83,8 +106,10 @@ export default function GamePage() {
     }
 
     useEffect(() => {
+        localStorage.setItem('gameState', JSON.stringify(gameState));
         if (gameState.gamePhase === 'GAME_OVER') {
-            updateScore();
+            localStorage.removeItem('gameState');
+            updateScoreInBDD();
         }
 
         if (gameState.gamePhase === 'REPLAY') {
@@ -328,8 +353,7 @@ export default function GamePage() {
                                 ) : (
                                     <div className="flex flex-col items-center justify-center w-full h-full">
                                         <div
-                                            className="w-full max-w-md rounded-lg"
-                                            onClick={() => handleTouch(selectedPlayer)}>
+                                            className="w-full max-w-md rounded-lg">
                                             {!isRevealing ? (
                                                 <>
                                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">De quel côté tu vas te ranger ?</h1>
@@ -337,7 +361,7 @@ export default function GamePage() {
                                                     <p className="text-white font-filson text-center ">Clique sur ton pseudo pour révéler ton rôle</p>
                                                 </div>
                                                     <div className="aspect-square w-full max-w-sm mx-auto p-6 flex items-center justify-center">
-                                                        <div className="text-4xl font-bold bg-dos-carte w-full h-full bg-center bg-cover bg-no-repeat"></div>
+                                                        <div className="text-4xl font-bold bg-dos-carte w-full h-full bg-center bg-cover bg-no-repeat" onClick={() => handleTouch(selectedPlayer)}></div>
                                                     </div>
                                                 </>
                                             ) : (
@@ -441,7 +465,7 @@ export default function GamePage() {
                                     </div>
 
                                     {/* Bottom button */}
-                                    <button className="mt-6 w-full py-3 bg-white text-slate-800 font-bold rounded-lg shadow">
+                                    <button className="mt-6 w-full py-3 bg-white text-slate-800 font-bold rounded-lg shadow" onClick={() => dispatch(revealRole())}>
                                         On est prêt pour l’aventure
                                     </button>
                                     </div>
@@ -458,6 +482,7 @@ export default function GamePage() {
                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">Qui part en voyage ?</h1>
                                 <div className=" border-white/20 border-y-2 p-4 w-full">
                                     <p className="text-white font-filson text-center font-bold">Tour actuel: {gameState.tour}</p>
+                                    <p className="text-white font-filson text-center font-bold border-2">Capitaine: { gameState.players.find(p => p.id === gameState.currentCaptain)?.name }</p>
                                 </div>
                             
                                 <div className="mt-4 px-6">

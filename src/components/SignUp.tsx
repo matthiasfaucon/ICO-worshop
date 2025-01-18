@@ -30,7 +30,6 @@ export default function SignupForm() {
         router.push("/");
       } else {
         const { message } = await response.json();
-        alert(message); // Afficher un message d'erreur à l'utilisateur
       }
     } catch (error) {
       console.error("Erreur lors de la requête d'inscription :", error);
