@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaUserCircle } from "react-icons/fa";
@@ -12,6 +12,14 @@ export default function HomepageChooseMode() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [isGameSaved, setIsGameSaved] = useState(false);
+
+  useEffect(() => {
+    const savedGameState = localStorage.getItem("gameState");
+    if (savedGameState) {
+      setIsGameSaved(true);
+    }
+  }, []);
 
   const handlePlayClick = () => {
     setIsModalOpen(true);
@@ -64,7 +72,7 @@ export default function HomepageChooseMode() {
             </div>
 
             <div className="px-6 flex flex-col gap-2 mb-6">
-              {localStorage.getItem("gameState") ? (
+              {isGameSaved ? (
                 <button
                   onClick={handleResumeGame}
                   className="w-full py-3 rounded-lg font-bold border-white border-2 text-white">

@@ -17,20 +17,30 @@ export default function ProfilPage() {
                 return;
             }
 
-            const response = await fetch(`/api/game-mono`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            let data = await response.json();
+            try {
+                const response = await fetch(`/api/game-mono`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-            if (data.length === 0) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                let data = await response.json();
+
+                if (data.length === 0) {
+                    setError(true);
+                } else {
+                    // prendre les 5 derniers jeux
+                    data = data?.slice(0, 5);
+                }
+                setUserGames(data);
+            } catch (error) {
+                console.error('Fetch error:', error);
                 setError(true);
-            } else {
-            // prendre les 5 derniers jeux
-                data = data?.slice(0, 5);
             }
-            setUserGames(data);
         }
         fetchData();
     }, []);
@@ -39,18 +49,22 @@ export default function ProfilPage() {
         localStorage.removeItem('userInfo');
         Cookies.remove('authToken');
         Cookies.remove('session_uuid');
-        router.push('/');
+        router.push('/auth-options');
     };
 
     return (
         <div>
             <h1>Profil</h1>
             <h2>Mes parties en mono-device</h2>
-            <ul>
-                {userGames.map((game) => (
-                    <li key={game.id}>{game.created_at}</li>
-                ))}
-            </ul>
+            {error ? (
+                <p>Une erreur s'est produite lors du chargement des données.</p>
+            ) : (
+                <ul>
+                    {userGames.map((game) => (
+                        <li key={game.id}>{game.created_at}</li>
+                    ))}
+                </ul>
+            )}
             <button onClick={handleLogout}>Se déconnecter</button>
         </div>
     );
