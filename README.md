@@ -90,6 +90,9 @@ cd ICO-worshop
 
 # Installer les dépendances
 npm install
+
+# Lancer le serveur de développement
+npm run dev # ou npm run dev
 ```
 
 ---
@@ -138,16 +141,10 @@ Ajoutez les fichiers nécessaires pour convertir l'application en PWA (éventuel
 
 ## Scripts utiles
 
-### Lancer le serveur de développement
-
-```bash
-yarn dev # ou npm run dev
-```
-
 ### Construire pour la production
 
 ```bash
-yarn build # ou npm run build
+npm run build
 ```
 
 ### Lancer Prisma Studio
@@ -156,7 +153,7 @@ yarn build # ou npm run build
 npx prisma studio
 ```
 
-### Synchroniser la base de données Prisma
+### Créez de nouvelles migrations
 
 ```bash
 npx prisma migrate dev --name init
