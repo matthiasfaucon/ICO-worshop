@@ -7,17 +7,26 @@ export async function middleware(request: NextRequest) {
   if (
     request.nextUrl.pathname.startsWith('/_next') ||
     request.nextUrl.pathname.startsWith('/auth') ||
-    request.nextUrl.pathname.startsWith('/signin') ||
-    request.nextUrl.pathname.startsWith('/signup') ||
-    request.nextUrl.pathname.startsWith('/auth-options') ||
     request.nextUrl.pathname.startsWith('/api') ||
     request.nextUrl.pathname === '/' ||
+    request.nextUrl.pathname === '' ||
     request.nextUrl.pathname.startsWith('/multidevice')
   ) {
     return NextResponse.next()
   }
 
   const authToken = request.cookies.get('authToken')?.value
+
+  if ( request.nextUrl.pathname === '/signin'
+    || request.nextUrl.pathname === '/signup'
+    || request.nextUrl.pathname === '/auth-options'
+  ) {
+    if (authToken) {
+      return NextResponse.redirect(new URL('/profil', request.url))
+    } else {
+      return NextResponse.next()
+    }
+  }
 
   if (!authToken) {
     return NextResponse.redirect(new URL('/auth-options', request.url))
