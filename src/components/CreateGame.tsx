@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { configureGame } from '@/lib/reducers/game';
 import Header from "./header";
+import Cookies from "js-cookie";
 
 export default function CreateGame() {
   const [withBonus, setWithBonus] = useState(false);
@@ -18,11 +19,12 @@ export default function CreateGame() {
   const gameState = useAppSelector((state) => state.game);
 
   const handleCreateGame = async () => {
+    const token = Cookies.get("authToken");
     let generalRules = await fetch("/api/admin/game-rules?type=SPECIFIC", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        "Authorization": `Bearer ${token}`
       }
     })
     generalRules = await generalRules.json()

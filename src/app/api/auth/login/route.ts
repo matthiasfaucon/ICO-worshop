@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign(
       { id: updatedUser.id, email: updatedUser.email, role: updatedUser.role },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     // Réponse avec les cookies mis à jour
@@ -99,10 +99,17 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
 
+    response.cookies.set("authToken", token, {
+      maxAge: 7 * 24 * 60 * 60, // 7 jours
+      // httpOnly: true,
+      // secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+
     response.cookies.set("session_uuid", sessionUuid, {
       maxAge: 365 * 24 * 60 * 60, // 1 an
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: false,
+      // secure: process.env.NODE_ENV === "production",
       path: "/",
     });
 

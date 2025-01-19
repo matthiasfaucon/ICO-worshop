@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { JWTPayload, jwtVerify } from 'jose'
+import { validateToken } from './lib/auth'
 
 export async function middleware(request: NextRequest) {
   // Exclure les routes publiques
@@ -16,13 +17,17 @@ export async function middleware(request: NextRequest) {
   }
 
   const authToken = request.cookies.get('authToken')?.value
-
+  
   if ( request.nextUrl.pathname === '/signin'
     || request.nextUrl.pathname === '/signup'
     || request.nextUrl.pathname === '/auth-options'
   ) {
     if (authToken) {
-      return NextResponse.redirect(new URL('/profil', request.url))
+      const validToken = validateToken(authToken)
+      if (validToken) {
+        return NextResponse.redirect(new URL('/profil', request.url))
+      }
+      return NextResponse.next()
     } else {
       return NextResponse.next()
     }

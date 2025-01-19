@@ -22,11 +22,6 @@ export default function ConnectedHome() {
   useEffect(() => {
     // Récupérer le `session_uuid` et `authToken` depuis les cookies
     const authToken = Cookies.get("authToken");
-  if (!authToken) {
-    console.warn("authToken non trouvé dans les cookies");
-  } else {
-    // Effectuez les actions nécessaires
-  }
 
     const sessionUuidFromCookie = document.cookie
       .split("; ")
@@ -36,9 +31,11 @@ export default function ConnectedHome() {
     const storedUserInfo = localStorage.getItem("userInfo");
     const storedNickname = localStorage.getItem("nickname");
 
-    console.log(authToken)
+    console.log("authToken", authToken);
+    console.log("sessionUuidFromCookie", sessionUuidFromCookie);
 
     if (authToken && storedUserInfo) {
+      console.log("L'utilisateur est connecté");
       const userInfo = JSON.parse(storedUserInfo);
       setNickname(userInfo.username || "");
       setSessionUUID(sessionUuidFromCookie || uuidv4());

@@ -152,7 +152,12 @@ export default function GamePage() {
             const gameId = game.id;
 
             if (!responseGame.ok) {
-                throw new Error('Erreur lors de la création de la partie');
+                if (responseGame.status === 401) {
+                    router.push('/auth-options');
+                    return;
+                }
+                
+                throw new Error('Erreur lors de la création du jeu');
             }
 
             const responseBonusCard = await fetch(`/api/admin/cards?type=bonus`, {
