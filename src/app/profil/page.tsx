@@ -9,6 +9,7 @@ export default function ProfilPage() {
     const router = useRouter();
     const [error, setError] = useState(false);
 
+    // Fetch user data when component mounts
     useEffect(() => {
         async function fetchData() {
             const token = Cookies.get("authToken");
@@ -25,7 +26,7 @@ export default function ProfilPage() {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error("Erreur réseau : données non disponibles");
                 }
 
                 let data = await response.json();
@@ -33,39 +34,60 @@ export default function ProfilPage() {
                 if (data.length === 0) {
                     setError(true);
                 } else {
-                    // prendre les 5 derniers jeux
-                    data = data?.slice(0, 5);
+                    // Récupérer les 5 derniers jeux
+                    data = data.slice(0, 5);
+                    setUserGames(data);
                 }
-                setUserGames(data);
             } catch (error) {
-                console.error('Fetch error:', error);
+                console.error("Erreur lors du fetch :", error);
                 setError(true);
             }
         }
-        fetchData();
-    }, []);
 
+        fetchData();
+    }, [router]);
+
+    // Logout logic
     const handleLogout = () => {
-        localStorage.removeItem('userInfo');
-        Cookies.remove('authToken');
-        Cookies.remove('session_uuid');
-        router.push('/auth-options');
+        try {
+            // Supprimer les données utilisateur
+            localStorage.removeItem("userInfo");
+            Cookies.remove("authToken");
+            Cookies.remove("session_uuid");
+
+            // Redirection vers la page d'authentification
+            router.push("/auth-options");
+        } catch (error) {
+            console.error("Erreur lors de la déconnexion :", error);
+        }
     };
 
     return (
-        <div>
-            <h1>Profil</h1>
-            <h2>Mes parties en mono-device</h2>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6">
+            <h1 className="text-3xl font-bold mb-6 text-gray-800">Profil</h1>
+
+            <h2 className="text-xl font-semibold mb-4">Mes parties en mono-device</h2>
             {error ? (
-                <p>Une erreur s'est produite lors du chargement des données.</p>
+                <p className="text-red-500">Une erreur s'est produite lors du chargement des données.</p>
             ) : (
-                <ul>
+                <ul className="w-full max-w-md bg-white rounded-lg shadow-md p-4 space-y-2">
                     {userGames.map((game) => (
-                        <li key={game.id}>{game.created_at}</li>
+                        <li
+                            key={game.id}
+                            className="text-gray-700 text-sm border-b last:border-b-0 pb-2"
+                        >
+                            Partie créée le : {new Date(game.created_at).toLocaleString()}
+                        </li>
                     ))}
                 </ul>
             )}
-            <button onClick={handleLogout}>Se déconnecter</button>
+
+            <button
+                onClick={handleLogout}
+                className="mt-6 px-6 py-2 bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-600 transition"
+            >
+                Se déconnecter
+            </button>
         </div>
     );
 }

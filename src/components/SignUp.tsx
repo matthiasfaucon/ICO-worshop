@@ -2,14 +2,41 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const router = useRouter(); // Pour la redirection
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSignup = async () => {
+    if (!username) {
+      setError("Veuillez entrer un nom d'utilisateur.");
+      return;
+    }
+
+    if (!email) {
+      setError("Veuillez entrer votre email.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Veuillez entrer une adresse email valide.");
+      return;
+    }
+
+    if (!password) {
+      setError("Veuillez entrer un mot de passe.");
+      return;
+    }
+
+    setError(""); // Réinitialiser les erreurs
+    setLoading(true);
+
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -18,22 +45,33 @@ export default function SignupForm() {
         },
         body: JSON.stringify({ email, password, username }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
-        console.log("Inscription réussie :", data);
-        
-        // Stocker les informations de l'utilisateur dans le localStorage
-        localStorage.setItem("userInfo", JSON.stringify(data.user));
-        
-        // Rediriger vers la page d'accueil
+        const token = data.token; 
+        const userInfo = data.user; 
+
+        // Stocker le token dans un cookie sécurisé
+        Cookies.set("authToken", token, { 
+          secure: true, 
+          sameSite: "strict", 
+          expires: 7 // Durée en jours
+        });
+
+        // Stocker les informations utilisateur dans localStorage
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+        // Rediriger l'utilisateur après une inscription réussie
         router.push("/");
       } else {
-        const { message } = await response.json();
+        const data = await response.json();
+        setError(data.message || "Une erreur est survenue lors de l'inscription.");
       }
-    } catch (error) {
-      console.error("Erreur lors de la requête d'inscription :", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
+    } catch (err) {
+      console.error("Erreur lors de l'inscription :", err);
+      setError("Une erreur inconnue est survenue.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,13 +124,19 @@ export default function SignupForm() {
           />
         </div>
 
-        {/* Bouton */}
+        {/* Afficher les erreurs */}
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+
+        {/* Bouton d'inscription */}
         <button
           type="button"
           onClick={handleSignup}
-          className="w-full py-3 text-white bg-gray-800 rounded-lg shadow-md hover:bg-gray-900 transition duration-300"
+          className={`w-full py-3 text-white bg-gray-800 rounded-lg shadow-md hover:bg-gray-900 transition duration-300 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={loading}
         >
-          Commencer l’aventure
+          {loading ? "Chargement..." : "S'inscrire"}
         </button>
       </form>
     </div>
