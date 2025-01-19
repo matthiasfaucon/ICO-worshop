@@ -79,6 +79,7 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 - **Seeder pour les règles** - Matthias FAUCON  
 
 ### Autres
+- **Implémenter la méthodologie Scrum Agile avec Notion pour gérer les sprints, les backlog et le suivi des tâches.** - Mouhamadou Soumare, Matthias FAUCON
 - **Cahier des charges** - Lallemand Ilan, Matthias FAUCON, Mouhamadou Soumare
 - **Matrice de droits** - Matthias FAUCON
 - **README** - Matthias FAUCON, Mouhamadou Soumare
