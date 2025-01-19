@@ -102,7 +102,6 @@ export default function CaptainSelectionPage() {
         const data = await response.json();
 
         // Redirections prises en charge via événements Pusher
-        console.log("Équipage validé :", data);
       } else {
         console.error("Erreur lors de la validation de l'équipage.");
       }

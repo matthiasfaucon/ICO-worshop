@@ -26,12 +26,6 @@ export default function CreateGameMulti({
   const router = useRouter();
 
   const handleCreateGame = async () => {
-    console.log("Création de la partie avec les paramètres :", {
-      withSiren,
-      withBonus,
-      pointsToWin,
-      playersCount,
-    });
 
     try {
       const token = Cookies.get("authToken");
@@ -63,7 +57,6 @@ export default function CreateGameMulti({
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Partie créée :", data);
         router.push(`./waiting-room/${data.code}`);
       } else {
         const error = await response.json();

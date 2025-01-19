@@ -40,7 +40,6 @@ export default function RoleDisplayPage() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Rôle récupéré :", data);
           setCurrentRole(data.role);
           setIsCaptain(data.is_captain);
         } else {

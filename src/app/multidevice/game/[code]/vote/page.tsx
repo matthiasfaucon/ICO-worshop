@@ -82,7 +82,6 @@ export default function VotePage() {
         if (crewResponse.ok) {
           const crewData = await crewResponse.json();
           setCrew(crewData.crew || []);
-          console.log("Réponse de l'API /crew :", crewData);
         }
 
         // Une fois les données récupérées, arrêter le chargement
@@ -120,7 +119,6 @@ export default function VotePage() {
 
       const data = await response.json();
       setVote(selectedVote); // Enregistrer le vote localement
-      console.log("Vote enregistré :", data);
     } catch (error) {
       console.error("Erreur dans handleVote :", error);
     }
@@ -146,7 +144,6 @@ export default function VotePage() {
     });
 
     channel.bind("vote-success", async () => {
-      console.log("Vote validé, préparation de l'équipage.");
     
       try {
         // Forcer la récupération de l'équipage avant d'envoyer
@@ -157,10 +154,8 @@ export default function VotePage() {
         }
     
         const crewData = await crewResponse.json();
-        console.log("Équipage récupéré après vote-success :", crewData.crew);
     
         const selectedPlayers = crewData.crew.map((member: CrewMember) => member.id); // Utiliser la donnée récupérée
-        console.log("selectedPlayers envoyés dans le body :", selectedPlayers);
     
         const response = await fetch(`/api/games/${gameCode}/post-vote-crew`, {
           method: "POST",
@@ -169,7 +164,6 @@ export default function VotePage() {
         });
     
         if (response.ok) {
-          console.log("Équipage configuré avec succès.");
     
           // Initialisez le compte à rebours
           setTimer(5);
@@ -191,7 +185,6 @@ export default function VotePage() {
     
 
     channel.bind("vote-rejected", async (data: any) => {
-      console.log("Vote rejeté :", data.message);
   
       // Initialisez un compte à rebours de 5 secondes
       setRejectedTimer(5);
@@ -233,7 +226,6 @@ export default function VotePage() {
   
     // Événement pour passer au capitaine suivant
     channel.bind("vote-failed", (data: any) => {
-      console.log("Deuxième rejet, passage au capitaine suivant :", data.message);
     
       // Initialisez un compte à rebours de 5 secondes
       setFailedTimer(5);

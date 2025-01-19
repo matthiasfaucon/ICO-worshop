@@ -73,7 +73,6 @@ export async function POST(
 ) {
   try {
 
-    console.log("route vote");
     const gameCode = await params.code;
     const body = await req.json();
 
@@ -159,10 +158,6 @@ export async function POST(
         username: p.username,
       })),
     });
-
-    console.log("nombre totale de votes :  " + totalVotes);
-    console.log("nombres joeuurs " + game.players.length);
-
 
     // Vérifiez si tous les joueurs ont voté
     if (totalVotes === game.players.length) {

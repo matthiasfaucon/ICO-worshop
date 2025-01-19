@@ -11,7 +11,6 @@ const pusher = new Pusher({
 });
 
 export async function POST(req: NextRequest) {
-  console.log("etsfdse");
 
   try {
     const { gameCode } = await req.json();
@@ -28,8 +27,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("etsfdse");
-
     // Vérifiez si la partie existe
     const game = await prisma.game.findUnique({
       where: { code: gameCode.trim() },
@@ -41,8 +38,6 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-
-    console.log("reger");
 
     // Récupération du sessionUUID et du pseudo
     const playerSessionUUID = req.headers.get("session-uuid");

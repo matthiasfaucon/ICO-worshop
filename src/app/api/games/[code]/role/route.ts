@@ -11,8 +11,6 @@ export async function POST(
     // Récupérer le sessionUuid depuis les cookies
     const sessionUuid = req.cookies.get("session_uuid")?.value;
 
-    console.log("Session UUID récupéré :", sessionUuid);
-
     // Vérifier si le session UUID est valide
     if (!sessionUuid) {
       return NextResponse.json(
@@ -36,8 +34,6 @@ export async function POST(
       );
     }
 
-    console.log("Partie trouvée :", game);
-
     // Trouver le joueur correspondant à la session UUID
     const player = await prisma.player.findFirst({
       where: {
@@ -52,8 +48,6 @@ export async function POST(
         { status: 404 }
       );
     }
-
-    console.log("Joueur trouvé :", player);
 
     // Retourner le rôle et le statut de capitaine
     return NextResponse.json({

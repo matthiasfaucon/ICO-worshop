@@ -36,8 +36,6 @@ export async function GET(
       (player) => player.role === "pirate" || player.role === "sirene"
     );
 
-    console.log("Partie et joueurs récupérés :", game);
-
     // Retourner la liste des joueurs avec les informations nécessaires
     return NextResponse.json({
       pirates: piratesAndSiren.map((p) => ({

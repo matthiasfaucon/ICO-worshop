@@ -26,8 +26,6 @@ export async function GET(
       },
     });
 
-    console.log("Données de la partie :", game);
-
     // Vérifier si la partie existe
     if (!game) {
       return NextResponse.json(
@@ -48,8 +46,6 @@ export async function GET(
 
     const scorePirates = score?.pirates || 0;
     const scoreMarins = score?.marins || 0;
-
-    console.log("Scores actuels :", { pirates: scorePirates, marins: scoreMarins });
 
     // Vérifier si une équipe a atteint le seuil de victoire
     if (scoreMarins >= 5) {

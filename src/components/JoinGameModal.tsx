@@ -62,13 +62,11 @@ export default function JoinGameModal({ isOpen, onClose }: JoinGameModalProps) {
   
       if (response.ok) {
         const data = await response.json();
-        console.log("Rejoint la partie :", data);
   
         // Récupérer les données initiales de la partie pour afficher les joueurs
         const playersResponse = await fetch(`/api/games/${gameCode}`);
         if (playersResponse.ok) {
           const playersData = await playersResponse.json();
-          console.log("Données initiales des joueurs :", playersData);
   
           // Rediriger vers la salle d'attente
           window.location.href = `multidevice/waiting-room/${gameCode}`;

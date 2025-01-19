@@ -131,7 +131,6 @@ export default function MissionPage() {
       if (response.ok) {
         const data = await response.json();
         setNextCaptain(data.nextCaptain.session_uuid);
-        console.log("Prochain capitaine défini :", data.nextCaptain);
       } else {
         console.error(
           "Erreur lors de la mise à jour du capitaine :",
@@ -171,9 +170,7 @@ export default function MissionPage() {
           data.winner === "marins"
             ? `/multidevice/game/${gameCode}/end-game`
             : `/multidevice/game/${gameCode}/end-game`; // Uniformisation pour pirates et marins
-  
-        console.log(`Gagnant identifié : ${data.winner}. Redirection dans 0.5 seconde.`);
-  
+    
         // Redirection après un délai
         setTimeout(() => {
           router.push(redirectPath);
@@ -193,9 +190,6 @@ export default function MissionPage() {
       });
 
       if (response.ok) {
-        console.log(
-          "Révélation déclenchée. Mise à jour du prochain capitaine."
-        );
         setAreCardsRevealed(true);
         await updateNextCaptain();
         setIsMissionOver(true);
@@ -233,7 +227,6 @@ export default function MissionPage() {
     );
 
     channel.bind("mission-reveal", (data: any) => {
-      console.log("Données reçues du canal Pusher 'mission-reveal' :", data);
       setMissionResult(data.result);
 
       setScore((prevScore) => ({
@@ -256,7 +249,6 @@ export default function MissionPage() {
     });
 
     channel.bind("game-winner", (data: any) => {
-      console.log("Gagnant :", data);
     
       // Mettre à jour le message final et marquer la partie comme terminée
       setFinalMessage(data.message);
@@ -267,10 +259,8 @@ export default function MissionPage() {
     
       setTimeout(() => {
         if (data.winner === "marins") {
-          console.log("Redirection vers la page de fin de partie (marins).");
           router.push(`/multidevice/game/${gameCode}/end-game`);
         } else if (data.winner === "pirates") {
-          console.log("Redirection vers la page de fin de partie (pirates).");
           router.push(`/multidevice/game/${gameCode}/end-game`);
         }
       }, redirectDelay);

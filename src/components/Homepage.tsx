@@ -14,16 +14,13 @@ export default function HomePage() {
   const [inputCode, setInputCode] = useState("");
 
   const handleConnect = () => {
-    console.log("Se connecter");
   };
 
   const handleSignup = () => {
-    console.log("Redirection vers la page d'inscription");
     router.push("/signup");
   };
 
   const handleJoinGame = () => {
-    console.log("Code de la partie :", inputCode);
   };
 
   const handleCreateGame = async () => {
@@ -46,7 +43,6 @@ export default function HomePage() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Partie créée :", data);
 
         // Redirige vers la salle d'attente
         router.push(`multidevice/waiting-room/${data.code}`);

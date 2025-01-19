@@ -9,8 +9,6 @@ export async function POST(
   try {
     const gameCode = await params.code;
 
-    console.log(`Finalisation du tour pour la partie : ${gameCode}`);
-
     // Récupérer la partie
     const game = await prisma.game.findUnique({
       where: { code: gameCode },

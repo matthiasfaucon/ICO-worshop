@@ -9,7 +9,6 @@ export async function POST(
   const gameCode = params.code;
 
   try {
-    console.log("Requête reçue pour lancer la partie avec le code :", gameCode);
 
     const body = await req.json().catch(() => null); // Attrape les erreurs JSON
     if (!body || !body.sessionUuid) {
@@ -35,7 +34,6 @@ export async function POST(
       );
     }
 
-    console.log("Partie trouvée :", game);
 
     const hostPlayer = game.players.find((player) => player.is_host);
     if (!hostPlayer || hostPlayer.session_uuid !== sessionUuid) {
@@ -46,7 +44,6 @@ export async function POST(
       );
     }
 
-    console.log("Hôte identifié :", hostPlayer);
 
     const totalPlayers = game.players.length;
 
@@ -58,8 +55,6 @@ export async function POST(
       pirates: Math.floor((totalPlayers - 1) / 3),
       sirene: 1,
     };
-
-    console.log("Distribution des rôles :", rolesDistribution);
 
     // Mélanger les joueurs pour garantir une distribution aléatoire
     const shuffledPlayers = [...game.players].sort(() => Math.random() - 0.5);
@@ -81,7 +76,6 @@ export async function POST(
         throw new Error("Distribution des rôles incorrecte.");
       }
 
-      console.log(`Assignation : ${player.username} reçoit le rôle ${role}`);
 
       return {
         ...player,
@@ -90,7 +84,6 @@ export async function POST(
       };
     });
 
-    console.log("Joueurs assignés :", assignedPlayers);
 
     const currentCaptain = assignedPlayers.find((player) => player.is_captain);
 
@@ -125,9 +118,6 @@ export async function POST(
       }),
     ]);
 
-    console.log(
-      "Rôles, capitaine et score mis à jour dans la base de données."
-    );
 
     // Notification via Pusher
     await pusher.trigger(`game-${gameCode}`, "game-started", {
@@ -141,8 +131,6 @@ export async function POST(
       currentCaptain: currentCaptain.username,
       score: initialScore,
     });
-
-    console.log("Événement envoyé via Pusher.");
 
     return NextResponse.json({ message: "La partie a commencé !" });
   } catch (error) {

@@ -60,13 +60,10 @@ export async function POST(req: NextRequest) {
     // Créez un code unique pour la partie
     const gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    console.log("Création de la partie avec le code :", gameCode);
 
     // Définir un rôle au hasard pour le créateur
     const roles = ["marin", "pirate", "sirene"];
     const randomRole = roles[Math.floor(Math.random() * roles.length)];
-
-    console.log(`Rôle attribué au créateur de la partie : ${randomRole}`);
 
     // Enregistrez la partie dans la base de données
     const newGame = await prisma.game.create({

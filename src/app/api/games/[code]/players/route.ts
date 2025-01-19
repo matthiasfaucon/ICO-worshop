@@ -33,8 +33,6 @@ export async function GET(
       );
     }
 
-    console.log(`Joueurs associés à la partie ${gameCode} :`, game.players);
-
     // Retourner tous les joueurs avec les informations nécessaires
     return NextResponse.json({
       players: game.players.map((player) => ({

@@ -66,8 +66,6 @@ export async function POST(
       );
     }
 
-    console.log("Nouveau capitaine session UUID:", nextCaptain.session_uuid);
-
     // Mettre à jour le capitaine et réinitialiser les joueurs
     await prisma.$transaction([
       prisma.player.updateMany({
@@ -86,8 +84,6 @@ export async function POST(
         },
       }),
     ]);
-
-    console.log("Capitaine mis à jour avec succès.");
 
     // Notifier les joueurs via Pusher
     const playerPromises = game.players.map((player) => {

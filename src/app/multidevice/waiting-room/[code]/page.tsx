@@ -113,7 +113,6 @@ export default function WaitingRoomPage() {
         const { message } = await response.json();
         console.error("Erreur lors du lancement de la partie :", message);
       } else {
-        console.log("Partie lancée avec succès !");
       }
     } catch (err) {
       console.error(

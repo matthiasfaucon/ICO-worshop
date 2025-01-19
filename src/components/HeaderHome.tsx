@@ -26,7 +26,6 @@ export default function HeaderHome() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("data", data);
           if (data.isLogged) {
             setIsLogged(true);
             if (data?.user?.role?.toLowerCase() === "admin") {

@@ -6,15 +6,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
 
 export async function GET(request: Request) {
   try {
-    // Vérifier que la méthode HTTP est `GET`
-    console.log("isLogged");
-    console.log(request.method);
-    if (request.method !== "GET") {
-      return new Response(JSON.stringify({ message: "Méthode non autorisée." }), {
-        status: 405,
-        headers: { Allow: "GET" },
-      });
-    }
 
     // Récupérer le token depuis les cookies
     const token = request.headers.get("cookie")?.split("; ").find(c => c.startsWith("authToken="))?.split("=")[1];

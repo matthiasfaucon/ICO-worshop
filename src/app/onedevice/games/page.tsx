@@ -98,7 +98,6 @@ export default function GamePage() {
             }
 
             const updatedGame = await response.json();
-            console.log('Jeu mis à jour:', updatedGame);
         } catch (error) {
             console.error('Erreur:', error);
         }

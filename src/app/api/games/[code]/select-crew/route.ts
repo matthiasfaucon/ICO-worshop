@@ -37,17 +37,10 @@ export async function POST(
       );
     }
 
-    console.log("Session UUID :", sessionUuid);
-
-    console.log("Joueurs de la partie :", game.players);
-
-
-    console.log ("game " + game.current_captain_id);
     // Vérification du capitaine
     const captain = game.players.find(
       (player) => player.is_captain && player.session_uuid === sessionUuid
     );
-    console.log(captain);
 
     if (!captain) {
       return NextResponse.json(
@@ -58,7 +51,6 @@ export async function POST(
 
     // Vérifier si c'est le premier tour
     const isFirstTurn = game.current_turn === 1;
-    console.log("Tour actuelle" + game.current_turn);
     // Transaction pour mettre à jour l'équipage et les tours
     await prisma.$transaction(async (prisma) => {
       // Réinitialiser les joueurs de l'équipage précédent
@@ -96,8 +88,7 @@ export async function POST(
     const nonSelectedPlayers = game.players.filter(
       (player) => !selectedPlayers.includes(player.id)
     );
-    console.log(nonSelectedPlayers);
-    console.log("chioisie voyahe" + selectedPlayers);
+
     await Promise.all(
       nonSelectedPlayers.map((player) =>
         pusher.trigger(`player-${player.session_uuid}`, "redirect-to-waiting", {

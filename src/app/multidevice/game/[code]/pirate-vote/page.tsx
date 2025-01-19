@@ -23,7 +23,6 @@ export default function PirateVotePage() {
           ?.split("=")[1]
       : null;
 
-  console.log("Session UUID:", sessionUuid);
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -33,13 +32,11 @@ export default function PirateVotePage() {
         });
         const data = await response.json();
 
-        console.log("Joueurs récupérés :", data.players);
         setPlayers(data.players);
 
         const currentPlayer = data.players.find(
           (player) => player.session_uuid === sessionUuid
         );
-        console.log("Joueur actuel :", currentPlayer);
 
         if (!currentPlayer) {
           setErrorMessage("Erreur : Impossible de déterminer votre rôle.");
@@ -85,7 +82,6 @@ export default function PirateVotePage() {
     const channel = pusher.subscribe(`game-${gameCode}`);
 
     channel.bind("vote-results", (data) => {
-      console.log("Résultats des votes :", data.results);
       setVoteResults(data.results);
 
       if (data.winner === "pirates") {
