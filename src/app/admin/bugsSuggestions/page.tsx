@@ -140,7 +140,7 @@ export default function AdminBugsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-gray-50">
             <Sidebar />
             <div className="max-w-7xl mx-auto p-6">
                 <div className="flex justify-between items-center mb-6">
