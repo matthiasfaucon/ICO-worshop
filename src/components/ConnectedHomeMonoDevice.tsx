@@ -107,7 +107,7 @@ export default function ConnectedHome() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen bg-gray-50 px-6 py-6">
+    <div className="flex bg-brown-texture flex-col items-center justify-between min-h-screen bg-gray-50 px-6 py-6">
       {/* Header */}
       <div className="flex justify-between items-center w-full max-w-md">
         <button onClick={handleInfo} className="p-2">
