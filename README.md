@@ -32,6 +32,7 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 ### Interface Utilisateur
 - **Page d’accueil pour expliquer les règles principales** - Mouhamadou SOUMARE  
 - **Interface de création de partie** - Mouhamadou SOUMARE
+- **Accès au back office pour les administrateurs** - Matthias FAUCON
 
 ### Gameplay
 - **Créer un écran où le capitaine choisit son équipage** - Matthias FAUCON  
@@ -172,7 +173,7 @@ npm run dev # ou npm run dev
 
 ### 2. Prisma
 1. Créez un projet sur **Pusher.com**
-2. 2Récupérez vos clés d'application : `PUSHER_APP_ID`, `PUSHER_APP_KEY`, `PUSHER_APP_SECRET` et `PUSHER_APP_CLUSTER`.
+2. Récupérez vos clés d'application : `NEXT_PUBLIC_PUSHER_APP_ID`, `NEXT_PUBLIC_PUSHER_APP_KEY`, `NEXT_PUBLIC_PUSHER_APP_SECRET` et `NEXT_PUBLIC_PUSHER_APP_CLUSTER`.
 3. Ajoutez ces informations dans le fichier `.env` 
 
 1. Générez le schéma Prisma basé sur la base de données :
