@@ -226,7 +226,6 @@ export default function GamePage() {
         if (!revealedRoles.includes(playerId)) {
             setRevealedRoles(prev => [...prev, playerId]);
         }
-        setRevealedRoles(prev => [...prev, playerId]);
     };
 
     useEffect(() => {
