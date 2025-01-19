@@ -165,7 +165,7 @@ Vous pouvez soit utiliser le fichier `.env` envoyé dans le rendu, soit renommer
 3. Copiez l'URL que vous avez récupérée dans la variable `DATABASE_URL`.
 4. Si vous utilisez une base de données de shadow pour Prisma, ajoutez également l'URL de cette base de données dans la variable `SHADOW_DATABASE_URL`.
 
-### JWT
+#### JWT
 
 1. Générez une clé secrète pour le JWT et ajoutez-la dans la variable `JWT_SECRET`.
 
