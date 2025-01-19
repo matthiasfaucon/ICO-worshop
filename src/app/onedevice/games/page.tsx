@@ -223,6 +223,9 @@ export default function GamePage() {
 
     const handleTouch = (playerId: string) => {
         setIsRevealing(true);
+        if (!revealedRoles.includes(playerId)) {
+            setRevealedRoles(prev => [...prev, playerId]);
+        }
         setRevealedRoles(prev => [...prev, playerId]);
     };
 
