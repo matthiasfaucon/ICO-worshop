@@ -34,6 +34,8 @@ export default function CreateGame() {
       return acc
     }, {})
 
+    localStorage.removeItem("gameState");
+
     dispatch(configureGame({ withBonus, pointsToWin, playersCount, timerDuration, min_players: generalRules["min-player"], max_players: generalRules["max-player"], min_points: generalRules["min-round-to-win"], max_points: generalRules["max-round-to-win"] }));
     router.push("/onedevice/games");
   };
