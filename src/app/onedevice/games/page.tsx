@@ -257,7 +257,7 @@ export default function GamePage() {
     };
 
     return (
-        <div className='bg-brown-texture h-dvh bg-cover bg-center'>
+        <div className='bg-brown-texture min-h-screen bg-cover bg-center'>
             <Header />
                 <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
                     <div className="relative z-10 flex flex-col items-center gap-4">

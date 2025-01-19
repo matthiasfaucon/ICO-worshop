@@ -3,61 +3,33 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaInfoCircle, FaTrophy, FaTimesCircle, FaUser } from "react-icons/fa";
-import JoinGameModal from "./JoinGameModal"; // Votre composant pour rejoindre une partie
-import { v4 as uuidv4 } from "uuid";
 import Cookies from "js-cookie";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ConnectedHome() {
   const [victories, setVictories] = useState(4);
   const [defeats, setDefeats] = useState(4);
   const [nickname, setNickname] = useState("");
-  const [isNicknameValid, setIsNicknameValid] = useState(false); // État pour valider le pseudo
-  const [sessionUUID, setSessionUUID] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNicknameValid, setIsNicknameValid] = useState(false); // Validation du pseudo
   const [isConnected, setIsConnected] = useState(false); // Indique si l'utilisateur est connecté
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // Fonction pour charger les données utilisateur
+  // Chargement des données utilisateur
   useEffect(() => {
-    // Récupérer le `session_uuid` et `authToken` depuis les cookies
     const authToken = Cookies.get("authToken");
-
-    const sessionUuidFromCookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("session_uuid="))
-      ?.split("=")[1];
-
     const storedUserInfo = localStorage.getItem("userInfo");
     const storedNickname = localStorage.getItem("nickname");
 
-    console.log("authToken", authToken);
-    console.log("sessionUuidFromCookie", sessionUuidFromCookie);
-
     if (authToken && storedUserInfo) {
-      console.log("L'utilisateur est connecté");
       const userInfo = JSON.parse(storedUserInfo);
       setNickname(userInfo.username || "");
-      setSessionUUID(sessionUuidFromCookie || uuidv4());
       setIsNicknameValid(!!userInfo.username);
       setIsConnected(true);
-
-      // Si le session_uuid n'existe pas dans les cookies, on le génère et l'ajoute
-      if (!sessionUuidFromCookie) {
-        document.cookie = `session_uuid=${uuidv4()}; path=/;`;
-      }
     } else {
-      // Si l'utilisateur est anonyme
       if (storedNickname) {
         setNickname(storedNickname);
         setIsNicknameValid(true);
-      }
-      if (sessionUuidFromCookie) {
-        setSessionUUID(sessionUuidFromCookie);
-      } else {
-        const newSessionUUID = uuidv4();
-        setSessionUUID(newSessionUUID);
-        document.cookie = `session_uuid=${newSessionUUID}; path=/;`;
       }
       setIsConnected(false);
     }
@@ -79,24 +51,10 @@ export default function ConnectedHome() {
     }
   };
 
-  const handleOpenModal = () => {
-    if (isNicknameValid) {
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
   const handleCreateGame = () => {
     if (isNicknameValid && isConnected) {
       router.push("/onedevice/create-game");
     }
-  };
-
-  const handleViewAchievements = () => {
-    router.push("/achievements");
   };
 
   const handleInfo = () => {
@@ -104,90 +62,100 @@ export default function ConnectedHome() {
   };
 
   return (
-    <div className="flex bg-brown-texture flex-col items-center justify-between min-h-screen bg-gray-50 px-6 py-6">
+    <div 
+      className="bg-brown-texture h-dvh bg-cover bg-center" 
+      style={{
+        backgroundImage: "url('/cards/background-app-brown.svg')",
+      }}
+    >
       {/* Header */}
-      <div className="flex justify-between items-center w-full max-w-md">
-        <button onClick={handleInfo} className="p-2">
-          <FaInfoCircle className="text-gray-700 text-2xl" />
+      <div className="bg-white/10 backdrop-blur-sm w-full py-4 px-6 flex items-center justify-between">
+        <button onClick={handleInfo} className="p-2 text-white">
+          <FaInfoCircle className="text-xl" />
         </button>
-        <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
-          <FaTrophy className="text-gray-400 text-3xl" />
+        <div className="text-white text-center">
+          <FaTrophy className="text-2xl" />
         </div>
         <a href="/multidevice/auth-options">
-          <button className="p-2">
-            <FaUser className="text-gray-700 text-2xl" />
+          <button className="p-2 text-white">
+            <FaUser className="text-xl" />
           </button>
         </a>
       </div>
 
-      {/* Profile and Nickname */}
-      <div className="flex flex-col items-center mt-6">
-        <div
-          className={`transition-transform duration-500 ${
-            isNicknameValid ? "scale-100 opacity-100" : "scale-90 opacity-50"
-          }`}
-        >
-          <div className="w-40 h-40 bg-gray-100 border border-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-5xl font-bold text-gray-700">
-              {nickname ? nickname.slice(0, 2).toUpperCase() : "?"}
-            </span>
+      {/* Main Container */}
+      <div className="mx-auto mt-8 bg-white/15 backdrop-blur-md rounded-lg shadow-lg border-2 border-white/40 w-11/12 md:w-8/12 lg:w-6/12">
+        {/* Profil et pseudo */}
+        <div className="flex flex-col items-center mt-8">
+          <div
+            className={`transition-transform duration-500 ${
+              isNicknameValid ? "scale-100 opacity-100" : "scale-90 opacity-50"
+            }`}
+          >
+            <div className="w-40 h-40 bg-white/20 border border-white rounded-full flex items-center justify-center">
+              <span className="text-5xl font-bold text-white">
+                {nickname ? nickname.slice(0, 2).toUpperCase() : "?"}
+              </span>
+            </div>
           </div>
+          {!isNicknameValid && (
+            <div className="flex flex-col items-center mt-4">
+              <input
+                type="text"
+                placeholder="Votre pseudo (min. 4 caractères)"
+                value={nickname}
+                onChange={handleNicknameChange}
+                onKeyDown={handleNicknameSubmit}
+                className="p-2 w-64 border border-white rounded-lg bg-transparent text-white placeholder-white text-center"
+                required
+              />
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+            </div>
+          )}
         </div>
-        {!isNicknameValid && (
-          <div className="flex flex-col items-center mt-4">
-            <input
-              type="text"
-              placeholder="Votre pseudo (min. 4 caractères)"
-              value={nickname}
-              onChange={handleNicknameChange}
-              onKeyDown={handleNicknameSubmit}
-              className="p-2 border border-gray-300 rounded-lg mb-4 w-64 text-slate-900"
-              required
-            />
-            {error && <p className="text-red-500">{error}</p>}
-          </div>
-        )}
-      </div>
 
-      {/* Statistics */}
-      <div className="flex justify-center items-center w-full max-w-md mt-6 space-x-8">
-        <div className="flex flex-col items-center">
-          <div className="w-14 h-14 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
-            <FaTrophy className="text-gray-600 text-xl" />
+        {/* Statistiques */}
+        <div className="flex justify-center items-center mt-8 space-x-8">
+          <div className="flex flex-col items-center">
+            <div className="w-14 h-14 bg-white/20 border border-white rounded-lg flex items-center justify-center">
+              <FaTrophy className="text-white text-xl" />
+            </div>
+            <p className="mt-2 text-sm font-semibold text-white">Victoires</p>
+            <span className="mt-1 text-lg font-bold text-white">{victories}</span>
           </div>
-          <p className="mt-2 text-sm font-semibold text-gray-700">Victoires</p>
-          <span className="mt-1 text-lg font-bold text-gray-900">{victories}</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="w-14 h-14 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center">
-            <FaTimesCircle className="text-gray-600 text-xl" />
+          <div className="flex flex-col items-center">
+            <div className="w-14 h-14 bg-white/20 border border-white rounded-lg flex items-center justify-center">
+              <FaTimesCircle className="text-white text-xl" />
+            </div>
+            <p className="mt-2 text-sm font-semibold text-white">Défaites</p>
+            <span className="mt-1 text-lg font-bold text-white">{defeats}</span>
           </div>
-          <p className="mt-2 text-sm font-semibold text-gray-700">Défaites</p>
-          <span className="mt-1 text-lg font-bold text-gray-900">{defeats}</span>
         </div>
-      </div>
 
-      {/* Actions */}
-      <div className="w-full max-w-md mt-6">
-        {!isNicknameValid && (
-          <p className="text-red-500 mb-2 text-center">Renseigner un pseudo pour accéder aux actions</p>
-        )}
-        <button
-          onClick={handleCreateGame}
-          disabled={!isNicknameValid || !isConnected}
-          className={`w-full py-3 text-white rounded-lg shadow-md transition duration-300 ${
-            isNicknameValid && isConnected
-              ? "bg-gray-800 hover:bg-gray-900"
-              : "bg-gray-600 cursor-not-allowed"
-          }`}
-        >
-          Créer une partie
-        </button>
-        {!isConnected && (
-          <p className="text-red-500 mt-2 text-center">
-            Vous devez être connecté pour créer une partie.
-          </p>
-        )}
+        {/* Actions */}
+        <div className="px-6 flex flex-col gap-2 mb-8 mt-6">
+          {!isNicknameValid && (
+            <p className="text-red-500 mb-2 text-center">
+              Renseigner un pseudo pour accéder aux actions
+            </p>
+          )}
+          <button
+            onClick={handleCreateGame}
+            disabled={!isNicknameValid || !isConnected}
+            className={`w-full py-3 rounded-lg font-bold transition duration-300 ${
+              isNicknameValid && isConnected
+                ? "bg-white text-slate-800 hover:bg-gray-100"
+                : "bg-gray-600 text-white cursor-not-allowed"
+            }`}
+          >
+            Créer une partie
+          </button>
+          {!isConnected && (
+            <p className="text-red-500 mt-2 text-center">
+              Vous devez être connecté pour créer une partie.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
