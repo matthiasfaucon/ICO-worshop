@@ -14,7 +14,7 @@ export default {
         filson: ['FilsonProRegular', ...fontFamily.sans],
       },
       backgroundImage: {
-        'brown-texture': "url('/cards/background-app-brown.svg?v=1')",
+        'brown-texture': "url('/cards/background-app-brown.svg')",
         'red-texture': "url('/cards/background-app-red.png')",
         'blue-texture': "url('/cards/background-app-blue.png')",
         'blue-violet-texture': "url('/cards/background-app-blue-violet.png')",

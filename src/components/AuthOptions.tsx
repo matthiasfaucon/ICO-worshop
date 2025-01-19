@@ -39,7 +39,7 @@ export default function AuthOptions() {
       </div> */}
       <HeaderHome />
       {/* Contenu principal */}
-      <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10 flex flex-col items-center justify-center px-6 py-8">
+      <div className="mx-auto mt-8 mb-4 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10 flex flex-col items-center justify-center px-6 py-8">
         {/* Titre et sous-titre */}
         <h1 className="text-4xl font-magellan text-white mb-2 text-center">
           Bienvenue sur ICO !
