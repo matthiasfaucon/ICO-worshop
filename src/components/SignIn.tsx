@@ -46,8 +46,12 @@ export default function SignInForm() {
         const userInfo = data.user; // Toutes les informations utilisateur retournées par l'API
 
         // Stocker le token dans un cookie sécurisé
-        Cookies.set("authToken", token, { secure: true, sameSite: "strict" });
-
+        Cookies.set("authToken", token, { 
+          secure: true, 
+          sameSite: "strict", 
+          expires: 7 // Durée en jours
+        });
+        
         // Stocker des informations utilisateur dans localStorage
         localStorage.setItem("userInfo", JSON.stringify(userInfo));
 

@@ -6,13 +6,16 @@ export async function POST(req: NextRequest) {
   try {
     const token = req.headers.get("Authorization")?.split(" ")[1];
     if (!token) {
-      return NextResponse.json({ message: "Token manquant." }, { status: 401 });
+      return NextResponse.json(
+        { message: "Token manquant.", code: "TOKEN_MISSING" },
+        { status: 401 }
+      );
     }
 
     const decoded: any = validateToken(token);
     if (!decoded) {
       return NextResponse.json(
-        { message: "Token invalide ou expiré." },
+        { message: "Token invalide ou expiré.", code: "TOKEN_INVALID" },
         { status: 401 }
       );
     }

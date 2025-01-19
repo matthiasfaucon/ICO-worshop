@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { v4 as uuidv4 } from "uuid"; // Génération d'UUID
+import { v4 as uuidv4 } from "uuid"; 
 
 const prisma = new PrismaClient();
 function generateRandomEmail() {
@@ -23,7 +23,7 @@ export async function seedUsers() {
     password: hashedPassword,
     role: "USER",
     session_uuid: uuidv4(),
-    is_logged: Math.random() < 0.5, // Aléatoire entre true et false
+    is_logged: Math.random() < 0.5, 
     created_at: new Date(),
     updated_at: new Date(),
   }));

@@ -7,21 +7,11 @@ export async function GET(
   { params }: { params: { code: string } }
 ) {
   try {
-    const gameCode = params.code;
+    const gameCode = await params.code;
 
-    // Récupérer l'UUID de session à partir du cookie
-    const sessionUuid = req.cookies.get("session_uuid")?.value;
-    if (!sessionUuid) {
-      return NextResponse.json(
-        { message: "Session UUID manquant." },
-        { status: 400 }
-      );
-    }
-
-    // Récupérer la partie
     const game = await prisma.game.findUnique({
       where: { code: gameCode },
-      include: { players: true },
+      include: { players: true, turns: true },
     });
 
     if (!game) {
@@ -31,79 +21,42 @@ export async function GET(
       );
     }
 
-    const { players, current_turn: currentTurnNumber } = game;
+    const currentTurn = await prisma.turn.findFirst({
+      where: {
+        game_id: game.id,
+        turn_number: game.current_turn,
+      },
+    });
 
-    if (!currentTurnNumber) {
+    if (!currentTurn) {
       return NextResponse.json(
         { message: "Tour actuel introuvable." },
         { status: 400 }
       );
     }
 
-    // Récupérer le tour actuel
-    const currentTurn = await prisma.turn.findFirst({
-      where: {
-        game_id: game.id,
-        turn_number: currentTurnNumber,
-      },
-    });
-
-    if (!currentTurn) {
-      return NextResponse.json(
-        { message: `Tour numéro ${currentTurnNumber} introuvable.` },
-        { status: 400 }
-      );
-    }
-
-    // Récupérer les votes
     const votes = await prisma.vote.findMany({
       where: { turn_id: currentTurn.id },
     });
 
     const totalVotes = votes.length;
-    const yesVotes = votes.filter((vote) => vote.is_approved).length;
+    const yesVotes = votes.filter((v) => v.is_approved).length;
     const noVotes = totalVotes - yesVotes;
 
-    // Récupérer le vote de l'utilisateur actuel
-    const player = await prisma.player.findFirst({
-      where: { session_uuid: sessionUuid, game_id: game.id },
-    });
-
-    const playerVote = votes.find((vote) => vote.player_id === player?.id)
-      ?.is_approved
-      ? "yes"
-      : null;
-
-    // Récupérer les joueurs n'ayant pas encore voté
-    const votedPlayerIds = votes.map((vote) => vote.player_id);
-    const playersYetToVote = players.filter(
-      (player) => !votedPlayerIds.includes(player.id)
+    const playersYetToVote = game.players.filter(
+      (p) => !votes.map((v) => v.player_id).includes(p.id)
     );
 
-    // Récupérer l'équipage sélectionné pour ce tour
-    const crew = await prisma.player.findMany({
-      where: {
-        is_in_crew: true,
-        game_id: game.id,
-      },
-      select: {
-        id: true,
-        username: true,
-      },
-    });
-
     return NextResponse.json({
-      message: "Données récupérées avec succès.",
+      message: "Votes récupérés avec succès.",
       yesVotes,
       noVotes,
       totalVotes,
-      totalPlayers: players.length,
-      playerVote,
-      playersYetToVote: playersYetToVote.map((player) => ({
-        id: player.id,
-        username: player.username,
+      totalPlayers: game.players.length,
+      playersYetToVote: playersYetToVote.map((p) => ({
+        id: p.id,
+        username: p.username,
       })),
-      crew,
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des votes :", error);
@@ -118,11 +71,11 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  console.log("dfdsfdsf");
-
   try {
+
+    console.log("route vote");
     const gameCode = await params.code;
-    const body = await req.json().catch(() => null);
+    const body = await req.json();
 
     if (!body || !body.sessionUuid || !body.vote) {
       return NextResponse.json(
@@ -146,11 +99,12 @@ export async function POST(
       );
     }
 
-    const currentTurn = player.game?.turns.find(
-      (turn) => turn.turn_number === player.game?.current_turn
+    const game = player.game;
+    const currentTurn = game.turns.find(
+      (turn) => turn.turn_number === game.current_turn
     );
 
-    if (!currentTurn || !currentTurn.id) {
+    if (!currentTurn) {
       return NextResponse.json(
         { message: "Tour actuel introuvable pour la partie." },
         { status: 400 }
@@ -190,33 +144,83 @@ export async function POST(
     const yesVotes = votes.filter((v) => v.is_approved).length;
     const noVotes = totalVotes - yesVotes;
 
-    const players = player.game.players;
-
-    const votedPlayerIds = votes.map((v) => v.player_id);
-    const playersYetToVote = players.filter(
-      (p) => !votedPlayerIds.includes(p.id)
+    const playersYetToVote = game.players.filter(
+      (p) => !votes.map((v) => v.player_id).includes(p.id)
     );
 
-    console.log(players);
-
-    // Publier les mises à jour des votes via Pusher
+    // Mise à jour en temps réel via Pusher
     await pusher.trigger(`game-${gameCode}`, "vote-updated", {
       yesVotes,
       noVotes,
       totalVotes,
-      totalPlayers: players.length,
+      totalPlayers: game.players.length,
       playersYetToVote: playersYetToVote.map((p) => ({
         id: p.id,
         username: p.username,
       })),
     });
 
+    console.log("nombre totale de votes :  " + totalVotes);
+    console.log("nombres joeuurs " + game.players.length);
+
+
+    // Vérifiez si tous les joueurs ont voté
+    if (totalVotes === game.players.length) {
+      if (yesVotes > noVotes) {
+        const endpoint = `/api/games/${gameCode}/vote-yes`;
+    
+        const response = await fetch(new URL(endpoint, req.url), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionUuid }), // Inclure sessionUuid si nécessaire
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          return NextResponse.json({
+            message: "Votes terminés, logique 'Oui' déclenchée.",
+            ...data,
+          });
+        } else {
+          const errorData = await response.json();
+          console.error("Erreur dans vote-yes :", errorData);
+          return NextResponse.json(
+            { message: "Erreur dans vote-yes.", ...errorData },
+            { status: response.status }
+          );
+        }
+      } else {
+        const endpoint = `/api/games/${gameCode}/vote-no`;
+    
+        const response = await fetch(new URL(endpoint, req.url), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionUuid }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          return NextResponse.json({
+            message: "Votes terminés, logique 'Non' déclenchée.",
+            ...data,
+          });
+        } else {
+          const errorData = await response.json();
+          console.error("Erreur dans vote-no :", errorData);
+          return NextResponse.json(
+            { message: "Erreur dans vote-no.", ...errorData },
+            { status: response.status }
+          );
+        }
+      }
+    }
+    
     return NextResponse.json({
       message: "Vote enregistré et mis à jour avec succès.",
       yesVotes,
       noVotes,
       totalVotes,
-      totalPlayers: players.length,
+      totalPlayers: game.players.length,
       playersYetToVote: playersYetToVote.map((p) => ({
         id: p.id,
         username: p.username,
