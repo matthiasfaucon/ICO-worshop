@@ -54,7 +54,7 @@ export default function AdminPage() {
           </Link>
 
           <Link
-            href="/statistics"
+            href="/admin/statistics"
             className="relative group transition-transform duration-300 hover:scale-105"
           >
             <div className="absolute inset-px rounded-lg bg-white" />

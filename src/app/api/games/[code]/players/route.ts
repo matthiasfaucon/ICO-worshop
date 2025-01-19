@@ -24,7 +24,6 @@ export async function GET(
       },
     });
 
-    console.log("Résultat de la requête Prisma pour la partie :", game);
 
     if (!game) {
       console.warn(`Aucune partie trouvée pour le code : ${gameCode}`);
