@@ -260,3 +260,7 @@ ICO-WORKSHOP/
    ├── StoreProvider.tsx # Fournisseur de contexte pour l'état global
 ├── .env               # Variables d'environnement
 ```
+
+### Livrables
+
+**Backlog produit** : Liste priorisée des fonctionnalités à développer, accessible via Notion et **Tableau Scrum** : Organisation des sprints, incluant les tâches en cours, terminées, et à faire. : https://gravel-sandalwood-3e8.notion.site/17bfd919ac27807ab099e6284a12a002?v=17bfd919ac27814199dd000cf652a186&pvs=73
