@@ -1,4 +1,4 @@
-# Next.js PWA avec Tailwind CSS, Neon DB et Prisma
+# ICO
 
 Ce projet est une application Next.js transformée en Progressive Web App (PWA). Elle utilise Tailwind CSS pour le design, Neon DB comme base de données, Prisma comme ORM, Redux pour la gestion de l'état, NextAuth pour l'authentification et Pusher pour la gestion des événements en temps réel.
 
