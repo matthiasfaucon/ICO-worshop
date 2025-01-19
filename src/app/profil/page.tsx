@@ -83,7 +83,7 @@ export default function ProfilPage() {
                         {userGames.map((game) => (
                             <li 
                                 key={game.id} 
-                                className="bg-white/10 backdrop-blur-sm border border-white/30 rounded-lg p-4 shadow-md text-white"
+                                className="border border-white/30 rounded-lg p-4 shadow-md text-white"
                             >
                                 <p className="text-lg font-bold">
                                     Date de création : {new Date(game.created_at).toLocaleDateString()}

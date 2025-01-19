@@ -258,9 +258,12 @@ export default function GamePage() {
 
     return (
         <div className='bg-brown-texture min-h-screen bg-cover bg-center'>
-            <Header />
-                <div className="mx-auto mt-8 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
-                    <div className="relative z-10 flex flex-col items-center gap-4">
+                  <Header 
+        pirateScore={gameState.pirateScore} 
+        marinScore={gameState.marinScore} 
+      />
+                <div className="mx-auto mt-8 mb-4 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10">
+                    <div className="relative pb-6 z-10 flex flex-col items-center gap-4">
                         {/* Phase de configuration */}
                         {gameState.gamePhase === 'CREATE_PLAYERS' && (
                             <div className="mb-4 w-full pt-6">
@@ -399,7 +402,7 @@ export default function GamePage() {
                                                             <p className='text-white font-bold'>Tu es aussi le capitaine du prochain voyage!</p>
                                                         </div>
                                                     )}
-                                                    <div className='px-6'>
+                                                    <div className='px-6 pb-6'>
                                                     <p className="text-center text-white mb-2">Retient bien et passe le téléphone</p>
                                                     <button 
                                                         onClick={() => {
@@ -431,7 +434,7 @@ export default function GamePage() {
                                 {/* Afficher le timer */}
                                 {remainingTime !== null && (
                                 <div
-                                    className="fixed inset-0 flex items-center justify-center bg-cover bg-center text-white text-center p-6"
+                                    className="absolute top-0 left-0 bottom-0 right-0 inset-0 flex items-center justify-center bg-cover bg-center text-white text-center p-6"
                                     style={{
                                     backgroundImage: "url('/cards/background-red.jpg')",
                                     }}
@@ -490,7 +493,7 @@ export default function GamePage() {
                                 <h1 className="text-4xl text-center font-magellan text-white mb-4">Qui part en voyage ?</h1>
                                 <div className=" border-white/20 border-y-2 p-4 w-full">
                                     <p className="text-white font-filson text-center font-bold">Tour actuel: {gameState.tour}</p>
-                                    <p className="text-white font-filson text-center font-bold border-2">Capitaine: { gameState.players.find(p => p.id === gameState.currentCaptain)?.name }</p>
+                                    <p className="text-white font-filson text-center font-bold">Capitaine: { gameState.players.find(p => p.id === gameState.currentCaptain)?.name }</p>
                                 </div>
                             
                                 <div className="mt-4 px-6">
@@ -506,7 +509,7 @@ export default function GamePage() {
                                                     }
                                                 }}
                                                 className={`p-2 rounded ${selectedPlayers.includes(player.id)
-                                                    ? 'bg-blue-400 text-white font-bold'
+                                                    ? 'bg-white text-slate-700 font-bold'
                                                     : 'text-white font-bold'
                                                     }`}
                                             >
@@ -523,7 +526,7 @@ export default function GamePage() {
                                     <button
                                         onClick={handleCrewSelection}
                                         disabled={selectedPlayers.length !== 3 || selectedPlayers.every(playerId => gameState.lastCrew.includes(playerId))}
-                                        className="mt-4 bg-green-500 text-white px-4 py-2 rounded disabled:bg-gray-400 w-full"
+                                        className="mt-4 bg-white text-slate-700 font-bold px-4 py-2 rounded disabled:bg-gray-400 w-full"
                                     >
                                         Valider l'équipage
                                     </button>
@@ -662,13 +665,13 @@ export default function GamePage() {
                         )}
 
                         {/* Affichage du score en cours */}
-                        {gameState.gamePhase !== 'SETUP' && gameState.gamePhase !== 'CREATE_PLAYERS' && gameState.gamePhase !== 'REVEAL_ROLES' && gameState.gamePhase !== 'GAME_OVER' && (
+                        {/* {gameState.gamePhase !== 'SETUP' && gameState.gamePhase !== 'CREATE_PLAYERS' && gameState.gamePhase !== 'REVEAL_ROLES' && gameState.gamePhase !== 'GAME_OVER' && (
                             <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded">
                                 <p>Score:</p>
                                 <p>Pirates: {gameState.pirateScore}</p>
                                 <p>Marins: {gameState.marinScore}</p>
                             </div>
-                        )}
+                        )} */}
                     </div>
 
                 </div>
