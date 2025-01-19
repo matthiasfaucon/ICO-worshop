@@ -7,7 +7,7 @@ export async function POST(
   { params }: { params: { code: string } }
 ) {
   const gameCode = await params.code;
-
+  console.log("test");
   try {
     const body = await req.json();
 
@@ -20,7 +20,7 @@ export async function POST(
 
     const { sessionUuid } = body;
 
-    // Récupérer la partie et le joueur
+    // Récupérer la partie et les joueurs
     const game = await prisma.game.findUnique({
       where: { code: gameCode },
       include: { players: true, turns: true },
@@ -42,6 +42,8 @@ export async function POST(
       );
     }
 
+    console.log("ici ceest la");
+
     // Vérifier le tour actuel
     const currentTurn = game.turns.find(
       (t) => t.turn_number === game.current_turn
@@ -53,10 +55,15 @@ export async function POST(
       );
     }
 
+    console.log("current turn :" + currentTurn);
+    console.log("aadfez afdezfazefgeazf la");
+
     // Récupérer toutes les actions de cartes pour ce tour
     const allActions = await prisma.cardAction.findMany({
       where: { turn_id: currentTurn.id },
     });
+
+    console.log("allactions  " +allActions);
 
     if (allActions.length === 0) {
       return NextResponse.json(
@@ -65,9 +72,11 @@ export async function POST(
       );
     }
 
+    
     // Mélanger les cartes pour garantir l'anonymat
     const shuffledActions = allActions.sort(() => Math.random() - 0.5);
 
+    console.log("faeeseses");
     // Calculer le résultat de la mission
     const poisonCount = shuffledActions.filter(
       (action) => action.type === "poison"
@@ -83,6 +92,8 @@ export async function POST(
       ...game.score,
       [result]: (game.score[result] || 0) + 1,
     };
+
+    console.log("isotherme");
 
     // Trouver le prochain capitaine
     const currentCaptainIndex = game.players.findIndex(
@@ -100,18 +111,22 @@ export async function POST(
 
     console.log("Nouveau capitaine session UUID:", nextCaptain.session_uuid);
 
-    // Réinitialiser l'équipage, votes et incrémenter le tour
+    // Réinitialiser et mettre à jour les joueurs et le capitaine
     await prisma.$transaction([
       prisma.player.updateMany({
         where: { game_id: game.id },
-        data: { is_in_crew: false },
+        data: { is_captain: false, is_in_crew: false },
+      }),
+      prisma.player.update({
+        where: { id: nextCaptain.id },
+        data: { is_captain: true },
       }),
       prisma.vote.deleteMany({ where: { game_id: game.id } }),
       prisma.game.update({
         where: { id: game.id },
         data: {
           current_turn: game.current_turn + 1,
-          current_captain_id: nextCaptain.id, // Relation conservée via `id`
+          current_captain_id: nextCaptain.id,
           score: updatedScore,
         },
       }),
@@ -143,9 +158,9 @@ export async function POST(
     // Publier l'événement via Pusher avec le `session_uuid` du capitaine
     await pusher.trigger(`game-${gameCode}`, "mission-reveal", {
       result,
-      shuffledCards: shuffledActions.map((action) => action.type), // Cartes mélangées
+      shuffledCards: shuffledActions.map((action) => action.type),
       score: updatedScore,
-      nextCaptainSessionUuid: nextCaptain.session_uuid, // Utilisation du `session_uuid`
+      nextCaptainSessionUuid: nextCaptain.session_uuid,
     });
 
     console.log("Événement Pusher 'mission-reveal' envoyé avec succès.");
@@ -157,7 +172,7 @@ export async function POST(
       islandCount,
       updatedScore,
       nextTurnNumber: game.current_turn + 1,
-      nextCaptain: nextCaptain.session_uuid, // Transmettre le `session_uuid`
+      nextCaptain: nextCaptain.session_uuid,
     });
   } catch (error) {
     console.error("Erreur lors de la révélation de la mission:", error);

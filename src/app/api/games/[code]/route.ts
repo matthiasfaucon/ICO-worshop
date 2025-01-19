@@ -7,7 +7,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  const gameCode = await params.code; // Suppression de l'utilisation de `await` ici
+  const gameCode = await params.code;
 
   try {
     // Récupérer les données de la partie avec les joueurs
@@ -16,7 +16,7 @@ export async function GET(
       include: {
         players: {
           include: {
-            user: true, // Inclure les informations utilisateur
+            user: true, 
           },
         },
       },

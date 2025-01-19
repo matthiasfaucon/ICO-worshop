@@ -37,13 +37,13 @@ model Game {
   current_turn       Int             @default(1)
   created_at         DateTime        @default(now())
   updated_at         DateTime?
+  score              Json            @default("{}")
   cardActions        CardAction[]
   current_captain    Player?         @relation("Captain", fields: [current_captain_id], references: [id])
   statistics         GameStatistics?
   players            Player[]
   turns              Turn[]
   votes              Vote[]
-  score              Json            @default("{}") 
 }
 
 model Player {
@@ -61,6 +61,7 @@ model Player {
   score        Int               @default(0)
   session_uuid String            @db.Uuid
   username     String            @db.VarChar(50)
+  rejections   Int               @default(0)
   cardActions  CardAction[]
   captainOf    Game[]            @relation("Captain")
   game         Game              @relation(fields: [game_id], references: [id])
@@ -128,8 +129,8 @@ model Vote {
   game        Game     @relation(fields: [game_id], references: [id])
   player      Player   @relation(fields: [player_id], references: [id])
   turn        Turn     @relation(fields: [turn_id], references: [id])
-  @@unique([player_id, turn_id]) 
 
+  @@unique([player_id, turn_id])
 }
 
 model GameStatistics {
@@ -184,9 +185,9 @@ model GameMonoDevice {
   created_by    String      @db.Uuid
   created_at    DateTime    @default(now())
   who_won       WinnerType?
-  players_count Int?
   terminated_at DateTime?
   game_duration Float?
+  players_count Int?
   User          User        @relation(fields: [created_by], references: [id])
 }
 

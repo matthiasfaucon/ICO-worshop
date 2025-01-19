@@ -131,8 +131,8 @@ export default function PiratesDisplayPage() {
                 <div className="w-12 h-12 bg-yellow-100 text-yellow-800 rounded-full flex items-center justify-center shadow-lg">
                   <svg
                     fill="#000000"
-                    height="15px"
-                    width="15px"
+                    height="50px"
+                    width="50px"
                     version="1.1"
                     id="Capa_1"
                     xmlns="http://www.w3.org/2000/svg"

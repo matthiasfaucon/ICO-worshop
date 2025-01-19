@@ -1,25 +1,50 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Pusher from "pusher-js";
+
+interface Votes {
+  yes: number;
+  no: number;
+  totalVotes: number;
+  totalPlayers: number;
+  playerVote: "yes" | "no" | null;
+}
+
+interface CrewMember {
+  id: string;
+  username: string;
+}
+
+interface PlayerYetToVote {
+  id: string;
+  username: string;
+}
 
 export default function VotePage() {
   const params = useParams();
+  const router = useRouter();
   const gameCode = params.code;
 
-  const [votes, setVotes] = useState({
+  const [votes, setVotes] = useState<Votes>({
     yes: 0,
     no: 0,
     totalVotes: 0,
     totalPlayers: 0,
     playerVote: null,
   });
+  const [vote, setVote] = useState<"yes" | "no" | null>(null);
+  const [crew, setCrew] = useState<CrewMember[]>([]);
+  const [playersYetToVote, setPlayersYetToVote] = useState<PlayerYetToVote[]>(
+    []
+  );
+  const [sessionUuid, setSessionUuid] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [vote, setVote] = useState(null);
-  const [crew, setCrew] = useState([]);
-  const [playersYetToVote, setPlayersYetToVote] = useState([]);
-  const [sessionUuid, setSessionUuid] = useState(null);
+  const [timer, setTimer] = useState<number | null>(5);
+  const [rejectedTimer, setRejectedTimer] = useState<number | null>(null);
+  const [failedTimer, setFailedTimer] = useState<number | null>(null);
 
   // Obtenir le sessionUuid uniquement côté client
   useEffect(() => {
@@ -28,11 +53,11 @@ export default function VotePage() {
         .split("; ")
         .find((row) => row.startsWith("session_uuid="))
         ?.split("=")[1];
-      setSessionUuid(uuid);
+      setSessionUuid(uuid || null);
     }
   }, []);
 
-  // Récupération initiale des données
+  // Récupération initiale des données (votes et équipage)
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -50,18 +75,24 @@ export default function VotePage() {
             totalPlayers: votesData.totalPlayers,
             playerVote: votesData.playerVote || null,
           });
+          setVote(votesData.playerVote || null);
           setPlayersYetToVote(votesData.playersYetToVote || []);
         }
 
         if (crewResponse.ok) {
           const crewData = await crewResponse.json();
           setCrew(crewData.crew || []);
+          console.log("Réponse de l'API /crew :", crewData);
         }
+
+        // Une fois les données récupérées, arrêter le chargement
+        setIsLoading(false);
       } catch (error) {
         console.error(
           "Erreur lors de la récupération initiale des données :",
           error
         );
+        setIsLoading(false); // Arrêter le chargement même en cas d'erreur
       }
     };
 
@@ -69,13 +100,10 @@ export default function VotePage() {
   }, [gameCode]);
 
   // Gestion des votes
-  const handleVote = async (selectedVote) => {
-    setVote(selectedVote);
-
+  const handleVote = async (selectedVote: "yes" | "no") => {
     try {
       if (!sessionUuid) {
-        console.error("Session UUID manquant.");
-        return;
+        throw new Error("Session UUID manquant.");
       }
 
       const response = await fetch(`/api/games/${gameCode}/vote`, {
@@ -84,29 +112,29 @@ export default function VotePage() {
         body: JSON.stringify({ sessionUuid, vote: selectedVote }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setVotes((prevVotes) => ({
-          ...prevVotes,
-          ...data,
-          playerVote: selectedVote,
-        }));
-        setPlayersYetToVote(data.playersYetToVote || []);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Erreur lors de l'envoi du vote :", errorData);
+        throw new Error(errorData.message || "Erreur lors de l'envoi du vote.");
       }
+
+      const data = await response.json();
+      setVote(selectedVote); // Enregistrer le vote localement
+      console.log("Vote enregistré :", data);
     } catch (error) {
-      console.error("Erreur lors de l'envoi du vote :", error);
+      console.error("Erreur dans handleVote :", error);
     }
   };
 
   // Mise à jour en temps réel avec Pusher
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER,
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER!,
     });
 
     const channel = pusher.subscribe(`game-${gameCode}`);
 
-    channel.bind("vote-updated", (data) => {
+    channel.bind("vote-updated", (data: any) => {
       setVotes({
         yes: data.yesVotes,
         no: data.noVotes,
@@ -117,15 +145,147 @@ export default function VotePage() {
       setPlayersYetToVote(data.playersYetToVote || []);
     });
 
+    channel.bind("vote-success", async () => {
+      console.log("Vote validé, préparation de l'équipage.");
+    
+      try {
+        // Forcer la récupération de l'équipage avant d'envoyer
+        const crewResponse = await fetch(`/api/games/${gameCode}/crew`, { method: "GET" });
+        if (!crewResponse.ok) {
+          console.error("Erreur lors de la récupération de l'équipage :", await crewResponse.json());
+          return;
+        }
+    
+        const crewData = await crewResponse.json();
+        console.log("Équipage récupéré après vote-success :", crewData.crew);
+    
+        const selectedPlayers = crewData.crew.map((member: CrewMember) => member.id); // Utiliser la donnée récupérée
+        console.log("selectedPlayers envoyés dans le body :", selectedPlayers);
+    
+        const response = await fetch(`/api/games/${gameCode}/post-vote-crew`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ selectedPlayers }),
+        });
+    
+        if (response.ok) {
+          console.log("Équipage configuré avec succès.");
+    
+          // Initialisez le compte à rebours
+          setTimer(5);
+          const countdown = setInterval(() => {
+            setTimer((prev) => (prev !== null && prev > 0 ? prev - 1 : null));
+          }, 1000);
+    
+          setTimeout(() => {
+            clearInterval(countdown);
+            router.push(`/multidevice/game/${gameCode}/trip`);
+          }, 5000);
+        } else {
+          console.error("Erreur lors de la configuration de l'équipage :", await response.json());
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'appel à post-vote-crew :", error);
+      }
+    });
+    
+
+    channel.bind("vote-rejected", async (data: any) => {
+      console.log("Vote rejeté :", data.message);
+  
+      // Initialisez un compte à rebours de 5 secondes
+      setRejectedTimer(5);
+  
+      const countdown = setInterval(() => {
+        setRejectedTimer((prev) => (prev !== null && prev > 0 ? prev - 1 : null));
+      }, 1000);
+  
+      // Obtenez l'utilisateur actuel
+      const sessionUuid = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("session_uuid="))
+        ?.split("=")[1];
+  
+      // Récupérez le capitaine actuel via l'API
+      const response = await fetch(`/api/games/${gameCode}/current-captain`, {
+        method: "GET",
+      });
+      if (!response.ok) {
+        console.error("Erreur lors de la récupération du capitaine actuel.");
+        return;
+      }
+  
+      const currentCaptainData = await response.json();
+      const currentCaptainUuid = currentCaptainData.currentCaptain.sessionUuid;
+  
+      setTimeout(() => {
+        clearInterval(countdown);
+  
+        if (sessionUuid === currentCaptainUuid) {
+          // Capitaine redirigé vers la sélection de l'équipage
+          router.push(`/multidevice/game/${gameCode}/captain-selection`);
+        } else {
+          // Autres joueurs redirigés vers la salle d'attente
+          router.push(`/multidevice/game/${gameCode}/player-wait`);
+        }
+      }, 5000);
+    });
+  
+    // Événement pour passer au capitaine suivant
+    channel.bind("vote-failed", (data: any) => {
+      console.log("Deuxième rejet, passage au capitaine suivant :", data.message);
+    
+      // Initialisez un compte à rebours de 5 secondes
+      setFailedTimer(5);
+    
+      const countdown = setInterval(() => {
+        setFailedTimer((prev) => (prev !== null && prev > 0 ? prev - 1 : null));
+      }, 1000);
+    
+      const sessionUuid = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("session_uuid="))
+        ?.split("=")[1];
+    
+      setTimeout(() => {
+        clearInterval(countdown);
+    
+        if (sessionUuid === data.captainSessionUuid) {
+          // Redirection du nouveau capitaine
+          router.push(`/multidevice/game/${gameCode}/captain-selection`);
+        } else {
+          // Redirection des autres joueurs
+          router.push(`/multidevice/game/${gameCode}/player-wait`);
+        }
+      }, 5000);
+    });
+    
+    
+
+
+    
     return () => {
       channel.unbind_all();
       channel.unsubscribe();
     };
-  }, [gameCode]);
+  }, [gameCode,router]);
+
+  
 
   const voteProgress = votes.totalPlayers
     ? Math.round((votes.totalVotes / votes.totalPlayers) * 100)
     : 0;
+
+  if (isLoading) {
+    // Afficher un spinner ou un message de chargement
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+        <h1 className="text-xl font-semibold text-gray-700 animate-pulse">
+          Chargement...
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 px-4 py-6">
@@ -186,43 +346,67 @@ export default function VotePage() {
         </div>
       </div>
 
+      {rejectedTimer !== null && (
+  <div className="text-center text-red-600 font-semibold mt-4">
+    Équipage démantelé, nouvelle sélection dans {rejectedTimer}...
+  </div>
+)}
+
+ {/* Message de redirection */}
+ {timer < 5 && timer > 0 && (
+        <div className="text-lg font-semibold text-gray-700 mb-6">
+          L'équipage va maintenant procéder à son voyage dans {timer}...
+        </div>
+      )}
+
+{failedTimer !== null && (
+  <div className="text-center text-red-600 font-semibold mt-4">
+    Deuxième rejet, passage au capitaine suivant dans {failedTimer}...
+  </div>
+)}
+
+      {/* Boutons de vote */}
       <div className="flex gap-4 w-full max-w-lg">
-        <button
-          onClick={() => handleVote("yes")}
-          disabled={vote !== null}
-          className={`flex-1 py-3 rounded-lg font-semibold transition-all duration-300 ${
-            vote === "yes"
-              ? "bg-green-500 text-white"
-              : vote === null
-              ? "bg-gray-200 hover:bg-green-500 hover:text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Oui
-        </button>
-        <button
-          onClick={() => handleVote("no")}
-          disabled={vote !== null}
-          className={`flex-1 py-3 rounded-lg font-semibold transition-all duration-300 ${
-            vote === "no"
-              ? "bg-red-500 text-white"
-              : vote === null
-              ? "bg-gray-200 hover:bg-red-500 hover:text-white"
-              : "bg-gray-200"
-          }`}
-        >
-          Non
-        </button>
+        {vote !== "no" && (
+          <button
+            onClick={() => handleVote("yes")}
+            disabled={vote !== null}
+            className={`flex-1 py-3 rounded-lg font-semibold transition-all duration-300 ${
+              vote === "yes"
+                ? "bg-green-500 text-white"
+                : "bg-gray-200 hover:bg-green-500 hover:text-white"
+            }`}
+          >
+            Oui
+          </button>
+        )}
+        {vote !== "yes" && (
+          <button
+            onClick={() => handleVote("no")}
+            disabled={vote !== null}
+            className={`flex-1 py-3 rounded-lg font-semibold transition-all duration-300 ${
+              vote === "no"
+                ? "bg-red-500 text-white"
+                : "bg-gray-200 hover:bg-red-500 hover:text-white"
+            }`}
+          >
+            Non
+          </button>
+        )}
       </div>
 
       {/* Message de statut */}
-      <div className="mt-6 text-gray-600 text-center">
-        {vote
-          ? `Vous avez voté : ${vote === "yes" ? "Oui" : "Non"}`
-          : "Vous n'avez pas encore voté."}
-      </div>
+      {vote === null ? (
+        <div className="mt-6 text-gray-600 text-center">
+          Vous n'avez pas encore voté.
+        </div>
+      ) : (
+        <div className="mt-6 text-gray-600 text-center">
+          Vous avez voté : {vote === "yes" ? "Oui" : "Non"}.
+        </div>
+      )}
 
-      {/* Joueurs non votants */}
+      {/* Joueurs n'ayant pas encore voté */}
       <div className="w-full max-w-lg bg-white shadow-lg rounded-xl p-6 mb-6 mt-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           Joueurs n'ayant pas encore voté :

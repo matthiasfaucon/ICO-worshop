@@ -43,3 +43,4 @@ next-env.d.ts
 /public/sw.js
 !.next/cache
 !public/workbox-*.js
+public/workbox-e43f5367.js

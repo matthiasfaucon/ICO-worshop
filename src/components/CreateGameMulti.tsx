@@ -37,7 +37,7 @@ export default function CreateGameMulti({
       const token = Cookies.get("authToken");
       if (!token) {
         alert("Vous devez être connecté pour créer une partie.");
-        router.push("/signin");
+        router.push("/auth-options/signIn");
         return;
       }
 
@@ -68,7 +68,18 @@ export default function CreateGameMulti({
       } else {
         const error = await response.json();
         console.error("Erreur :", error.message);
-        alert(`Erreur : ${error.message}`);
+        switch (error.code) {
+          case "TOKEN_MISSING":
+            alert("Erreur : Vous devez être connecté pour effectuer cette action.");
+            router.push("/auth-options/signin");
+            break;
+          case "TOKEN_INVALID":
+            alert("Erreur : Votre session a expiré. Veuillez vous reconnecter.");
+            router.push("/auth-options/signin");
+            break;
+          default:
+            alert("Erreur inconnue. Veuillez réessayer.");
+        }
       }
     } catch (err) {
       console.error("Erreur lors de la création de la partie :", err);

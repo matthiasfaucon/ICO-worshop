@@ -37,6 +37,12 @@ export async function POST(
       );
     }
 
+    console.log("Session UUID :", sessionUuid);
+
+    console.log("Joueurs de la partie :", game.players);
+
+
+    console.log ("game " + game.current_captain_id);
     // Vérification du capitaine
     const captain = game.players.find(
       (player) => player.is_captain && player.session_uuid === sessionUuid
@@ -52,6 +58,7 @@ export async function POST(
 
     // Vérifier si c'est le premier tour
     const isFirstTurn = game.current_turn === 1;
+    console.log("Tour actuelle" + game.current_turn);
     // Transaction pour mettre à jour l'équipage et les tours
     await prisma.$transaction(async (prisma) => {
       // Réinitialiser les joueurs de l'équipage précédent

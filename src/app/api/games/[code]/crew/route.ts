@@ -5,7 +5,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  const gameCode = params.code;
+  const gameCode = await params.code;
 
   try {
     // Récupérer la partie par son code
