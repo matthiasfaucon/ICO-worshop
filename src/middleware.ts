@@ -11,7 +11,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/api') ||
     request.nextUrl.pathname === '/' ||
     request.nextUrl.pathname === '' ||
-    request.nextUrl.pathname.startsWith('/multidevice')
+    request.nextUrl.pathname.startsWith('/multidevice') ||
+    request.nextUrl.pathname.startsWith('/public')
   ) {
     return NextResponse.next()
   }
@@ -56,7 +57,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Appliquer le middleware à toutes les routes sauf les fichiers statiques
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Appliquer le middleware à toutes les routes sauf les fichiers statiques et certains types de fichiers
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.json|.*\\.png|.*\\.jpeg|.*\\.svg|.*\\.woff|.*\\.woff2|.*\\.jpg|.*\\.webp).*)',
   ],
 }
