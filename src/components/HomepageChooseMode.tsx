@@ -9,7 +9,6 @@ import { useAppDispatch } from '@/lib/hooks';
 import { loadFromLocalStorage } from '@/lib/reducers/game';
 
 export default function HomepageChooseMode() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isGameSaved, setIsGameSaved] = useState(false);
@@ -21,12 +20,10 @@ export default function HomepageChooseMode() {
     }
   }, []);
 
-  const handlePlayClick = () => {
-    setIsModalOpen(true);
-  };
-
   const handleModeSelect = (mode: string) => {
-    setIsModalOpen(false);
+    if (isGameSaved) {
+      localStorage.removeItem("gameState");
+    }
     if (mode === "multidevice") {
       router.push("/multidevice");
     } else if (mode === "onedevice") {
@@ -93,37 +90,6 @@ export default function HomepageChooseMode() {
 
           </div>
         </div>
-
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-              <h2 className="text-lg font-bold text-gray-900 mb-4 text-center">
-                Choisissez un mode de jeu
-              </h2>
-              <div className="flex flex-col space-y-4">
-                <button
-                  onClick={() => handleModeSelect("multidevice")}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
-                >
-                  Multi Device
-                </button>
-                <button
-                  onClick={() => handleModeSelect("onedevice")}
-                  className="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition"
-                >
-                  One Device
-                </button>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="mt-4 w-full text-gray-500 hover:text-gray-700 text-sm text-center"
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
