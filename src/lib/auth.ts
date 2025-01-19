@@ -42,13 +42,12 @@ export const authOptions = {
  */
 export function validateToken(token: string) {
   if (!token || typeof token !== "string") {
-    throw new Error("Token vide ou non valide");
+    console.error("Token vide ou non valide");
   }
 
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {
     console.error("Erreur lors de la validation du token :", error);
-    throw new Error("Token invalide ou expiré");
   }
 }
