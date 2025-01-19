@@ -42,23 +42,26 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const token = request.headers.get("Authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json(
-        { message: "Token manquant." },
-        { status: 401 }
-      );
-    }
+    let decoded = null;
+    if (request.headers.get("Authorization")) {
+      const token = request.headers.get("Authorization")?.split(" ")[1];
+      if (!token) {
+        return NextResponse.json(
+          { message: "Token manquant." },
+          { status: 401 }
+        );
+      }
 
-    const decoded: any = validateToken(token);
-    if (!decoded) {
-      return NextResponse.json(
-        { message: "Token invalide ou expiré." },
-        { status: 401 }
-      );
+      decoded = validateToken(token);
+      if (!decoded) {
+        return NextResponse.json(
+          { message: "Token invalide ou expiré." },
+          { status: 401 }
+        );
+      }
     }
     const games = await prisma.gameMonoDevice.findMany({
-      where: decoded.id ? { created_by: decoded.id } : {},
+      where: decoded?.id ? { created_by: decoded?.id } : {},
       include: {
         User: {
           select: {

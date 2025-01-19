@@ -30,10 +30,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
                 { status: 401 }
             );
         }
-        const { name, value, description, order, type } = await request.json();
+        const { name, value, description, order, type, key } = await request.json();
         const rule = await prisma.gameRule.update({
             where: { id: params.id },
-            data: { name, value, description, updated_by: decoded.id, order, type }
+            data: { name, value, description, updated_by: decoded.id, order, type, key }
         });
         return NextResponse.json(rule);
     } catch (error) {
