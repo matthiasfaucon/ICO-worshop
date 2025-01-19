@@ -154,14 +154,15 @@ npm run dev # ou npm run dev
 ## Configuration
 
 
-
 ### 1. Variables d'environnement
+
+Vous pouvez soit utiliser le fichier `.env` envoyé dans le rendu, soit renommer le `.env.example` en `.env` à la racine du projet et suivre les étapes suivantes pour configurer les variables d'environnement nécessaires :
 
 #### Neon DB
 
 1. Créez un projet sur [Neon.tech](https://neon.tech/).
 2. Récupérez l'URL de connexion de votre base de données.
-3. Renommez le `.env.example` en `.env`, et copiez l'URL que vous avez récupérée dans la variable `DATABASE_URL`.
+3. Copiez l'URL que vous avez récupérée dans la variable `DATABASE_URL`.
 4. Si vous utilisez une base de données de shadow pour Prisma, ajoutez également l'URL de cette base de données dans la variable `SHADOW_DATABASE_URL`.
 
 ### JWT
@@ -170,11 +171,11 @@ npm run dev # ou npm run dev
 
 #### Pusher
 
-
-### 2. Prisma
 1. Créez un projet sur **Pusher.com**
 2. Récupérez vos clés d'application : `NEXT_PUBLIC_PUSHER_APP_ID`, `NEXT_PUBLIC_PUSHER_APP_KEY`, `NEXT_PUBLIC_PUSHER_APP_SECRET` et `NEXT_PUBLIC_PUSHER_APP_CLUSTER`.
 3. Ajoutez ces informations dans le fichier `.env` 
+
+#### Prisma
 
 1. Générez le schéma Prisma basé sur la base de données :
 
@@ -188,7 +189,7 @@ npx prisma db pull
 npx prisma generate
 ```
 
-### 3. Configuration PWA
+### 2. Configuration PWA
 
 Ajoutez les fichiers nécessaires pour convertir l'application en PWA (éventuellement déjà inclus dans ce modèle) :
 
