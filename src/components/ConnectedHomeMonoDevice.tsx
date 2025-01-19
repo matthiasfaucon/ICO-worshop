@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaInfoCircle, FaTrophy, FaTimesCircle, FaUser } from "react-icons/fa";
 import Cookies from "js-cookie";
 import { v4 as uuidv4 } from "uuid";
+import HeaderHome from "./HeaderHome";
 
 export default function ConnectedHome() {
   const [victories, setVictories] = useState(4);
@@ -69,19 +70,7 @@ export default function ConnectedHome() {
       }}
     >
       {/* Header */}
-      <div className="bg-white/10 backdrop-blur-sm w-full py-4 px-6 flex items-center justify-between">
-        <button onClick={handleInfo} className="p-2 text-white">
-          <FaInfoCircle className="text-xl" />
-        </button>
-        <div className="text-white text-center">
-          <FaTrophy className="text-2xl" />
-        </div>
-        <a href="/multidevice/auth-options">
-          <button className="p-2 text-white">
-            <FaUser className="text-xl" />
-          </button>
-        </a>
-      </div>
+      <HeaderHome />
 
       {/* Main Container */}
       <div className="mx-auto mt-8 bg-white/15 backdrop-blur-md rounded-lg shadow-lg border-2 border-white/40 w-11/12 md:w-8/12 lg:w-6/12">
