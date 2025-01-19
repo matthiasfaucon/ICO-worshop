@@ -87,6 +87,11 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 
 ### Améliorations prévues pour la V2
 
+#### Paiement et Monétisation
+
+- **Intégration de paiement en ligne** : Ajout de fonctionnalités de paiement pour acheter le jeu directement sur l'application.
+- **Acheter le jeu en ligne ou en physique** : Offrir la possibilité d'acheter le jeu en ligne ou en version physique pour avoir accès à l'application et donc offir une expérience de jeu flexible.
+
 #### Authentification et Sessions
 
 - **Authentification via des providers tiers** : Intégration de la connexion via Google, Facebook, Twitter, Apple, etc. pour une expérience utilisateur plus fluide.

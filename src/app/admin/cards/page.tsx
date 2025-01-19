@@ -36,7 +36,7 @@ export default function AdminCardsPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [router]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Êtes-vous sûr de vouloir supprimer cette carte ?")) return;
@@ -62,6 +62,7 @@ export default function AdminCardsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
+      
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Gestion des Cartes</h1>

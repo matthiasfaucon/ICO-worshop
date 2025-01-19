@@ -178,12 +178,13 @@ export default function AdminUsersPage() {
                     >
                       Modifier
                     </button>
-                    <button
+                    {/* Ne pas supprimer pour des questions de données, on veut garder la data sur les joueurs */}
+                    {/* <button
                       onClick={() => deleteUser(user.id)}
                       className="rounded bg-red-50 px-2 py-1 text-xs font-semibold text-red-600 shadow-sm hover:bg-red-100 transition duration-200 ml-2"
                     >
                       Supprimer
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               ))}

@@ -23,11 +23,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    try {
-        const user = await prisma.user.delete({ where: { id: params?.id } });
-        return NextResponse.json({ message: "Utilisateur supprimé" });
-    } catch (error) {
-        return NextResponse.json({ error: "Erreur lors de la suppression de l'utilisateur" }, { status: 500 });
-    }
-}
+// export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+//     try {
+//         const user = await prisma.user.delete({ where: { id: params?.id } });
+//         return NextResponse.json({ message: "Utilisateur supprimé" });
+//     } catch (error) {
+//         return NextResponse.json({ error: "Erreur lors de la suppression de l'utilisateur" }, { status: 500 });
+//     }
+// }
