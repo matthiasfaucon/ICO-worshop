@@ -7,12 +7,14 @@ import { FaBookDead } from "react-icons/fa";
 import Link from "next/link";
 import RulesSlider from "./RulesSlider";
 import { GoPerson } from "react-icons/go";
+import { FaUserShield } from "react-icons/fa";
 
 export default function HeaderHome() {
   const [showRules, setShowRules] = useState(false);
   const [isLogged, setIsLogged] = useState(null); // `null` pour différencier le chargement
   const gamePhase = useAppSelector((state) => state.game.gamePhase);
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(null);
 
   useEffect(() => {
     async function checkLogin() {
@@ -24,12 +26,18 @@ export default function HeaderHome() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log("data", data);
           if (data.isLogged) {
-            setIsLogged(true); 
+            setIsLogged(true);
+            if (data?.user?.role?.toLowerCase() === "admin") {
+              setIsAdmin(true);
+            }
           } else {
-            setIsLogged(false); 
+            setIsAdmin(false);
+            setIsLogged(false);
           }
         } else {
+          setIsAdmin(false);
           setIsLogged(false);
         }
       } catch (error) {
@@ -51,9 +59,16 @@ export default function HeaderHome() {
         <div>
           {/* Si connecté, lien vers le profil */}
           {isLogged ? (
-            <Link href="/profil">
-              <GoPerson className="text-xl text-slate-700" />
-            </Link>
+            <div className="flex items-center gap-5">
+              <Link href="/profil">
+                <GoPerson className="text-xl text-slate-700" />
+              </Link>
+              {isAdmin ? (
+                <Link href="/admin">
+                  <FaUserShield className="text-xl text-red-500" />
+                </Link>
+              ) : null}
+            </div>
           ) : (
             <Link href="/auth-options">
               <GoPerson className="text-xl text-slate-700" />
