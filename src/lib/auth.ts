@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import Router from "next/router";
 import { v4 as uuidv4 } from "uuid";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -43,14 +42,13 @@ export const authOptions = {
  */
 export function validateToken(token: string) {
   if (!token || typeof token !== "string") {
-    console.error("Token manquant.");
-    window.location.href = "/auth-options";
+    throw new Error("Token vide ou non valide");
   }
 
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {
     console.error("Erreur lors de la validation du token :", error);
-    window.location.href = "/auth-options";
+    throw new Error("Token invalide ou expiré");
   }
 }

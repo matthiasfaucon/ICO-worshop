@@ -9,7 +9,6 @@ import { useAppDispatch } from '@/lib/hooks';
 import { loadFromLocalStorage } from '@/lib/reducers/game';
 
 export default function HomepageChooseMode() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isGameSaved, setIsGameSaved] = useState(false);
@@ -21,12 +20,10 @@ export default function HomepageChooseMode() {
     }
   }, []);
 
-  const handlePlayClick = () => {
-    setIsModalOpen(true);
-  };
-
   const handleModeSelect = (mode: string) => {
-    setIsModalOpen(false);
+    if (isGameSaved) {
+      localStorage.removeItem("gameState");
+    }
     if (mode === "multidevice") {
       router.push("/multidevice");
     } else if (mode === "onedevice") {
@@ -116,6 +113,10 @@ export default function HomepageChooseMode() {
           </div>
         </div>
       )}
+
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

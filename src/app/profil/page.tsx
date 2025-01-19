@@ -26,6 +26,10 @@ export default function ProfilPage() {
                 });
 
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        router.push('/auth-options');
+                        return;
+                    }
                     throw new Error('Network response was not ok');
                 }
 

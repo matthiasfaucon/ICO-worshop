@@ -45,6 +45,9 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 - **Passer le rôle de capitaine au joueur suivant si l’équipage est refusé deux fois** - Matthias FAUCON  
 - **Afficher une notification de victoire lorsqu'une équipe atteint le nombre de points défini au paramétrage de la partie** - Matthias FAUCON
 - **Paramétrage de la partie (Durée timer des pirates, nombres de joueurs, nombres de manches gagnantes, choisir si on joue avec des bonus)** - Matthias FAUCON
+- **Permettre à l'utilisateur de reprendre la partie en cours, si elle est quittée** - Matthias FAUCON
+- **Permettre à l'utilisateur de rejouer** - Matthias FAUCON
+- **Permettre à l'utilisateur de rejouer avec les mêmes paramètres et les mêmes personnes** - Matthias FAUCON
 - **En cas de victoire pirate, afficher un écran de vote pour identifier la sirène** - Matthias FAUCON  
 
 ### Gameplay Multidevice avec Fonctionnalités Temps Réel : 
@@ -83,13 +86,31 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 
 ### Améliorations prévues pour la V2
 
-#### Fonctionnalités Multidevice
+#### Authentification et Sessions
+
+- **Authentification via des providers tiers** : Intégration de la connexion via Google, Facebook, Twitter, Apple, etc. pour une expérience utilisateur plus fluide.
+
+#### Fonctionnalités de Gameplay (Multidevice et Monodevice)
+
+- **Possibilité de jouer avec les bonus** : Intégration de bonus spéciaux pour pimenter les parties et offrir des défis supplémentaires.
+- **Récapitulatif de fin de tour** : Permettre aux joueurs de personnaliser les rôles et les attributions pour une expérience de jeu unique.
+- **Récapitulatif de fin de partie** : Permettre aux joueurs de personnaliser les rôles et les attributions pour une expérience de jeu unique.
+- **Gamification du jeu** : Intégration de récompenses, de niveaux et de défis pour encourager l'engagement et la fidélité des joueurs.
+- **Intégration d'avatar** : Personnalisation des profils des joueurs avec des avatars uniques pour une expérience de jeu plus immersive.
+- **Système de chat** : Ajout d'un chat en temps réel pour faciliter la communication entre les joueurs et renforcer l'interaction sociale.
+
+#### Fonctionnalités spécifiques au multidevice
 
 - **Mode spectateur** : Les joueurs non actifs pourront suivre le déroulement de la partie en temps réel.
 - **Rejoindre la partie via QR code** : Les joueurs pourront rejoindre rapidement la partie en scannant un QR code unique.
 - **Rejoindre via un lien de partage** : Un lien généré automatiquement contiendra le code de la partie pour un accès simplifié.
 - **Contrôle avancé des règles** : Ajustements stratégiques et gestion optimisée des événements pour une flexibilité accrue.
 - **Synchronisation renforcée** : Garantir une fluidité et une absence de latence pour une expérience sans interruption.
+
+#### Interface Utilisateur
+
+- **Gestion des erreurs** : Afficher des messages d'erreur clairs et informatifs pour guider les utilisateurs en cas de problème.
+- **Optimisation des performances** : Améliorer la vitesse de chargement et la réactivité de l'application pour une expérience utilisateur optimale.
 
 ---
 
@@ -201,7 +222,7 @@ npx prisma studio
 ### Créez de nouvelles migrations
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev --name <nom_migration>
 ```
 
 ---
