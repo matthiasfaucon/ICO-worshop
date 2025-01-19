@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`antialiased h-dvh bg-brown-500`}
+        className={`antialiased h-dvh`}
       >
         <GameProvider>
           <StoreProvider>
