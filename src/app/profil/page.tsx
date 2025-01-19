@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
+import HeaderHome from "@/components/HeaderHome"; // Ajoutez ici votre composant Header
 
 export default function ProfilPage() {
     const [userGames, setUserGames] = useState([]);
@@ -26,6 +27,11 @@ export default function ProfilPage() {
                 });
 
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        router.push('/auth-options');
+                        return;
+                    }
+                    throw new Error('Network response was not ok');
                     throw new Error("Erreur réseau : données non disponibles");
                 }
 

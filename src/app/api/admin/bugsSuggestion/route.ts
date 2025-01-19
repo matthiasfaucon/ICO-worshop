@@ -1,9 +1,26 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { validateToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
     try {
-        const { type, description, user_id } = await request.json();
+        const token = request.headers.get("Authorization")?.split(" ")[1];
+        if (!token) {
+            return NextResponse.json(
+                { message: "Token manquant." },
+                { status: 401 }
+            );
+        }
+
+        const decoded: any = validateToken(token);
+        if (!decoded) {
+            return NextResponse.json(
+                { message: "Token invalide ou expiré." },
+                { status: 401 }
+            );
+        }
+
+        const { type, description } = await request.json();
 
         // Créer le feedback
         const feedback = await prisma.bugSuggestion.create({
@@ -13,7 +30,7 @@ export async function POST(request: Request) {
                 status: 'PENDING',
                 user: {
                     connect: {
-                        id: user_id
+                        id: decoded.id
                     }
                 }
             }

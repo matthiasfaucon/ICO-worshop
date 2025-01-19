@@ -60,11 +60,6 @@ export default function CreateCard() {
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Créer une nouvelle carte</h1>
-          <button
-            className="block md:hidden p-2 rounded-full text-gray-500 hover:bg-gray-200"
-          >
-            <Bars3Icon className="h-6 w-6" />
-          </button>
         </div>
 
         <form

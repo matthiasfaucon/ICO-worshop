@@ -95,14 +95,14 @@ export async function POST(req: NextRequest) {
 
     response.cookies.set("authToken", token, {
       maxAge: 60 * 60 * 24, // 1 heure
-      httpOnly: true,
+      // httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
 
     response.cookies.set("session_uuid", sessionId, {
       maxAge: 365 * 24 * 60 * 60, // 1 an
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
+      // httpOnly: false,
+      // secure: process.env.NODE_ENV === "production",
       path: "/",
     });
 

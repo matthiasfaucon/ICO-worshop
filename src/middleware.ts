@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { JWTPayload, jwtVerify } from 'jose'
+import { validateToken } from './lib/auth'
 
 export async function middleware(request: NextRequest) {
   // Exclure les routes publiques
@@ -10,19 +11,24 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/api') ||
     request.nextUrl.pathname === '/' ||
     request.nextUrl.pathname === '' ||
-    request.nextUrl.pathname.startsWith('/multidevice')
+    request.nextUrl.pathname.startsWith('/multidevice') ||
+    request.nextUrl.pathname.startsWith('/public')
   ) {
     return NextResponse.next()
   }
 
   const authToken = request.cookies.get('authToken')?.value
-
+  
   if ( request.nextUrl.pathname === '/signin'
     || request.nextUrl.pathname === '/signup'
     || request.nextUrl.pathname === '/auth-options'
   ) {
     if (authToken) {
-      return NextResponse.redirect(new URL('/profil', request.url))
+      const validToken = validateToken(authToken)
+      if (validToken) {
+        return NextResponse.redirect(new URL('/profil', request.url))
+      }
+      return NextResponse.next()
     } else {
       return NextResponse.next()
     }
@@ -51,7 +57,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Appliquer le middleware à toutes les routes sauf les fichiers statiques
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Appliquer le middleware à toutes les routes sauf les fichiers statiques et certains types de fichiers
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.json|.*\\.png|.*\\.jpeg|.*\\.svg|.*\\.woff|.*\\.woff2|.*\\.jpg|.*\\.webp).*)',
   ],
 }

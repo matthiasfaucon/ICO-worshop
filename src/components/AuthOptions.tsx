@@ -1,104 +1,100 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
-import { FaGoogle } from "react-icons/fa";
+import HeaderHome from "./HeaderHome";
 
 export default function AuthOptions() {
   const router = useRouter();
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await signIn("google", { callbackUrl: "/" });
-    } catch (error) {
-      console.error("Erreur lors de la connexion avec Google :", error);
-    }
-  };
-
   const handleSignIn = () => {
-    console.log("Se connecter");
     router.push("/signin");
   };
 
   const handleSignUp = () => {
-    console.log("S'inscrire");
     router.push("/signup");
   };
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen bg-gradient-to-br from-blue-400 to-blue-600 px-6 py-6 text-white">
+    <div
+      className="bg-brown-texture h-dvh bg-cover bg-center"
+      style={{ backgroundImage: "url('/cards/background-app-brown.svg')" }}
+    >
       {/* Header */}
-      <div className="flex justify-start w-full">
-        <a href="/multidevice">
+      {/* <div className="flex items-center justify-between px-6 py-4">
         <button
-          className="p-3 text-white bg-blue-500 rounded-full hover:bg-blue-400 transition duration-300"
+          onClick={() => router.push("/multidevice")}
+          className="p-3 rounded-full bg-white shadow-md hover:bg-gray-200 transition"
         >
-          &#8592;
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6 text-gray-800"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
         </button>
-        </a>
-      </div>
-
-      {/* Logo et message */}
-      <div className="flex flex-col items-center text-center mt-10">
-        <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
-          <img
-            src="/logo.png" // Remplacez par l'URL de votre logo
-            alt="Logo"
-            className="w-full h-full rounded-full object-cover"
-          />
-        </div>
-        <p className="mt-6 text-lg font-semibold text-center">
-          Connecte-toi ou crée un compte pour jouer en ligne et accéder à ta progression sur tous tes appareils.
+      </div> */}
+      <HeaderHome />
+      {/* Contenu principal */}
+      <div className="mx-auto mt-8 mb-4 bg-white/15 backdrop-blur-sm rounded-lg shadow-lg border-2 border-white/40 h-5/6 w-11/12 z-10 flex flex-col items-center justify-center px-6 py-8">
+        {/* Titre et sous-titre */}
+        <h1 className="text-4xl font-magellan text-white mb-2 text-center">
+          Bienvenue sur ICO !
+        </h1>
+        <p className="text-white text-center font-filson mb-6">
+          Identifier, Convaincre, Observer
         </p>
-      </div>
 
-      {/* Boutons */}
-      <div className="flex flex-col items-center w-full max-w-md space-y-4 mt-10">
-        {/* Bouton Google */}
-        <button
-          onClick={handleGoogleSignIn}
-          className="flex items-center justify-center w-full py-3 bg-white text-gray-800 font-semibold rounded-full shadow-lg hover:bg-gray-100 transition duration-300"
-        >
-          <FaGoogle className="text-xl mr-3" />
-          Se connecter avec Google
-        </button>
-
-        {/* Séparateur */}
-        <div className="flex items-center w-full my-6">
-          <div className="flex-grow border-t border-gray-200"></div>
-          <span className="mx-4 text-gray-200 text-sm">ou</span>
-          <div className="flex-grow border-t border-gray-200"></div>
+        {/* Section VS */}
+        <div className="flex items-center justify-center mb-8 gap-4">
+          <div className="w-20 h-20 bg-red-400 rounded-lg flex items-center justify-center shadow-md">
+            <img src="/cards/pirate.png" alt="Pirate" className="w-12 h-12" />
+          </div>
+          <p className="text-white font-magellan text-lg font-bold">VS</p>
+          <div className="w-20 h-20 bg-blue-400 rounded-lg flex items-center justify-center shadow-md">
+            <img src="/cards/marin.png" alt="Marin" className="w-12 h-12" />
+          </div>
         </div>
 
-        {/* Bouton Se connecter */}
-        <button
-          onClick={handleSignIn}
-          className="w-full py-3 bg-blue-700 rounded-full font-semibold hover:bg-blue-800 transition duration-300"
-        >
-          Se connecter
-        </button>
+        {/* Boutons */}
+        <div className="w-full max-w-lg">
+          <button
+            onClick={handleSignIn}
+            className="w-full py-3 bg-white text-gray-800 text-lg font-bold rounded-lg shadow-md hover:bg-gray-100 transition"
+          >
+            Se connecter
+          </button>
 
-        {/* Bouton S'inscrire */}
-        <button
-          onClick={handleSignUp}
-          className="w-full py-3 bg-transparent border border-white rounded-full font-semibold hover:bg-white hover:text-blue-600 transition duration-300"
-        >
-          S'inscrire
-        </button>
-      </div>
+          {/* Séparateur */}
+          <div className="flex items-center my-6">
+            <div className="flex-grow border-t border-white/50"></div>
+            <span className="text-white px-4">Ou</span>
+            <div className="flex-grow border-t border-white/50"></div>
+          </div>
 
-      {/* Footer */}
-      <div className="mt-10 text-center text-sm">
-        <p>
-          En t'inscrivant ou en te connectant, tu acceptes nos{" "}
-          <a href="/terms" className="underline font-semibold">
-            Conditions d'utilisation
-          </a>{" "}
-          et notre{" "}
-          <a href="/privacy" className="underline font-semibold">
-            Politique de confidentialité
-          </a>.
-        </p>
+          <button
+            onClick={handleSignUp}
+            className="w-full py-3 text-white text-lg font-bold border border-white rounded-lg shadow-md hover:bg-white hover:text-gray-800 transition"
+          >
+            S'inscrire
+          </button>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8">
+          <p className="text-white text-sm text-center">
+            Tu n’as pas de compte ?{" "}
+            <span
+              onClick={handleSignUp}
+              className="font-bold underline cursor-pointer"
+            >
+              Inscris-toi
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );

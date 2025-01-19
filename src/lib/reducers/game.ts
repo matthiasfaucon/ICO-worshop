@@ -190,6 +190,7 @@ const gameSlice = createSlice({
           state.submittedCards = [];
         } else {
           state.votesAnnulation += 1;
+          state.lastCrew = state.currentCrew;
           if (state.votesAnnulation === 2) {
             const currentIndex = state.players.findIndex(p => p.id === state.currentCaptain);
             const nextIndex = (currentIndex + 1) % state.players.length;
@@ -199,7 +200,7 @@ const gameSlice = createSlice({
           }
           state.gamePhase = 'CREW_SELECTION';
         }
-
+        state.lastCrew = state.currentCrew;
         state.votes = [];
       }
     },

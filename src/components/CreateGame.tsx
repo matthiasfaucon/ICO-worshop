@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { configureGame } from '@/lib/reducers/game';
+import { configureGame, resetGame } from '@/lib/reducers/game';
 import Header from "./header";
+import Cookies from "js-cookie";
 
 export default function CreateGame() {
   const [withBonus, setWithBonus] = useState(false);
@@ -18,11 +19,15 @@ export default function CreateGame() {
   const gameState = useAppSelector((state) => state.game);
 
   const handleCreateGame = async () => {
+    localStorage.removeItem("gameState");
+    dispatch(resetGame(false));
+
+    const token = Cookies.get("authToken");
     let generalRules = await fetch("/api/admin/game-rules?type=SPECIFIC", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        "Authorization": `Bearer ${token}`
       }
     })
     generalRules = await generalRules.json()
@@ -58,14 +63,15 @@ export default function CreateGame() {
 
   useEffect(() => {
     async function fetchGameRules() {
+
+
       const filter = {
         type: "SPECIFIC"
       }
       const response = await fetch(`/api/admin/game-rules?type=${filter.type}`, {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+          "Content-Type": "application/json"
         },
       })
 

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import Sidebar from '../components/Sidebar';
 
 type BugSuggestion = {
     id: string;
@@ -139,8 +140,9 @@ export default function AdminBugsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-50">
+            <Sidebar />
+            <div className="max-w-7xl mx-auto p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold text-gray-900">Bugs et Suggestions</h1>
                     <div className="flex gap-4">
