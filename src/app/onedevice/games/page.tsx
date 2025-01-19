@@ -46,7 +46,6 @@ export default function GamePage() {
 
     useEffect(() => {
         const savedGameState = localStorage.getItem('gameState');
-        console.log('savedGameState:', savedGameState);
         if (savedGameState) {
             dispatch(loadFromLocalStorage());
         }

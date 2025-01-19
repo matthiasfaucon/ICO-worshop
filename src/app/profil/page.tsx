@@ -32,7 +32,6 @@ export default function ProfilPage() {
                         return;
                     }
                     throw new Error('Network response was not ok');
-                    throw new Error("Erreur réseau : données non disponibles");
                 }
 
                 let data = await response.json();
@@ -70,6 +69,12 @@ export default function ProfilPage() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-6">
+
+            {/* Bouton de retour */}
+            <button onClick={() => router.back()} className="text-gray-600 text-sm mb-4">
+                Retour
+            </button>
+
             <h1 className="text-3xl font-bold mb-6 text-gray-800">Profil</h1>
 
             <h2 className="text-xl font-semibold mb-4">Mes parties en mono-device</h2>

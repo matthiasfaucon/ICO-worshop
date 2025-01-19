@@ -14,7 +14,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     try {
         const { role } = await request.json();
         const user = await prisma.user.update({
-            where: { id: params.id },
+            where: { id: params?.id },
             data: { role }
         });
         return NextResponse.json(user);
@@ -25,7 +25,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
     try {
-        await prisma.user.delete({ where: { id: params.id } });
+        const user = await prisma.user.delete({ where: { id: params?.id } });
         return NextResponse.json({ message: "Utilisateur supprimé" });
     } catch (error) {
         return NextResponse.json({ error: "Erreur lors de la suppression de l'utilisateur" }, { status: 500 });
