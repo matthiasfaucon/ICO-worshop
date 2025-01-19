@@ -8,9 +8,6 @@ export async function GET(
   const gameCode = await params.code; // Pas besoin d'utiliser await ici, params.code est synchrone
 
   try {
-    console.log(
-      `Requête reçue pour récupérer les joueurs de la partie avec le code : ${gameCode}`
-    );
 
     const game = await prisma.game.findUnique({
       where: { code: gameCode },

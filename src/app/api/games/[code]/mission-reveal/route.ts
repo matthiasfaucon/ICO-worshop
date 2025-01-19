@@ -7,7 +7,6 @@ export async function POST(
   { params }: { params: { code: string } }
 ) {
   const gameCode = await params.code;
-  console.log("test");
   try {
     const body = await req.json();
 
@@ -42,8 +41,6 @@ export async function POST(
       );
     }
 
-    console.log("ici ceest la");
-
     // Vérifier le tour actuel
     const currentTurn = game.turns.find(
       (t) => t.turn_number === game.current_turn
@@ -55,15 +52,10 @@ export async function POST(
       );
     }
 
-    console.log("current turn :" + currentTurn);
-    console.log("aadfez afdezfazefgeazf la");
-
     // Récupérer toutes les actions de cartes pour ce tour
     const allActions = await prisma.cardAction.findMany({
       where: { turn_id: currentTurn.id },
     });
-
-    console.log("allactions  " +allActions);
 
     if (allActions.length === 0) {
       return NextResponse.json(
@@ -76,7 +68,6 @@ export async function POST(
     // Mélanger les cartes pour garantir l'anonymat
     const shuffledActions = allActions.sort(() => Math.random() - 0.5);
 
-    console.log("faeeseses");
     // Calculer le résultat de la mission
     const poisonCount = shuffledActions.filter(
       (action) => action.type === "poison"
@@ -93,8 +84,6 @@ export async function POST(
       [result]: (game.score[result] || 0) + 1,
     };
 
-    console.log("isotherme");
-
     // Trouver le prochain capitaine
     const currentCaptainIndex = game.players.findIndex(
       (p) => p.session_uuid === game.current_captain?.session_uuid
@@ -108,8 +97,6 @@ export async function POST(
         { status: 500 }
       );
     }
-
-    console.log("Nouveau capitaine session UUID:", nextCaptain.session_uuid);
 
     // Réinitialiser et mettre à jour les joueurs et le capitaine
     await prisma.$transaction([
@@ -136,8 +123,6 @@ export async function POST(
       }),
     ]);
 
-    console.log("Équipage réinitialisé et tour incrémenté avec succès.");
-
     // Rediriger les joueurs avec `session_uuid`
     const playerPromises = game.players.map((player) => {
       const event =
@@ -162,8 +147,6 @@ export async function POST(
       score: updatedScore,
       nextCaptainSessionUuid: nextCaptain.session_uuid,
     });
-
-    console.log("Événement Pusher 'mission-reveal' envoyé avec succès.");
 
     return NextResponse.json({
       message: "Mission terminée. Prochain tour en cours.",
