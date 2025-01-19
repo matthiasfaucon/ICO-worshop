@@ -52,7 +52,7 @@ export async function GET(
     console.log("Scores actuels :", { pirates: scorePirates, marins: scoreMarins });
 
     // Vérifier si une équipe a atteint le seuil de victoire
-    if (scoreMarins >= 3) {
+    if (scoreMarins >= 5) {
       // Mettre à jour le statut du jeu à "end"
       await prisma.game.update({
         where: { code: gameCode },
@@ -73,7 +73,7 @@ export async function GET(
       });
     }
 
-    if (scorePirates >= 3) {
+    if (scorePirates >= 5) {
       // Mettre à jour le statut du jeu à "end"
       await prisma.game.update({
         where: { code: gameCode },
