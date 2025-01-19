@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
@@ -8,13 +7,6 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
-export const metadata = {
-  title: 'Nom de ton App',
-  description: 'Description de ton application',
-  themeColor: '#000000',
-  manifest: '/manifest.json'
-};
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -29,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body
-        className={`antialiased h-dvh`}
+        className={`antialiased h-dvh bg-brown-500`}
       >
         <GameProvider>
           <StoreProvider>
