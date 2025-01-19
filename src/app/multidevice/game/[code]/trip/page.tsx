@@ -251,7 +251,7 @@ export default function MissionPage() {
           } else {
             router.push(`/multidevice/game/${gameCode}/player-wait`);
           }
-        }, 80000);
+        }, 8000);
       }
     });
 
