@@ -32,7 +32,7 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 ### Interface Utilisateur
 - **Page d’accueil pour expliquer les règles principales** - Mouhamadou SOUMARE  
 - **Interface de création de partie** - Mouhamadou SOUMARE
-- **Accès au back office pour les administrateurs** - Matthias FAUCON
+- **Accès au back office pour les administrateurs (Dans le header)** - Matthias FAUCON
 
 ### Gameplay
 - **Créer un écran où le capitaine choisit son équipage** - Matthias FAUCON  
@@ -187,20 +187,6 @@ npx prisma db pull
 ```bash
 npx prisma generate
 ```
-### Exemple de fichier `.env`
-
-Voici un exemple de configuration du fichier `.env` à utiliser pour votre projet :
-
-```env
-DATABASE_URL='postgresql://<username>:<password>@ep--busha2n7pl5f.eu-central-1.aws.neon.tech/ico_db?sslmode=require'
-SHADOW_DATABASE_URL='postgresql://<username>:<password>@ep-old--.eu-central-1.aws.neon.tech/ico_db?sslmode=require'
-JWT_SECRET="<votre_clé_secrète>"
-NEXT_PUBLIC_PUSHER_APP_ID="<votre_app_id>"
-NEXT_PUBLIC_PUSHER_APP_KEY="<votre_app_key>"
-NEXT_PUBLIC_PUSHER_APP_SECRET="<votre_app_secret>"
-NEXT_PUBLIC_PUSHER_APP_CLUSTER="eu"
-```
-
 
 ### 3. Configuration PWA
 
