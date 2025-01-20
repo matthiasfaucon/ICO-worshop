@@ -52,18 +52,18 @@ Ce projet est une application Next.js transformée en Progressive Web App (PWA).
 - **En cas de victoire pirate, afficher un écran de vote pour identifier la sirène** - Matthias FAUCON  
 
 ### Gameplay Multidevice avec Fonctionnalités Temps Réel : 
-- **Choix d’équipage multidevice** : Le capitaine sélectionne son équipage avec une synchronisation instantanée sur tous les appareils, garantissant des décisions collectives fluides.
-- **Ajout et gestion des joueurs** : Interface intuitive permettant d'ajouter et gérer les joueurs en temps réel, avec mise à jour dynamique des informations pour tous les participants.
-- **Votes en direct sur l’équipage** : Chaque joueur vote "Pour" ou "Contre" l’équipage via une interface dédiée, les résultats s'affichant instantanément pour tout le monde.
-- **Attribution des rôles en temps réel** : Les rôles (pirates, marins, sirène) sont attribués aléatoirement et notifiés de manière sécurisée à chaque joueur.
-- **Gestion automatique des scores** : Mise à jour transparente des scores à la fin de chaque manche, avec notifications en temps réel sur tous les appareils connectés.
-- **Jouabilité interactive et synchronisée** : Pirates et marins jouent leurs cartes respectives ("ÎLE" ou "POISON"), avec un retour visuel immédiat sur le plateau partagé.
-- **Gestion dynamique du capitaine** : En cas de double refus de l’équipage, le rôle de capitaine passe automatiquement au joueur suivant, avec notification immédiate.
-- **Notifications de victoire en direct** : Une notification synchronisée informe instantanément tous les joueurs lorsqu'une équipe atteint le score de victoire.
-- **Paramétrage en temps réel** : L’hôte configure les paramètres de la partie (durée des manches, nombre de joueurs, manches gagnantes, bonus) avec application immédiate pour tous les joueurs.
-- **Écran de vote en cas de victoire pirate** : Si les pirates remportent la partie, un écran dédié permet un vote collectif pour identifier la sirène.
-- **Révélation des cartes jouées** : Les cartes restent masquées jusqu’à la décision du capitaine de les révéler, offrant une expérience stratégique immersive.
-- **Temps de réflexion synchronisé** : Mise en place d’un timer visible par tous pour gérer le rythme des actions et assurer une coordination fluide.
+- **Choix d’équipage multidevice** : Le capitaine sélectionne son équipage avec une synchronisation instantanée sur tous les appareils, garantissant des décisions collectives fluides.  - Mouhamadou Soumare
+- **Ajout et gestion des joueurs** : Interface intuitive permettant d'ajouter et gérer les joueurs en temps réel, avec mise à jour dynamique des informations pour tous les participants.  - Mouhamadou Soumare
+- **Votes en direct sur l’équipage** : Chaque joueur vote "Pour" ou "Contre" l’équipage via une interface dédiée, les résultats s'affichant instantanément pour tout le monde.  - Mouhamadou Soumare
+- **Attribution des rôles en temps réel** : Les rôles (pirates, marins, sirène) sont attribués aléatoirement et notifiés de manière sécurisée à chaque joueur.  - Mouhamadou Soumare
+- **Gestion automatique des scores** : Mise à jour transparente des scores à la fin de chaque manche, avec notifications en temps réel sur tous les appareils connectés.  - Mouhamadou Soumare
+- **Jouabilité interactive et synchronisée** : Pirates et marins jouent leurs cartes respectives ("ÎLE" ou "POISON"), avec un retour visuel immédiat sur le plateau partagé.  - Mouhamadou Soumare
+- **Gestion dynamique du capitaine** : En cas de double refus de l’équipage, le rôle de capitaine passe automatiquement au joueur suivant, avec notification immédiate.  - Mouhamadou Soumare
+- **Notifications de victoire en direct** : Une notification synchronisée informe instantanément tous les joueurs lorsqu'une équipe atteint le score de victoire.  - Mouhamadou Soumare
+- **Paramétrage en temps réel** : L’hôte configure les paramètres de la partie (durée des manches, nombre de joueurs, manches gagnantes, bonus) avec application immédiate pour tous les joueurs.  - Mouhamadou Soumare
+- **Écran de vote en cas de victoire pirate** : Si les pirates remportent la partie, un écran dédié permet un vote collectif pour identifier la sirène.  - Mouhamadou Soumare
+- **Révélation des cartes jouées** : Les cartes restent masquées jusqu’à la décision du capitaine de les révéler, offrant une expérience stratégique immersive.  - Mouhamadou Soumare
+- **Temps de réflexion synchronisé** : Mise en place d’un timer visible par tous pour gérer le rythme des actions et assurer une coordination fluide.  - Mouhamadou Soumare
 
 ### Design et Responsive
 - **Design responsive pour s’adapter aux mobiles et tablettes** - Ilan Lallemand  
